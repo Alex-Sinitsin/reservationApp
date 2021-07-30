@@ -16,19 +16,28 @@ class DatabaseDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
   // TODO: Сделать различные проверки при обновлении и удалении пользователей
 
   def createSchemaIfNotExist: Future[Unit] = {
-    dbConfig.db.run(allSchemas.createIfNotExists).andThen{
+    dbConfig.db.run(allSchemas.createIfNotExists).andThen {
+      case Success(v) => println("Схема базы данных успешно создана!")
+      case Failure(ex) => println(ex)
+    }
+  }
+
+  def dropSchemaIfExist: Future[Unit] = {
+    dbConfig.db.run(allSchemas.dropIfExists).andThen{
+      case Success(_) =>  println("Схема базы данных успешно удалена!")
       case Failure(v) => println(v)
     }
   }
 
   //UserDAO Implement
 
-  def createUser(userData: User): Future[Unit] = {
-    dbConfig.db.run(users.filter(userRow => userRow.email === userData.email).result).flatMap{userRows =>
-      if(userRows.nonEmpty) Future.successful(println("Пользователь с таким Email уже существует"))
-      else dbConfig.db.run(users += userData).andThen{case Success(_) => println("User successfully created")}
+  def createUser(userData: User): Future[String] = {
+    dbConfig.db.run(users.filter(userRow => userRow.email === userData.email).result).flatMap{userMatch =>
+      if(userMatch.nonEmpty) Future.failed(new Exception("Пользователь с таким Email уже существует!"))
+      else {
+        dbConfig.db.run(users += userData).flatMap(_ => Future.successful("Новый пользователь успешно добавлен!"))
+      }
     }
-    Future.successful()
   }
 
   def updateUser(user: User) = ???
