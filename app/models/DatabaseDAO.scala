@@ -2,6 +2,7 @@ package models
 
 import javax.inject.{Inject, Singleton}
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import play.api.libs.json.Json
 import slick.jdbc.PostgresProfile.api._
 import slick.jdbc.JdbcProfile
 
@@ -17,7 +18,7 @@ class DatabaseDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
 
   def createSchemaIfNotExist: Future[Unit] = {
     dbConfig.db.run(allSchemas.createIfNotExists).andThen {
-      case Success(v) => println("Схема базы данных успешно создана!")
+      case Success(_) => println("Схема базы данных успешно создана!")
       case Failure(ex) => println(ex)
     }
   }
@@ -25,7 +26,7 @@ class DatabaseDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
   def dropSchemaIfExist: Future[Unit] = {
     dbConfig.db.run(allSchemas.dropIfExists).andThen{
       case Success(_) =>  println("Схема базы данных успешно удалена!")
-      case Failure(v) => println(v)
+      case Failure(ex) => println(ex)
     }
   }
 
@@ -40,13 +41,24 @@ class DatabaseDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
     }
   }
 
-  def updateUser(user: User) = ???
-
-  def deleteUser(id: Int): Future[Int] = {
-    dbConfig.db.run(users.filter(_.id === id).delete).andThen{case Success(_) => println("User was successfully deleted")}
+  def updateUser(userRowData: User): Future[String] = {
+    //TODO: Сделать шифрование паролей, когда будет подключена библиотека Silhouette (bcrypt)
+    val updateUserById = users.filter(_.id === userRowData.id)
+      .map(user => (user.name, user.position, user.email, user.password))
+      .update((userRowData.name, userRowData.position, userRowData.email, userRowData.password ))
+    db.run(updateUserById).flatMap { counter =>
+      if(counter > 0) Future.successful("Данные пользователя успешно обновлены!")
+      else Future.failed(new Exception("Произошла ошибка при обновлении данных пользователя!"))
+    }
   }
 
-  def getAllUsers: Future[Seq[User]] = {
-    dbConfig.db.run(users.result)
+  def deleteUser(id: Int): Future[String] = {
+    dbConfig.db.run(users.filter(_.id === id).delete).flatMap {counter =>
+      if(counter > 0) Future.successful("Данные пользователя успешно удалены!")
+      else Future.failed(new Exception("Произошла ошибка при удалении данных пользователя!"))}
+  }
+
+  def getAllUsers: Future[List[User]] = {
+    dbConfig.db.run(users.result).map(_.toList)
   }
 }
