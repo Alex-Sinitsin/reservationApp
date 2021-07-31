@@ -5,6 +5,7 @@ import models._
 import javax.inject._
 import play.api.mvc._
 import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import play.api.libs.json.{JsArray, JsError, JsSuccess, Json, Reads, Writes}
 import slick.jdbc.JdbcProfile
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -20,17 +21,40 @@ class HomeController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 
   val dao = new DatabaseDAO(dbConfigProvider)
 
-  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
-//    dao.createSchemaIfNotExist
-//    dao.dropSchemaIfExist
+  def withJsonBody[A](f: A => Future[Result])(implicit request: Request[AnyContent], reads: Reads[A]): Future[Result] = {
+    request.body.asJson.map { body =>
+      Json.fromJson[A](body) match {
+        case JsSuccess(a, path) => f(a)
+        case e @ JsError(_) => Future.successful(Redirect(routes.HomeController.index()))
+      }
+    }.getOrElse(Future.successful(Redirect(routes.HomeController.index())))
+  }
 
-    dao.createUser(User(-1,"Лиза", "Директор", "liza@mail.ru", "pass")).onComplete {
-      case Success(result) =>  println(result)
-      case Failure(exception) => println(exception)
-    }
+  def index(): Request[AnyContent] = Action async   { implicit request: Request[AnyContent] =>
+    //    dao.createSchemaIfNotExist
+    //    dao.dropSchemaIfExist
 
-//    dao.getAllUsers.foreach(println)
+    //    dao.createUser(User(-1,"Лиза", "Директор", "liza@mail.ru", "pass")).onComplete {
+    //      case Success(result) =>  println(result)
+    //      case Failure(exception) => println(exception)
+    //    }
 
-    Ok(views.html.index())
+    //    dao.updateUser(User(1,"Алексей", "Разработчик", "alex@mail.ru", "pass1word")).onComplete {
+    //      case Success(result) =>  println(result)
+    //      case Failure(exception) => println(exception)
+    //    }
+
+
+//    Ok(views.html.index(Json.toJson(users)))
+
+
+//    withJsonBody[List[User]]{
+//    val users: Future[List[User]] = dao.getAllUsers.map(usl => Ok(Json.toJson(usl)(dao.ListUserWrites)))
+//    }(dao.UserReads)
+
+
+//    withJsonBody[List[User]] {
+//
+//    }(dao.UserReads)
   }
 }
