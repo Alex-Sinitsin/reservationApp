@@ -30,7 +30,9 @@ class HomeController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
     }.getOrElse(Future.successful(Redirect(routes.HomeController.index())))
   }
 
-  def index(): Request[AnyContent] = Action async   { implicit request: Request[AnyContent] =>
+  def index(): Action[AnyContent] = Action { implicit request: Request[AnyContent] =>
+
+    Ok(views.html.index())
     //    dao.createSchemaIfNotExist
     //    dao.dropSchemaIfExist
 
@@ -56,5 +58,6 @@ class HomeController @Inject()(protected val dbConfigProvider: DatabaseConfigPro
 //    withJsonBody[List[User]] {
 //
 //    }(dao.UserReads)
+
   }
 }
