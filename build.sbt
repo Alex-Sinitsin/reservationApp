@@ -12,7 +12,8 @@ libraryDependencies ++= Seq(
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
   "com.typesafe.play" %% "play-slick" % "5.0.0",
   "com.typesafe.play" %% "play-slick-evolutions" % "5.0.0",
-  "org.postgresql" % "postgresql" % "42.2.23"
+  "org.postgresql" % "postgresql" % "42.2.23",
+  "com.dripower" %% "play-circe" % "2814.1"
 )
 
 // Adds additional packages into Twirl
