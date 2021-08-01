@@ -9,11 +9,15 @@ import slick.jdbc.JdbcProfile
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success}
 
+/**
+ * Объект для работы с базой данных
+ * @param dbConfigProvider - Провайдер конфигурации базы данных
+ * @param ec - Исполняемы контекст
+ */
 @Singleton
 class DatabaseDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
   extends HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
-  // Скорее всего будет частично переделываться
-  //TODO: Разобраться с возвратом ошибок и попробовать что-ниюудь вывести в шаблон вида
+
   // TODO: Сделать различные проверки при обновлении и удалении пользователей
 
   def createSchemaIfNotExist: Future[Unit] = {
