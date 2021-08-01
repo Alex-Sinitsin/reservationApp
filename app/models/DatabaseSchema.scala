@@ -10,6 +10,9 @@ case class User(id: Int, name: String, position: String, email: String, password
 case class Item(id: Int, name: String)
 case class Event(id:Int, title: String, date: LocalDate, startAt: LocalTime, endAt: LocalTime, orgUserId: Int, members: Option[List[User]], itemId: Int, description: Option[String])
 
+/**
+ * Модель базы данных для генерации с помощью Slick
+ */
 trait DatabaseSchema {
   class Users(tag: Tag) extends Table[User](tag, "Users") {
     def id = column[Int]("ID", O.SqlType("SERIAL"), O.PrimaryKey, O.AutoInc)
@@ -30,10 +33,9 @@ trait DatabaseSchema {
 
   val items = TableQuery[Items]
 
-  // Json Converters
-
-  implicit val ListUserWrites: Writes[List[User]] = Json.writes[List[User]]
-
+  /**
+   * Json Конвертеры
+   */
   implicit val UserReads: Reads[User] = (
     (JsPath \ "id").read[Int] and
       (JsPath \ "name").read[String] and
