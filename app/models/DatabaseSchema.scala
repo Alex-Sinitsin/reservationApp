@@ -1,12 +1,35 @@
 package models
 
+import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
+import com.mohiva.play.silhouette.api.util.PasswordInfo
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
+
 import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
 import play.api.libs.json._
 import slick.jdbc.PostgresProfile.api._
 
 //TODO: Сделать значения поля Id рандомным
 
-case class User(id: Int, name: String, position: String, email: String, password: String)
+case class User(id: Int, name: String, position: String, email: String, password: String) extends Identity {
+
+  /**
+   * Generates login info from email
+   *
+   * @return login info
+   */
+  def loginInfo: LoginInfo = LoginInfo(CredentialsProvider.ID, email)
+
+  /**
+   * Generates password info from password.
+   *
+   * @return password info
+   */
+  def passwordInfo: PasswordInfo = PasswordInfo(BCryptSha256PasswordHasher.ID, password)
+}
+
+
+
 case class Item(id: Int, name: String)
 case class Event(id: Int, title: String, orgUserId: Int, members: Option[Seq[User]], itemId: Int, description: Option[String])
 
