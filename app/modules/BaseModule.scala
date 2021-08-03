@@ -1,7 +1,8 @@
 package modules
 
 import com.google.inject.AbstractModule
-import models.services.{UserService, UserServiceImpl}
+import models.daos.{ UserDAO, UserDAOImpl }
+import models.services.{ UserService, UserServiceImpl }
 import net.codingwell.scalaguice.ScalaModule
 
 /**

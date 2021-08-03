@@ -14,8 +14,8 @@ import scala.concurrent.{ExecutionContext, Future}
  * The `Sign Up` controller.
  */
 class SignUpController @Inject() (
-  components: SilhouetteControllerComponents
-)(implicit ex: ExecutionContext) extends SilhouetteController(components) {
+  scc: SilhouetteControllerComponents
+)(implicit ex: ExecutionContext) extends SilhouetteController(scc) {
 
   implicit val userFormat = Json.format[User]
 
