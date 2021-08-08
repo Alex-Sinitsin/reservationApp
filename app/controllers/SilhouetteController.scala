@@ -1,18 +1,19 @@
 package controllers
 
-import com.mohiva.play.silhouette.api.actions.{ SecuredActionBuilder, UnsecuredActionBuilder }
+import com.mohiva.play.silhouette.api.actions.{SecuredActionBuilder, UnsecuredActionBuilder}
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.services.AuthenticatorService
-import com.mohiva.play.silhouette.api.util.{ Clock, PasswordHasherRegistry }
-import com.mohiva.play.silhouette.api.{ EventBus, Silhouette }
+import com.mohiva.play.silhouette.api.util.{Clock, PasswordHasherRegistry}
+import com.mohiva.play.silhouette.api.{EventBus, Silhouette}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import javax.inject.Inject
 import models.services.UserService
 import play.api.Logging
 import play.api.http.FileMimeTypes
-import play.api.i18n.{ I18nSupport, Langs, MessagesApi }
+import play.api.i18n.{I18nSupport, Langs, MessagesApi}
 import play.api.mvc._
 import utils.auth.JWTEnvironment
+
+import javax.inject.Inject
 
 /**
  * Abstract silhouette controller which contains all components to work with authentication

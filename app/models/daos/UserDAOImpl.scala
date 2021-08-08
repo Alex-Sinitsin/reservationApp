@@ -2,8 +2,8 @@ package models.daos
 
 import com.google.inject.Inject
 import com.mohiva.play.silhouette.api.LoginInfo
-import models.{DatabaseSchema, User}
-import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
+import models.User
+import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 import slick.jdbc.PostgresProfile.api._
 
@@ -12,9 +12,10 @@ import scala.concurrent.{ExecutionContext, Future}
 /**
  * Gives access to the user storage.
  */
-class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
-  extends UserDAO with HasDatabaseConfigProvider[JdbcProfile] with DatabaseSchema {
+class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends UserDAO with DBTableDefinitions {
 
+
+  private val db = dbConfigProvider.get[JdbcProfile].db
 
   /**
    * Finds a user by its login info.

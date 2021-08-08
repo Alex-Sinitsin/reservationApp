@@ -14,8 +14,8 @@ import scala.concurrent.{ExecutionContext, Future}
  * The `Sign Up` controller.
  */
 class SignUpController @Inject() (
-  scc: SilhouetteControllerComponents
-)(implicit ex: ExecutionContext) extends SilhouetteController(scc) {
+  components: SilhouetteControllerComponents
+)(implicit ex: ExecutionContext) extends SilhouetteController(components) {
 
   implicit val userFormat = Json.format[User]
 
@@ -25,9 +25,9 @@ class SignUpController @Inject() (
    * @return The result to display.
    */
   def signUp = UnsecuredAction.async { implicit request: Request[AnyContent] =>
-    implicit val lang: Lang = supportedLangs.availables.head  // для вывода сообщений ошибок
+    implicit val lang: Lang = supportedLangs.availables.head
     request.body.asJson.flatMap(_.asOpt[User]) match {
-      case Some(newUser) if (newUser.password.nonEmpty) =>
+      case Some(newUser) if newUser.password.isEmpty =>
         userService.retrieve(LoginInfo(CredentialsProvider.ID, newUser.email)).flatMap {
           case Some(_) =>
             Future.successful(Conflict(JsString(messagesApi("user.already.exist"))))
