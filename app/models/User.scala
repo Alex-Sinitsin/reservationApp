@@ -15,10 +15,11 @@ import java.util.UUID
  * @param password the user's password
  */
 case class User(
-  id: UUID,
-  email: String,
+  id: Int,
   name: String,
   lastName: String,
+  position: String,
+  email: String,
   password: String) extends Identity {
 
   /**

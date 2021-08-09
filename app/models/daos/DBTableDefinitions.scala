@@ -5,8 +5,6 @@ import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
 import play.api.libs.json._
 import slick.jdbc.PostgresProfile.api._
 
-import java.time.ZonedDateTime
-import java.util.UUID
 
 //TODO: Сделать значения поля Id рандомным
 
@@ -14,12 +12,13 @@ import java.util.UUID
 trait DBTableDefinitions {
 
     class Users(tag: Tag) extends Table[User](tag, "Users") {
-      def id = column[UUID]("ID", O.PrimaryKey, O.AutoInc)
+      def id = column[Int]("ID", O.PrimaryKey, O.AutoInc)
       def name = column[String]("name")
+      def lastname = column[String]("lastname")
       def position = column[String]("position")
       def email = column[String]("email", O.Unique)
       def password = column[String]("password")
-      def * = (id, name, position,email,password).<>(User.tupled, User.unapply)
+      def * = (id, name, lastname, position, email, password).<>(User.tupled, User.unapply)
     }
 
 
@@ -37,27 +36,33 @@ trait DBTableDefinitions {
     def itemId = column[Int]("itemID")
     def description = column[Option[String]]("description")
 
+    // Настраиваем внешние ключи
+    def item = foreignKey("ITM_FK", itemId, items)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
+    def orgPerson = foreignKey("ORG_FK", orgUserId, users)(_.id, onUpdate=ForeignKeyAction.Restrict, onDelete=ForeignKeyAction.Cascade)
+
     def * = (id, title, orgUserId, members, itemId, description).<>(Event.tupled, Event.unapply)
   }
 
-  val items = TableQuery[Items]
-  val events = TableQuery[Events]
-  val users = TableQuery[Users]
+    val items = TableQuery[Items]
+    val events = TableQuery[Events]
+    val users = TableQuery[Users]
 
 
   // Json Converters
 
   implicit val UserReads: Reads[User] = (
-      (JsPath \ "id").read[UUID] and
+      (JsPath \ "id").read[Int] and
       (JsPath \ "name").read[String] and
+      (JsPath \ "lastname").read[String] and
       (JsPath \ "position").read[String] and
       (JsPath \ "email").read[String] and
       (JsPath \ "password").read[String]
     )(User.apply _)
 
   implicit val UserWrites: Writes[User] = (
-      (JsPath \ "id").write[UUID] and
+      (JsPath \ "id").write[Int] and
       (JsPath \ "name").write[String] and
+      (JsPath \ "lastname").write[String] and
       (JsPath \ "position").write[String] and
       (JsPath \ "email").write[String] and
       (JsPath \ "password").write[String]
