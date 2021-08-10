@@ -8,7 +8,7 @@ import scala.concurrent.Future
 /**
  * Gives access to the user storage.
  */
-trait UserDAO {
+trait UserDAO extends DatabaseDAO {
 
   /**
    * Finds a user by its login info.
@@ -16,7 +16,15 @@ trait UserDAO {
    * @param loginInfo The login info of the user to find.
    * @return The found user or None if no user for the given login info could be found.
    */
-  def find(loginInfo: LoginInfo): Future[Option[User]]
+  def findByLoginInfo(loginInfo: LoginInfo): Future[Option[User]]
+
+  /**
+   * Finds a user by its email
+   *
+   * @param email email of the user to find
+   * @return The found user or None if no user for the given login info could be found
+   */
+  def findByEmail(email: String): Future[Option[User]]
 
   /**
    * Saves a user.
@@ -32,5 +40,5 @@ trait UserDAO {
    * @param user The user to update.
    * @return The saved user.
    */
-  def update(user: User): Future[User]
+//  def update(user: User): Future[User]
 }

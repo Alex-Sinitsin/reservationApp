@@ -1,38 +1,36 @@
 package models
 
-import com.mohiva.play.silhouette.api.util.PasswordInfo
-import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import com.mohiva.play.silhouette.password.BCryptSha256PasswordHasher
+import com.mohiva.play.silhouette.api.Identity
+import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
+import play.api.libs.json.{JsPath, JsValue, Json, OFormat, Reads}
 
 import java.util.UUID
 
 /**
- * The user object.
+ * User model Object
  *
- * @param id The unique ID of the user.
- * @param lastName the last name of the authenticated user.
- * @param password the user's password
+ * @param ID d
+ * @param name d
+ * @param lastName d
+ * @param position d
+ * @param email d
+ * @param role d
  */
-case class User(
-  id: Int,
-  name: String,
-  lastName: String,
-  position: String,
-  email: String,
-  password: String) extends Identity {
+case class User(ID: UUID, name: String, lastName: String, position: String, email: String, role: Option[String]) extends Identity
 
-  /**
-   * Generates login info from email
-   *
-   * @return login info
-   */
-  def loginInfo = LoginInfo(CredentialsProvider.ID, email)
-
-  /**
-   * Generates password info from password.
-   *
-   * @return password info
-   */
-  def passwordInfo = PasswordInfo(BCryptSha256PasswordHasher.ID, password)
-}
+//{
+//
+//  /**
+//   * Generates login info from email
+//   *
+//   * @return login info
+//   */
+//  def loginInfo: LoginInfo = LoginInfo(CredentialsProvider.ID, email)
+//
+//  /**
+//   * Generates password info from password.
+//   *
+//   * @return password info
+//   */
+//  def passwordInfo: PasswordInfo = PasswordInfo(BCryptSha256PasswordHasher.ID, password)
+//}

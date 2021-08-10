@@ -9,8 +9,8 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.13.6"
 
 resolvers += Resolver.jcenterRepo
-
 resolvers += "Sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
+resolvers += "Atlassian Maven" at "https://maven.atlassian.com/content/repositories/atlassian-public/"
 
 
 libraryDependencies ++= Seq(
@@ -19,14 +19,15 @@ libraryDependencies ++= Seq(
   "com.mohiva" %% "play-silhouette-crypto-jca" % "7.0.0",
   "com.mohiva" %% "play-silhouette-persistence" % "7.0.0",
   "net.codingwell" %% "scala-guice" % "5.0.1",
-
-  guice,
-  filters,
   "org.scalatestplus.play" %% "scalatestplus-play" % "5.0.0" % Test,
   "com.typesafe.play" %% "play-slick" % "5.0.0",
   "com.typesafe.play" %% "play-slick-evolutions" % "5.0.0",
   "org.postgresql" % "postgresql" % "42.2.23",
-  "com.dripower" %% "play-circe" % "2814.1"
+  "com.dripower" %% "play-circe" % "2814.1",
+  "com.iheart" %% "ficus" % "1.5.0",
+  guice,
+  filters,
+  evolutions
 )
 
 scalacOptions ++= Seq(
