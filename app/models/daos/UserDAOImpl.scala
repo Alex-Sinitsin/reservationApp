@@ -6,7 +6,6 @@ import models.{User, UserRoles}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.PostgresProfile.api._
 
-import java.time.ZonedDateTime
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
@@ -21,9 +20,6 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
    * @return The found user or None if no user for the given login info could be found.
    */
   override def findByLoginInfo(loginInfo: LoginInfo): Future[Option[User]] = {
-    //    db.run {
-    //      users.filter(_.email === loginInfo.providerKey).result.headOption
-    //    }
     val userQuery = for {
       dbLoginInfo <- loginInfoQuery(loginInfo)
       dbUserLoginInfo <- userLoginInfos.filter(_.loginInfoId === dbLoginInfo.id)
@@ -32,7 +28,7 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
 
     db.run(userQuery.result.headOption).map { dbUserOption =>
       dbUserOption.map { user =>
-        User(user.ID, user.name, user.lastName, user.position, user.email, Some(UserRoles.toHumanReadable(user.roleId)))
+        User(user.id, user.name, user.lastName, user.position, user.email, Some(UserRoles.toHumanReadable(user.roleId)))
       }
     }
   }
@@ -59,19 +55,19 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
 //    }
       val actions = (for {
         userRoleId <- userRolesDAO.getUserRole
-        dbUser = DBUser(user.ID, user.name, user.lastName, user.position, user.email, userRoleId)
+        dbUser = DBUser(user.id, user.name, user.lastName, user.position, user.email, userRoleId)
         _ <- users.insertOrUpdate(dbUser)
       } yield ()).transactionally
       // run actions and return user afterwards
       db.run(actions).map(_ => user)
   }
 
-  /**
-   * Updates a user.
-   *
-   * @param user The user to update.
-   * @return The saved user.
-   */
+//  /**
+//   * Updates a user.
+//   *
+//   * @param user The user to update.
+//   * @return The saved user.
+//   */
 //  override def update(user: User): Future[User] = db.run {
 //    users.filter(_.email === user.email).update(user).map(_ => user)
 //  }

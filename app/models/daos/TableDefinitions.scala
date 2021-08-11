@@ -1,19 +1,20 @@
 package models.daos
 
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
-import models.{AuthToken, User, UserRoles}
+import models.{AuthToken, DBAuthToken, User, UserRoles}
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.ProvenShape
 
+import java.sql.Timestamp
 import java.time.ZonedDateTime
 import java.util.UUID
 
 trait TableDefinitions {
-  class AuthTokens(tag: Tag) extends Table[AuthToken](tag, Some("auth"),"silhouette_tokens") {
+  class AuthTokens(tag: Tag) extends Table[DBAuthToken](tag, Some("auth"),"silhouette_tokens") {
     def id = column[UUID]("id", O.PrimaryKey)
     def userId = column[UUID]("user_id")
-    def expiry = column[ZonedDateTime]("expiry")
-    def * : ProvenShape[AuthToken] = (id, userId, expiry).<>(AuthToken.tupled, AuthToken.unapply)
+    def expiry = column[Timestamp]("expiry")
+    def * : ProvenShape[DBAuthToken] = (id, userId, expiry).<>(DBAuthToken.tupled, DBAuthToken.unapply)
   }
 
   case class DBUserRoles(id: Int, name: String)
@@ -24,16 +25,16 @@ trait TableDefinitions {
     def * = (id, name).<> (DBUserRoles.tupled, DBUserRoles.unapply)
   }
 
-  case class DBUser(ID: UUID, name: String, lastName: String, position: String, email: String, roleId: Int)
+  case class DBUser(id: UUID, name: String, lastName: String, position: String, email: String, roleId: Int)
 
   object DBUser {
-    def toUser(u: DBUser): User = User(u.ID, u.name, u.lastName, u.position, u.email, Some(UserRoles.toHumanReadable(u.roleId)))
-    def fromUser(u: User): DBUser = DBUser(u.ID, u.name, u.lastName, u.position, u.email, UserRoles.toDBReadable(u.role.toString))
+    def toUser(u: DBUser): User = User(u.id, u.name, u.lastName, u.position, u.email, Some(UserRoles.toHumanReadable(u.roleId)))
+    def fromUser(u: User): DBUser = DBUser(u.id, u.name, u.lastName, u.position, u.email, UserRoles.toDBReadable(u.role.toString))
   }
 
   class Users(tag: Tag) extends Table[DBUser](tag, Some("auth"),"silhouette_users") {
-    def id = column[UUID]("ID", O.PrimaryKey)
-    def name = column[String]("first_name")
+    def id = column[UUID]("id", O.PrimaryKey)
+    def name = column[String]("name")
     def lastName = column[String]("last_name")
     def position = column[String]("position")
     def email = column[String]("email")

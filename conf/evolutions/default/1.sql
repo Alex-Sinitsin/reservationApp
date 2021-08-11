@@ -44,7 +44,7 @@ CREATE TABLE auth.silhouette_password_info (
 CREATE TABLE auth.silhouette_tokens (
   id      UUID        NOT NULL PRIMARY KEY,
   user_id UUID        NOT NULL,
-  expiry  TIMESTAMP NOT NULL,
+  expiry  TIMESTAMPTZ NOT NULL,
   CONSTRAINT auth_token_user_id_fk FOREIGN KEY (user_id) REFERENCES auth.silhouette_users (id)
 );
 

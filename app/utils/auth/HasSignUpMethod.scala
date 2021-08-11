@@ -27,7 +27,7 @@ class HasSignUpMethod @Inject()(authenticateService: AuthenticateService) {
      * @return True if the user is authorized, false otherwise.
      */
     override def isAuthorized[B](user: User, authenticator: A)(implicit request: Request[B]): Future[Boolean] = {
-      authenticateService.userHasAuthenticationMethod(user.ID, provider)
+      authenticateService.userHasAuthenticationMethod(user.id, provider)
     }
   }
 

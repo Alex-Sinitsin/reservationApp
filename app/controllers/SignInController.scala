@@ -34,16 +34,17 @@ class SignInController @Inject()(authenticateService: AuthenticateService,
    * @return The result to display.
    */
   def submit: Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
-    SignInForm.form.fold(
-      _ => Future.successful(BadRequest),
+    //TODO: Сделать возврат формы с ошибками в результат
+    SignInForm.form.bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(formWithErrors.errors.toString())),
       data => {
         authenticateService.credentials(data.email, data.password).flatMap {
           case Success(user) =>
             val loginInfo = LoginInfo(CredentialsProvider.ID, user.email)
             authenticateUser(user, loginInfo)
           case InvalidPassword(msg) =>
-            Future.successful(Forbidden(Json.obj("errorCode" -> msg)))
-          case UserNotFound => Future.successful(Forbidden(Json.obj("errorCode" -> "Пользователь не найден")))
+            Future.successful(Forbidden(Json.obj("errors" -> msg)))
+          case UserNotFound => Future.successful(Forbidden(Json.obj("errors" -> "Пользователь не найден")))
           }
           .recover {
             case e =>

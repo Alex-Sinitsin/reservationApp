@@ -6,9 +6,10 @@
 # An example controller showing a sample home page
 GET     /                                   controllers.IndexController.index()
 
-POST        /signUp                          controllers.SignUpController.submit
-GET        /signUp                           controllers.SignUpController.signUp
+GET         /signUp                           controllers.SignUpController.signUp
 
++noCSRF
+POST        /signUp                          controllers.SignUpController.submit
 POST        /signIn                          controllers.SignInController.submit
 
 # Map static resources from the /public folder to the /assets URL path

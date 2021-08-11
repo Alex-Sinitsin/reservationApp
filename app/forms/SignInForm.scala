@@ -11,11 +11,11 @@ object SignInForm {
   /**
    * A play framework form.
    */
-  val form = Form(
+  val form: Form[CredentialsSingInData] = Form(
     mapping(
       "email" -> email,
       "password" -> nonEmptyText
-    )(Data.apply)(Data.unapply)
+    )(CredentialsSingInData.apply)(CredentialsSingInData.unapply)
   )
 
   /**
@@ -24,5 +24,5 @@ object SignInForm {
    * @param email The email of the user.
    * @param password The password of the user.
    */
-  case class Data(email: String, password: String)
+  case class CredentialsSingInData(email: String, password: String)
 }

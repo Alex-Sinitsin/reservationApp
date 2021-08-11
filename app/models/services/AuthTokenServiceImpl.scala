@@ -1,6 +1,6 @@
 package models.services
 
-import models.AuthToken
+import models.{AuthToken, DBAuthToken}
 
 import java.time.ZonedDateTime
 import java.util.UUID
@@ -26,8 +26,8 @@ class AuthTokenServiceImpl @Inject()(authTokenDAO: AuthTokenDAO)(implicit ex: Ex
    * @param expiry The duration a token expires.
    * @return The saved auth token.
    */
-  def create(userID: UUID, expiry: FiniteDuration = 3 hours): Future[AuthToken] = {
-    val token = AuthToken(UUID.randomUUID(), userID, ZonedDateTime.now().plusSeconds(expiry.toSeconds))
+  def create(userID: UUID, expiry: FiniteDuration = 3 hours): Future[DBAuthToken] = {
+    val token = DBAuthToken(UUID.randomUUID(), userID, AuthToken.toTimeStamp(ZonedDateTime.now().plusSeconds(expiry.toSeconds)))
     authTokenDAO.save(token).map(_ => token)
   }
 
@@ -37,14 +37,14 @@ class AuthTokenServiceImpl @Inject()(authTokenDAO: AuthTokenDAO)(implicit ex: Ex
    * @param id The token ID to validate.
    * @return The token if it's valid, None otherwise.
    */
-  def validate(id: UUID): Future[Option[AuthToken]] = authTokenDAO.find(id)
+  def validate(id: UUID): Future[Option[DBAuthToken]] = authTokenDAO.find(id)
 
   /**
    * Cleans expired tokens.
    *
    * @return The list of deleted tokens.
    */
-  def clean: Future[Seq[AuthToken]] = authTokenDAO.findExpired().flatMap { tokens =>
+  def clean: Future[Seq[DBAuthToken]] = authTokenDAO.findExpired().flatMap { tokens =>
     Future.sequence(tokens.map { token =>
       authTokenDAO.remove(token.id).map(_ => token)
     })

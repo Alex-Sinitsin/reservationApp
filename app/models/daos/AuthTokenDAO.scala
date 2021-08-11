@@ -7,8 +7,7 @@ import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.Future
-
-import models.AuthToken
+import models.{AuthToken, DBAuthToken}
 
 /**
  * Give access to the [[AuthToken]] object.
@@ -21,7 +20,7 @@ class AuthTokenDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProv
    * @param id The unique token ID.
    * @return The found token or None if no token for the given ID could be found.
    */
-  def find(id: UUID): Future[Option[AuthToken]] = {
+  def find(id: UUID): Future[Option[DBAuthToken]] = {
     db.run(authTokens.filter(_.id === id).result.headOption)
   }
 
@@ -29,8 +28,8 @@ class AuthTokenDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProv
    * Finds expired tokens.
    *
    */
-  def findExpired(): Future[Seq[AuthToken]] = {
-    db.run(authTokens.filter(_.expiry < ZonedDateTime.now()).result)
+  def findExpired(): Future[Seq[DBAuthToken]] = {
+    db.run(authTokens.filter(_.expiry < AuthToken.toTimeStamp(ZonedDateTime.now())).result)
   }
 
 
@@ -40,7 +39,7 @@ class AuthTokenDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProv
    * @param token The token to save.
    * @return The saved token.
    */
-  def save(token: AuthToken): Future[Int] = {
+  def save(token: DBAuthToken): Future[Int] = {
     db.run(authTokens.insertOrUpdate(token))
   }
 
