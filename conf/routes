@@ -6,8 +6,9 @@
 # An example controller showing a sample home page
 GET     /                                   controllers.IndexController.index()
 
-GET         /signUp                           controllers.SignUpController.signUp
+GET         /signUp                         controllers.SignUpController.signUp
 
+# TODO: Настроить у форм CSRF токены
 +noCSRF
 POST        /signUp                          controllers.SignUpController.submit
 POST        /signIn                          controllers.SignInController.submit

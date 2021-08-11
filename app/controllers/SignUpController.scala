@@ -6,7 +6,7 @@ import forms.SignUpForm
 import models.services._
 import play.api.i18n.I18nSupport
 import play.api.libs.json._
-import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents, Request}
+import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents, MessagesAbstractController, MessagesControllerComponents, Request}
 import utils.auth.JWTEnvironment
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -18,10 +18,10 @@ import scala.concurrent.{ExecutionContext, Future}
  * @param silhouette             Компоненты Silhouette.
  * @param ex                     Контекст выполнения.
  */
-class SignUpController @Inject()(components: ControllerComponents,
+class SignUpController @Inject()(components: MessagesControllerComponents,
                                  silhouette: Silhouette[JWTEnvironment],
                                  signUpService: SignUpService,
-                                )(implicit ex: ExecutionContext) extends AbstractController(components) with I18nSupport {
+                                )(implicit ex: ExecutionContext) extends MessagesAbstractController(components) with I18nSupport {
   /**
    * Обработка данных формы регистрации.
    *
@@ -43,5 +43,7 @@ class SignUpController @Inject()(components: ControllerComponents,
     )
   }
 
-  def signUp: Action[AnyContent] = TODO
+  def signUp: Action[AnyContent] = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
+    Ok(views.html.register(SignUpForm.form))
+  }
 }

@@ -12,7 +12,7 @@ import play.api.data.Forms._
  * @param email           The email of the user.
  * @param password        The password of the user.
  */
-case class CredentialsSingUpData(name: String, lastName: String, position: String, email: String, password: String)
+case class CredentialsSingUpData(name: String, lastName: String, position: String, email: String, password: String, confirmPassword: String)
 
 /**
  * The form which handles the sign up process.
@@ -27,7 +27,8 @@ object SignUpForm {
       "lastName" -> nonEmptyText,
       "position" -> nonEmptyText,
       "email" -> nonEmptyText,
-      "password" -> nonEmptyText
+      "password" -> nonEmptyText,
+      "confirmPassword" -> nonEmptyText
     )(CredentialsSingUpData.apply)(CredentialsSingUpData.unapply)
   )
 }
