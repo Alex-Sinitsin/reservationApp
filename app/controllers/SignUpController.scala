@@ -43,7 +43,5 @@ class SignUpController @Inject()(components: MessagesControllerComponents,
     )
   }
 
-  def signUp: Action[AnyContent] = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
-    Ok(views.html.register(SignUpForm.form))
-  }
+
 }

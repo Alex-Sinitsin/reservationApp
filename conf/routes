@@ -4,14 +4,17 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                                   controllers.IndexController.index()
+GET         /                               controllers.FrontendController.index()
 
-GET         /signUp                         controllers.SignUpController.signUp
+
 
 # TODO: Настроить у форм CSRF токены
 +noCSRF
-POST        /signUp                          controllers.SignUpController.submit
-POST        /signIn                          controllers.SignInController.submit
+POST        /api/signUp                          controllers.SignUpController.submit
+POST        /api/signIn                          controllers.SignInController.submit
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+# Serve static assets under public directory
+GET     /*file                      controllers.FrontendController.assetOrDefault(file)
