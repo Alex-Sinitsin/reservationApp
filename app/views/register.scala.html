@@ -1,12 +1,12 @@
-@import forms.CredentialsSingUpData
 @import views.html.helper._
+@import forms.SignUpForm.CredentialsSignUpData
 
-@(signUpForm: Form[CredentialsSingUpData])(implicit messages: Messages)
+@(signUpForm: Form[CredentialsSignUpData])(implicit messages: Messages)
 
 @main("Регистрация") {
     <h1>Welcome to Play!</h1>
 
-    @form(action = routes.IndexController.index()) {
+    @form(action = routes.SignUpController.submit) {
         @inputText(signUpForm("name"))
         @inputText(signUpForm("lastName"))
         @inputText(signUpForm("position"))
