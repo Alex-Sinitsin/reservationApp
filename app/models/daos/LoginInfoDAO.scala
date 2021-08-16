@@ -1,14 +1,16 @@
 package models.daos
 
 import com.mohiva.play.silhouette.api.LoginInfo
+
+import scala.concurrent.Future
+
 import models.User
 
 import java.util.UUID
-import scala.concurrent.Future
 
 trait LoginInfoDAO {
   /**
-   * Get list of user authentication methods providers
+   * Получает список провайдеров аутентификации пользователей
    *
    * @param email user email
    * @return
@@ -16,20 +18,20 @@ trait LoginInfoDAO {
   def getAuthenticationProviders(email: String): Future[Seq[String]]
 
   /**
-   * Finds a user and login info pair by userID and login info providerID
+   * Находит пользователя и информацию авторизации по ID пользователя и ID провайдера аутентификации
    *
-   * @param userId     user id
-   * @param providerId provider id
-   * @return Some(User, LoginInfo) if there is a user by userId which has login method for provider by provider ID, otherwise None
+   * @param userId     ID пользователя
+   * @param providerId ID провайдера аутентификации
+   * @return Some(User, LoginInfo), если пользователь с данным ID имеет метод аутентификации для данного провайдера по ID провайдера, иначе None
    */
   def find(userId: UUID, providerId: String): Future[Option[(User, LoginInfo)]]
 
   /**
-   * Saves a login info for user
+   * Сохраняет данные входа для пользователя
    *
-   * @param userID The user id.
-   * @param loginInfo login info
-   * @return unit
+   * @param userID ID пользователя
+   * @param loginInfo Данные для входа
+   * @return
    */
   def saveUserLoginInfo(userID: UUID, loginInfo: LoginInfo): Future[Unit]
 }

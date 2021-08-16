@@ -9,7 +9,10 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 /**
- * The `Index` controller.
+ *
+ * @param silhouette Стек `Silhouette`
+ * @param controllerComponents Экземпляр трейта `ControllerComponents`
+ * @param ex Контекст выполнения
  */
 class IndexController @Inject() (silhouette: Silhouette[JWTEnvironment], controllerComponents: ControllerComponents)
                                 (implicit ex: ExecutionContext) extends AbstractController(controllerComponents) {

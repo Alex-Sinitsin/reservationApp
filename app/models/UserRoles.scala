@@ -7,7 +7,7 @@ object UserRoles {
     val roleName = id match {
       case 1 => "User"
       case 2 => "Admin"
-      case _ => "N/a"
+      case _ => "None"
     }
     roleName
   }
@@ -16,7 +16,7 @@ object UserRoles {
     val roleId = name match {
       case "User" => 1
       case "Admin" => 2
-      case _ => 0
+      case _ => 1
     }
     roleId
   }

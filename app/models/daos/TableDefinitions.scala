@@ -1,14 +1,18 @@
 package models.daos
 
-import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
-import models.{AuthToken, DBAuthToken, User, UserRoles}
+import com.mohiva.play.silhouette.api.LoginInfo
+
+import models.{DBAuthToken, User, UserRoles}
+
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.ProvenShape
 
 import java.sql.Timestamp
-import java.time.ZonedDateTime
 import java.util.UUID
 
+/**
+ * Трейт, содержит модель базы данных Slick и описание таблиц
+ */
 trait TableDefinitions {
   class AuthTokens(tag: Tag) extends Table[DBAuthToken](tag, Some("auth"),"silhouette_tokens") {
     def id = column[UUID]("id", O.PrimaryKey)

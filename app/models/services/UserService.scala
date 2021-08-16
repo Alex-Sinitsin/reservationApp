@@ -1,72 +1,46 @@
 package models.services
 
-//import com.mohiva.play.silhouette.api.services.IdentityService
-//import models.User
-//
-//import scala.concurrent.Future
-//
-///**
-// * Handles actions to users.
-// */
-//trait UserService extends IdentityService[User] {
-//
-//  /**
-//   * Saves a user.
-//   *
-//   * @param user The user to save.
-//   * @return The saved user.
-//   */
-//  def save(user: User): Future[User]
-//
-//  /**
-//   * Updates a user.
-//   *
-//   * @param user The user to update.
-//   * @return The updated user.
-//   */
-//  def update(user: User): Future[User]
-//}
-
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService
-import models.{User, UserRoles}
+
+import models.User
 
 import scala.concurrent.Future
 
 /**
- * Handles actions to users.
+ * Обрабатывает действия для пользователей
  */
 trait UserService extends IdentityService[User] {
   /**
-   * Changes role of user
+   * Меняет роль пользователя
    *
-   * @param userId user id
-   * @param role   role to assign to user
+   * @param userId ID пользователя
+   * @param role   Новая роль, которую необходимо присвоить пользователю
    * @return
    */
   def changeUserRole(userId: UUID, role: String): Future[Boolean]
 
   /**
-   * Retrieves a user and login info pair by userID and login info providerID
+   * Извлекает пару информации о пользователе и информации для входа по идентификатору пользователя и идентификатору поставщика информации для входа
    *
-   * @param id         The ID to retrieve a user.
-   * @param providerID The ID of login info provider.
-   * @return The retrieved user or None if no user could be retrieved for the given ID.
+   * @param id         ID пользователя
+   * @param providerID ID провайдера
+   * @return Полученный пользователь или None, если не удалось получить пользователя для данного идентификатора
    */
   def retrieveUserLoginInfo(id: UUID, providerID: String): Future[Option[(User, LoginInfo)]]
 
   /**
-   * Creates or updates a user
+   * Создает или обновляет информацию о пользователе
    *
-   * If a user exists for given login info or email then update the user, otherwise create a new user with the given data
+   * Если пользователь существует для данной информации для входа или электронной почты, обновляет пользователя, в противном случае создает нового пользователя с заданными данными
    *
-   * @param loginInfo social profile
-   * @param email     user email
-   * @param name first name
-   * @param lastName  last name
-   * @param position company position
+   * @param loginInfo Данные для входа
+   * @param email     Электронная почта пользователя
+   * @param name      Имя пользователя
+   * @param lastName  Фамилия пользователя
+   * @param position  Должность пользователя в компании
    * @return
    */
   def createOrUpdate(loginInfo: LoginInfo, email: String, name: String, lastName: String, position: String): Future[User]

@@ -1,28 +1,24 @@
 package modules
 
 import com.google.inject.AbstractModule
-import models.daos.{LoginInfoDAO, LoginInfoDAOImpl, UserDAO, UserDAOImpl}
-import models.services.{AuthTokenService, AuthTokenServiceImpl, UserService, UserServiceImpl}
+
 import net.codingwell.scalaguice.ScalaModule
+
 import play.api.libs.concurrent.AkkaGuiceSupport
 
+import models.daos.{LoginInfoDAO, LoginInfoDAOImpl}
+import models.services.{AuthTokenService, AuthTokenServiceImpl}
+
 /**
- * The base Guice module.
+ * Базовый модуль Guice
  */
 class BaseModule extends AbstractModule with ScalaModule with AkkaGuiceSupport {
 
   /**
-   * Configures the module.
+   * Настройки модуля.
    */
   override def configure(): Unit = {
     bind[AuthTokenService].to[AuthTokenServiceImpl]
     bind[LoginInfoDAO].to[LoginInfoDAOImpl]
   }
-  /**
-   * Configures the module.
-   */
-//  override def configure(): Unit = {
-//    bind[UserDAO].to[UserDAOImpl]
-//    bind[UserService].to[UserServiceImpl]
-//  }
 }
