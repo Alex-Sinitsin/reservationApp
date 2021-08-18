@@ -24,10 +24,10 @@ import scala.concurrent.{ExecutionContext, Future}
  * Контроллер авторизации пользователей
  *
  * @param authenticateService Служба аутентификации пользователей
- * @param silhouette    Стек Silhouette.
+ * @param silhouette    Стек Silhouette
  * @param configuration Конфигурация Play.
- * @param clock         Экземпляр трейта `Clock`.
- * @param ex            Контекст выполнения.
+ * @param clock         Экземпляр трейта `Clock`
+ * @param ex            Контекст выполнения
  */
 class SignInController @Inject()(authenticateService: AuthenticateService,
                                  silhouette: Silhouette[JWTEnvironment],
