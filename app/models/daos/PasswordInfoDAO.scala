@@ -39,9 +39,9 @@ class PasswordInfoDAO @Inject() (protected val dbConfigProvider: DatabaseConfigP
     }.transactionally
 
   protected def updateAction(loginInfo: LoginInfo, authInfo: PasswordInfo): FixedSqlAction[Int, NoStream, Effect.Write] =
-    passwordInfoSubQuery(loginInfo).
-      map(dbPasswordInfo => (dbPasswordInfo.hasher, dbPasswordInfo.password, dbPasswordInfo.salt)).
-      update((authInfo.hasher, authInfo.password, authInfo.salt))
+    passwordInfoSubQuery(loginInfo)
+      .map(dbPasswordInfo => (dbPasswordInfo.hasher, dbPasswordInfo.password, dbPasswordInfo.salt))
+      .update((authInfo.hasher, authInfo.password, authInfo.salt))
 
   /**
    * Находит информацию об авторизации, которая связана с определенными данными для входа
