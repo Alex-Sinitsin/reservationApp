@@ -9,6 +9,7 @@ import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 /**
+ *  Контроллер главной страницы
  *
  * @param silhouette Стек `Silhouette`
  * @param controllerComponents Экземпляр трейта `ControllerComponents`
