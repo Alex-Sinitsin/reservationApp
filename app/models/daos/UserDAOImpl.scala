@@ -2,7 +2,6 @@ package models.daos
 
 import com.google.inject.Inject
 import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.PostgresProfile.api._
 
@@ -18,7 +17,7 @@ import java.util.UUID
  * @param userRolesDAO Объект для доступа к хранилищу ролей пользователя
  * @param ec Контекст выполнения
  */
-class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvider, userRolesDAO: UserRolesDAO, loginInfoDAO: LoginInfoDAO)(implicit ec: ExecutionContext) extends UserDAO {
+class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvider, userRolesDAO: UserRolesDAO)(implicit ec: ExecutionContext) extends UserDAO {
 
   /**
    * Находит информацию о пользователе по данным для входа
@@ -74,5 +73,16 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
     } yield ()).transactionally
 
     db.run(actions).map(_ => user)
+  }
+
+  /**
+   * Меняет роль пользователя
+   *
+   * @param userId ID пользователя
+   * @param role   Новая роль, которую необходимо присвоить пользователю
+   *  @return
+   */
+  override def updateUserRole(userId: UUID, role: String): Future[Boolean] = {
+    db.run(users.filter(_.id === userId).map(_.roleId).update(UserRoles.toDBReadable(role))).map(_ > 0)
   }
 }

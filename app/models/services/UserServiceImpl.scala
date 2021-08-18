@@ -46,11 +46,9 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
    * @param role   Новая роль, которую необходимо присвоить пользователю
    *  @return
    */
-  //TODO: Переделать метод изменения роли у пользователя
-  override def changeUserRole(userId: UUID, role: String): Future[Boolean] = ???
-//  override def changeUserRole(userId: UUID, role: UserRoles.Value): Future[Boolean] = {
-//    userDAO.updateUserRole(userId, role)
-//  }
+  override def changeUserRole(userId: UUID, role: String): Future[Boolean] = {
+    userDAO.updateUserRole(userId, role)
+  }
 
   /**
    * Создает или обновляет информацию о пользователе

@@ -12,7 +12,15 @@ import java.util.UUID
  */
 trait UserDAO extends DatabaseDAO {
   //TODO: Добавить метод для удаления информации о пользователе
-  //TODO: Добавить метод для смены роли у пользователя
+
+  /**
+   * Меняет роль пользователя
+   *
+   * @param userId ID пользователя
+   * @param role   Новая роль, которую необходимо присвоить пользователю
+   * @return
+   */
+  def updateUserRole(userId: UUID, role: String): Future[Boolean]
 
   /**
    * Находит пользователя по информации для входа
