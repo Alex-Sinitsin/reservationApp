@@ -8,8 +8,6 @@ GET         /                               controllers.FrontendController.index
 
 
 
-# TODO: Настроить у форм CSRF токены
-+noCSRF
 POST        /api/signUp                          controllers.SignUpController.submit
 POST        /api/signIn                          controllers.SignInController.submit
 
