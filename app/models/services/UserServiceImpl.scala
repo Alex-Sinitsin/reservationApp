@@ -71,16 +71,16 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
           userDAO.save(user.copy(
             name = name,
             lastName = lastName,
-            email = email,
-            position = position
+            position = position,
+            email = email
           ))
         case None =>
           userDAO.save(User(
             id = UUID.randomUUID(),
             name = name,
             lastName = lastName,
-            email = email,
             position = position,
+            email = email,
             role = None
           ))
       }
