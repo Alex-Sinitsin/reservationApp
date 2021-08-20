@@ -39,7 +39,7 @@ class SignUpController @Inject()(ControllerComponents: MessagesControllerCompone
   def submit: Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
 
     SignUpForm.form.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest(views.html.register(formWithErrors))),
+      formWithErrors => Future.successful(BadRequest),
       data => {
         if(data.password == data.confirmPassword) {
           signUpService.signUpByCredentials(data).map {
@@ -55,14 +55,5 @@ class SignUpController @Inject()(ControllerComponents: MessagesControllerCompone
         }
       }
     )
-  }
-
-  /**
-   * Страница добавления пользователя
-   *
-   * @return Результат выполнения
-   */
-  def signUp: Action[AnyContent] = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
-    Ok(views.html.register(SignUpForm.form))
   }
 }
