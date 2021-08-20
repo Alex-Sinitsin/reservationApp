@@ -2,26 +2,30 @@ package forms
 
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.{Json, OFormat}
 
 /**
- * CredentialsSingUpData
- *
- * @param name       The first name of a user.
- * @param lastName        The last name of a user.
- * @param position        The last name of a user.
- * @param email           The email of the user.
- * @param password        The password of the user.
- */
-case class CredentialsSingUpData(name: String, lastName: String, position: String, email: String, password: String, confirmPassword: String)
-
-/**
- * The form which handles the sign up process.
+ * Форма, которая принимает данные для регистрации со стороны клиента.
  */
 object SignUpForm {
+
   /**
-   * A play framework form.
+   * Данные формы
+   *
+   * @param name       Имя пользователя.
+   * @param lastName   Фамилия пользователя.
+   * @param position   Должность пользователя.
+   * @param email      Электронная почта пользователя.
+   * @param password   Пароль пользователя.
    */
-  val form: Form[CredentialsSingUpData] = Form(
+  case class CredentialsSignUpData(name: String, lastName: String, position: String, email: String, password: String, confirmPassword: String)
+
+  implicit val CredentialsSignUpFormat: OFormat[CredentialsSignUpData] = Json.format[CredentialsSignUpData]
+
+  /**
+   * Форма Play Framework.
+   */
+  val form: Form[CredentialsSignUpData] = Form(
     mapping(
       "name" -> nonEmptyText,
       "lastName" -> nonEmptyText,
@@ -29,6 +33,6 @@ object SignUpForm {
       "email" -> nonEmptyText,
       "password" -> nonEmptyText,
       "confirmPassword" -> nonEmptyText
-    )(CredentialsSingUpData.apply)(CredentialsSingUpData.unapply)
+    )(CredentialsSignUpData.apply)(CredentialsSignUpData.unapply)
   )
 }

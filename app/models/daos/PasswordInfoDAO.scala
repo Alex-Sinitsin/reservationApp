@@ -3,19 +3,23 @@ package models.daos
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.persistence.daos.DelegableAuthInfoDAO
-import play.api.db.slick.{DatabaseConfigProvider, HasDatabaseConfigProvider}
-import slick.dbio.Effect
-import slick.jdbc.JdbcProfile
 
 import javax.inject.Inject
-import scala.Console.in
+
 import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
+
 import slick.jdbc.PostgresProfile.api._
+import play.api.db.slick.DatabaseConfigProvider
 import slick.sql.FixedSqlAction
+import slick.dbio.Effect
 
 /**
- * The DAO to store the password information.
+ * DAO для сохранения информации о паролях
+ *
+ * @param dbConfigProvider Провайдер конфигурации базы данных
+ * @param ec Контекст выполнения
+ * @param classTag Экземпляр трейта `ClassTag`
  */
 class PasswordInfoDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext, val classTag: ClassTag[PasswordInfo])
   extends DelegableAuthInfoDAO[PasswordInfo] with DatabaseDAO {
@@ -35,15 +39,15 @@ class PasswordInfoDAO @Inject() (protected val dbConfigProvider: DatabaseConfigP
     }.transactionally
 
   protected def updateAction(loginInfo: LoginInfo, authInfo: PasswordInfo): FixedSqlAction[Int, NoStream, Effect.Write] =
-    passwordInfoSubQuery(loginInfo).
-      map(dbPasswordInfo => (dbPasswordInfo.hasher, dbPasswordInfo.password, dbPasswordInfo.salt)).
-      update((authInfo.hasher, authInfo.password, authInfo.salt))
+    passwordInfoSubQuery(loginInfo)
+      .map(dbPasswordInfo => (dbPasswordInfo.hasher, dbPasswordInfo.password, dbPasswordInfo.salt))
+      .update((authInfo.hasher, authInfo.password, authInfo.salt))
 
   /**
-   * Finds the auth info which is linked with the specified login info.
+   * Находит информацию об авторизации, которая связана с определенными данными для входа
    *
-   * @param loginInfo The linked login info.
-   * @return The retrieved auth info or None if no auth info could be retrieved for the given login info.
+   * @param loginInfo Связанная информация для входа.
+   * @return Полученная информация для авторизации или None, если данных, связанных с такой информацией для входа, нет.
    */
   def find(loginInfo: LoginInfo): Future[Option[PasswordInfo]] = {
     db.run(passwordInfoQuery(loginInfo).result.headOption).map { dbPasswordInfoOption =>
@@ -53,34 +57,33 @@ class PasswordInfoDAO @Inject() (protected val dbConfigProvider: DatabaseConfigP
   }
 
   /**
-   * Adds new auth info for the given login info.
+   * Добавляет данные об авторизации для конкретной информации для входа
    *
-   * @param loginInfo The login info for which the auth info should be added.
-   * @param authInfo  The auth info to add.
-   * @return The added auth info.
+   * @param loginInfo Информация для входа в систему, для которой должна быть добавлена информация для авторизации
+   * @param authInfo  Информация об входа, для которой необходимо добавить информацию об авторизации
+   * @return Информацию для авторизации
    */
   def add(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
     db.run(addAction(loginInfo, authInfo)).map(_ => authInfo)
 
   /**
-   * Updates the auth info for the given login info.
+   * Обновляет информацию об авторизации для данной информации для входа
    *
-   * @param loginInfo The login info for which the auth info should be updated.
-   * @param authInfo  The auth info to update.
-   * @return The updated auth info.
+   * @param loginInfo Информация для входа в систему, для которой должна быть обновлена информация об авторизации
+   * @param authInfo  Информация об входа, для которой необходимо обновить информацию об авторизации
+   * @return Обновленную информацию об авторизации
    */
   def update(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] =
     db.run(updateAction(loginInfo, authInfo)).map(_ => authInfo)
 
   /**
-   * Saves the auth info for the given login info.
+   * Сохраняет информацию об аутентификации для данной информации для входа
    *
-   * This method either adds the auth info if it doesn't exists or it updates the auth info
-   * if it already exists.
+   * Этот метод либо добавляет информацию об аутентификации, если она не существует, либо обновляет информацию об аутентификации, если она уже существует.
    *
-   * @param loginInfo The login info for which the auth info should be saved.
-   * @param authInfo  The auth info to save.
-   * @return The saved auth info.
+   * @param loginInfo Информация для входа в систему, для которой должна быть сохранена информация об авторизации
+   * @param authInfo  Информация об входа, для которой необходимо сохранить информацию об авторизации
+   * @return Сохраненная информация об авторизации
    */
   def save(loginInfo: LoginInfo, authInfo: PasswordInfo): Future[PasswordInfo] = {
     val query = loginInfoQuery(loginInfo).joinLeft(passwordInfos).on(_.id === _.loginInfoId)
@@ -92,10 +95,10 @@ class PasswordInfoDAO @Inject() (protected val dbConfigProvider: DatabaseConfigP
   }
 
   /**
-   * Removes the auth info for the given login info.
+   * Удаляет информацию об авторизации для данной информации для входа
    *
-   * @param loginInfo The login info for which the auth info should be removed.
-   * @return A future to wait for the process to be completed.
+   * @param loginInfo Информация для входа, для которой необходимо удалить информацию об авторизации
+   * @return Объект Future
    */
   def remove(loginInfo: LoginInfo): Future[Unit] =
     db.run(passwordInfoSubQuery(loginInfo).delete).map(_ => ())

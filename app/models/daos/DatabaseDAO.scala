@@ -4,6 +4,6 @@ import play.api.db.slick.HasDatabaseConfigProvider
 import slick.jdbc.JdbcProfile
 
 /**
- * Trait that contains generic slick db handling code to be mixed in with DAOs
+ * Базовый трейт, содержащий настройки Slick и совмещенный с объектами доступа БД (DAOs)
  */
 trait DatabaseDAO extends TableDefinitions with HasDatabaseConfigProvider[JdbcProfile]
