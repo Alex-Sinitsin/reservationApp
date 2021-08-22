@@ -4,8 +4,9 @@ import Cookies from 'js-cookie';
 const API_URL = "http://localhost:3000/api/";
 
 
-
 class AuthService {
+
+    // Авторизация пользователя
     login(email, password) {
         return axios
             .post(API_URL + "signIn",
@@ -18,9 +19,11 @@ class AuthService {
                         'Csrf-Token': Cookies.get('csrfCookie')
                     }
                 })
-            .then(response => {
-                if (response.data.accessToken) {
-                    localStorage.setItem("user", JSON.stringify(response.data));
+            .then(
+                response => {
+                    console.log(response.data)
+                if (response.headers["x-auth-token"]) {
+                    localStorage.setItem("user", JSON.stringify(response.data).slice(0, -1) + ',"accessToken":"' + response.headers["x-auth-token"] + '"}');
                 }
 
                 return response.data;
@@ -31,6 +34,7 @@ class AuthService {
         localStorage.removeItem("user");
     }
 
+    // Регистрация пользователя
     register(name, lastName, position, email, password, confirmPassword) {
         return axios.post(API_URL + "signUp", {
             name,
@@ -49,6 +53,7 @@ class AuthService {
     }
 
     getCurrentUser() {
+        console.log(JSON.parse(localStorage.getItem('user')));
         return JSON.parse(localStorage.getItem('user'));
     }
 }
