@@ -52,12 +52,21 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
   /**
    * Находит информацию о пользователе по его ID
    *
-   * @param userID Электронная почта пользователя, которого необходимо найти
+   * @param userID ID пользователя, которого необходимо найти
    * @return Найденный пользователь или None, если пользователь не найден
    */
   override def findByID(userID: UUID): Future[Option[User]] = {
     db.run(users.filter(_.id === userID).take(1).result.headOption).map(_ map DBUser.toUser)
   }
+
+  /**
+   * Находит пользователей по их ID
+   *
+   * @param userIDs ID пользователей, которых необходимо найти
+   * @return Найденные пользователи
+   */
+  override def findUsersByID(userIDs: Seq[UUID]): Future[Seq[User]] =
+    db.run(users.filter(_.id inSetBind userIDs).result).map(_.map {usrs => DBUser.toUser(usrs)})
 
   /**
    * Сохраняет информацию о пользователе

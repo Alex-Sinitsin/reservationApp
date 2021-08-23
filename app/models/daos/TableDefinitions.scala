@@ -1,16 +1,13 @@
 package models.daos
 
 import com.mohiva.play.silhouette.api.LoginInfo
-
-import play.api.libs.json.Json
-
+import play.api.libs.json.{JsValue, Json}
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.ProvenShape
 
 import java.sql.Timestamp
 import java.time.{LocalDate, LocalTime}
 import java.util.UUID
-
 import models._
 
 /**
@@ -81,27 +78,27 @@ trait TableDefinitions {
     def * = (hasher, password, salt, loginInfoId).<> (DBPasswordInfo.tupled, DBPasswordInfo.unapply)
   }
 
-  implicit val OptListUserMappedColumnType: BaseColumnType[Option[List[User]]] =
-    MappedColumnType.base[Option[List[User]], String](
+  implicit val OptListUserMappedColumnType: BaseColumnType[Option[JsValue]] =
+    MappedColumnType.base[Option[JsValue], String](
       list => Json.stringify(Json.toJson(list)),
-      column => Json.parse(column).asOpt[List[User]]
+      column => Json.parse(column).asOpt[JsValue]
     )
 
-  class Events(tag: Tag) extends Table[Event](tag, Some("app"), "Events") {
-    def id = column[Long]("ID", O.SqlType("SERIAL"), O.PrimaryKey, O.AutoInc)
+  class Events(tag: Tag) extends Table[Event](tag, Some("app"), "events") {
+    def id = column[Long]("id", O.SqlType("SERIAL"), O.PrimaryKey, O.AutoInc)
     def title = column[String]("title")
     def date = column[LocalDate]("date")
-    def startAt = column[LocalTime]("startAt")
-    def endAt = column[LocalTime]("endAt")
-    def orgUserId = column[UUID]("orgUserID")
-    def members = column[Option[List[User]]]("members", O.SqlType("json"))
-    def itemId = column[Long]("itemID")
+    def startAt = column[LocalTime]("startat")
+    def endAt = column[LocalTime]("endat")
+    def orgUserId = column[UUID]("orguserid")
+    def members = column[Option[JsValue]]("members", O.SqlType("json"))
+    def itemId = column[Long]("itemid")
     def description = column[Option[String]]("description")
     def * = (id, title, date, startAt, endAt, orgUserId, members, itemId, description).<> ((Event.apply _).tupled, Event.unapply)
   }
 
-  class Items(tag: Tag) extends Table[Item](tag, Some("app"), "Items") {
-    def id = column[Long]("ID", O.SqlType("SERIAL"), O.PrimaryKey, O.AutoInc)
+  class Items(tag: Tag) extends Table[Item](tag, Some("app"), "items") {
+    def id = column[Long]("id", O.SqlType("SERIAL"), O.PrimaryKey, O.AutoInc)
     def name = column[String]("name")
     def * = (id, name).<> ((Item.apply _).tupled, Item.unapply)
   }
