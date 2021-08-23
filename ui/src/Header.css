@@ -1,0 +1,39 @@
+.Header {
+  color: white;
+  background-color: #039BE5;
+  height: 80px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.Header-Body {
+  width: 100%;
+  max-width: 800px;
+  min-width: 500px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.Header-Icon {
+  width: 45px;
+  height: 45px;
+  fill: white;
+  margin-right: 20px;
+}
+
+.Header-Title {
+  font-size: 24px;
+}
+
+.Header-UserName {
+  font-size: 14px;
+  margin-right: 20px;
+}
+
+.Header-ExitBtn {
+  border-width: 1px solid white;
+}

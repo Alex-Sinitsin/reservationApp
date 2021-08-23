@@ -1,0 +1,55 @@
+.Home {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.Home-Body {
+  flex: 1;
+  max-width: 800px;
+  min-width: 500px;
+}
+
+.SectionNavigation {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  padding: 5% 10%;
+}
+
+.SectionNavigation-Item {
+  border: 2px solid #039BE5;
+  margin-right: 10px;
+  margin-bottom: 10px;
+}
+
+.Section {
+  &:hover {
+    background-color: rgba($color: #6d6d6d, $alpha: 0.1)
+  }
+  padding: 40px;
+  padding-bottom: 40px;
+  position: relative;
+}
+
+.Section-Icon {
+  width: 90px;
+  height: 90px;
+  fill: #039BE5;
+  position: relative;
+  margin-top: -10px;
+}
+
+.Section-Title {
+  position: absolute;
+  bottom: 10px;
+  left: 0px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #039BE5;
+}

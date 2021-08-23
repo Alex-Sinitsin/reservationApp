@@ -6,4 +6,8 @@ target
 /.classpath
 /.project
 /.settings
+/ui/.bsp
+/ui/.idea
+ui/node_modules
+ui/package-lock.json
 /RUNNING_PID
