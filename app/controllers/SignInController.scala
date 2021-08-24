@@ -5,16 +5,12 @@ import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 
 import javax.inject.Inject
-
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, Request}
-import play.api.data.Form
-import play.api.http.Writeable
-
 import forms.SignInForm
-import forms.SignInForm.CredentialsSignInData
+import models.daos.UserDAO
 import models.services._
 import utils.auth.JWTEnvironment
 
@@ -32,6 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class SignInController @Inject()(authenticateService: AuthenticateService,
                                  silhouette: Silhouette[JWTEnvironment],
                                  configuration: Configuration,
+                                 userDAO: UserDAO,
                                  clock: Clock)(implicit ex: ExecutionContext)
   extends AbstractAuthController(silhouette, configuration, clock) with I18nSupport with Logger {
 

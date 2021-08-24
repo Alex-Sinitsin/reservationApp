@@ -26,7 +26,7 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
    * @param loginInfo Информация для входа
    * @return Полученный пользователь или None, если ни один пользователь не может быть получен для данной информации для входа
    */
-  def retrieve(loginInfo: LoginInfo): Future[Option[User]] = userDAO.findByLoginInfo(loginInfo)
+  override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = userDAO.findByLoginInfo(loginInfo)
 
   /**
    * Извлекает пару информации о пользователе и информации для входа по идентификатору пользователя и идентификатору поставщика информации для входа
@@ -35,7 +35,7 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
    * @param providerID ID провайдера
    * @return Полученный пользователь или None, если не удалось получить пользователя для данного идентификатора
    */
-  def retrieveUserLoginInfo(id: UUID, providerID: String): Future[Option[(User, LoginInfo)]] = {
+  override def retrieveUserLoginInfo(id: UUID, providerID: String): Future[Option[(User, LoginInfo)]] = {
     loginInfoDAO.find(id, providerID)
   }
 
