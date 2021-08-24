@@ -16,7 +16,6 @@ import authProvider from './authProvider';
 import "bootstrap/dist/css/bootstrap.min.css";
 import React, { Component } from "react";
 import { Switch, Route, Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import AuthService from "./services/auth.service";
 import Login from "./components/login.component";
@@ -24,6 +23,8 @@ import Register from "./components/register.component";
 import Profile from "./components/profile.component";
 import BoardUser from "./components/board-user.component";
 import BoardAdmin from "./components/board-admin.component";
+
+import PageNotFound from './PageNotFound';
 
 
 class App extends Component {
@@ -94,7 +95,7 @@ class App extends Component {
                         <div className="navbar-nav ml-auto">
                             <li className="nav-item">
                                 <Link to={"/"} className="nav-link">
-                                    Войти
+                                    Вход
                                 </Link>
                             </li>
 
@@ -115,6 +116,9 @@ class App extends Component {
                         <Route exact path="/profile" component={Profile} />
                         <Route path="/user" component={BoardUser} />
                         <Route path="/admin" component={BoardAdmin} />
+
+                        <Route component={PageNotFound} />
+
                     </Switch>
                 </div>
             </div>
