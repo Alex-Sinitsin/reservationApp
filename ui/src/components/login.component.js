@@ -109,11 +109,11 @@ export default class Login extends Component {
 
 
                         <div className="form-group">
-                            <label htmlFor="confirmPassword">Пароль:</label>
+                            <label htmlFor="Password">Пароль:</label>
                             <Input
                                 type="password"
                                 className="form-control"
-                                name="confirmPassword"
+                                name="password"
                                 value={this.state.password}
                                 onChange={this.onChangePassword}
                                 validations={[required]}
@@ -121,7 +121,9 @@ export default class Login extends Component {
                         </div>
 
 
+
                         <div className="form-group">
+                            <div className="text-center">
                             <button
                                 className="btn btn-primary btn-block"
                                 disabled={this.state.loading}
@@ -129,8 +131,9 @@ export default class Login extends Component {
                                 {this.state.loading && (
                                     <span className="spinner-border spinner-border-sm"></span>
                                 )}
-                                <span>Вход</span>
+                                <span>Войти</span>
                             </button>
+                            </div>
                         </div>
 
                         {this.state.message && (

@@ -141,6 +141,11 @@ export default class Register extends Component {
         }
     }
 
+
+
+
+
+    // Вывод форм интерфейса
     render() {
         return (
             <div className="col-md-12">
@@ -234,21 +239,16 @@ export default class Register extends Component {
 
 
                                 <div className="form-group">
+                                    <div className="text-center">
                                     <button className="btn btn-primary btn-block">Зарегистрироваться</button>
+                                    </div>
                                 </div>
                             </div>
                         )}
 
                         {this.state.message && (
                             <div className="form-group">
-                                <div
-                                    className={
-                                        this.state.successful
-                                            ? "alert alert-success"
-                                            : "alert alert-danger"
-                                    }
-                                    role="alert"
-                                >
+                                <div className={this.state.successful ? "alert alert-success" : "alert alert-danger"} role="alert">
                                     {this.state.message}
                                 </div>
                             </div>

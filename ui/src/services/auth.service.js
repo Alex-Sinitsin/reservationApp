@@ -16,16 +16,15 @@ class AuthService {
                 },
                 {
                     headers: {
-                        'Csrf-Token': Cookies.get('csrfCookie')
+                        'Csrf-Token': Cookies.get('csrfCookie'),
+                        'Content-Type': 'application/json'
                     }
                 })
             .then(
                 response => {
-                    console.log(response.data)
                 if (response.headers["x-auth-token"]) {
                     localStorage.setItem("user", JSON.stringify(response.data).slice(0, -1) + ',"accessToken":"' + response.headers["x-auth-token"] + '"}');
                 }
-
                 return response.data;
             })
     }
@@ -46,14 +45,13 @@ class AuthService {
         },
             {
                 headers: {
-                    'Csrf-Token': Cookies.get('csrfCookie')
+                    'Csrf-Token': Cookies.get('csrfCookie'),
+                    'Content-Type': 'application/json'
                 }
             }
             );
     }
-
     getCurrentUser() {
-        console.log(JSON.parse(localStorage.getItem('user')));
         return JSON.parse(localStorage.getItem('user'));
     }
 }
