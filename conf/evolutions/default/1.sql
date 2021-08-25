@@ -30,7 +30,7 @@ CREATE TABLE auth.silhouette_user_login_info (
   user_id       UUID   NOT NULL,
   login_info_id BIGINT NOT NULL,
   CONSTRAINT auth_user_login_info_user_id_fk FOREIGN KEY (user_id) REFERENCES auth.silhouette_users (id) ON DELETE CASCADE,
-  CONSTRAINT auth_user_login_info_login_info_id_fk FOREIGN KEY (login_info_id) REFERENCES auth.silhouette_login_info (id)
+  CONSTRAINT auth_user_login_info_login_info_id_fk FOREIGN KEY (login_info_id) REFERENCES auth.silhouette_login_info (id) ON DELETE CASCADE
 );
 
 CREATE TABLE auth.silhouette_password_info (
@@ -38,7 +38,7 @@ CREATE TABLE auth.silhouette_password_info (
   password      VARCHAR NOT NULL,
   salt          VARCHAR,
   login_info_id BIGINT  NOT NULL,
-  CONSTRAINT auth_password_info_login_info_id_fk FOREIGN KEY (login_info_id) REFERENCES auth.silhouette_login_info (id)
+  CONSTRAINT auth_password_info_login_info_id_fk FOREIGN KEY (login_info_id) REFERENCES auth.silhouette_login_info (id) ON DELETE CASCADE
 );
 
 CREATE TABLE auth.silhouette_tokens (

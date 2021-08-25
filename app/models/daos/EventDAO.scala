@@ -23,10 +23,11 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
   }
 
   /**
-   * Извлекает событие по его названию
+   * Извлекает событие по дате начала и дате окончания
    *
-   * @param title Название события
-   * @return Событие, если найдено, иначе None
+   * @param startDateTime Дата и время начала события
+   * @param endDateTime Дата и время окончанния события
+   * @return
    */
   def getByDateTime(startDateTime: LocalDateTime, endDateTime: LocalDateTime): Future[Option[Event]] = {
     db.run(events.filter(evt =>

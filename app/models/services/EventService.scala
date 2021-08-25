@@ -11,6 +11,13 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: ExecutionContext) {
+  /**
+   * Метод сохраняет новое событие
+   *
+   * @param eventData Данные с формы
+   * @param members Данные из формы (ID пользователей-участников события)
+   * @return Добавленное событие
+   */
   def saveEvent(eventData: EventData, members: List[UUID]): Future[EventResult] = {
     val newEndDateTime: LocalDateTime = eventData.endDateTime.getMinute match {
       case 0 => eventData.endDateTime.minus(Duration.ofMinutes(1))

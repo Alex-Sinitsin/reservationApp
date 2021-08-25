@@ -1,14 +1,14 @@
 package controllers
 
 import com.mohiva.play.silhouette.api.Silhouette
-import play.api.libs.json.{JsString, Json}
+import play.api.libs.json.Json
 import play.api.mvc._
 import utils.auth.JWTEnvironment
 
 import java.time.format.DateTimeFormatter
+import java.time.{Duration, LocalDate, LocalDateTime, LocalTime}
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
-import java.time.{Duration, LocalDate, LocalDateTime, LocalTime}
 
 /**
  *  Контроллер главной страницы

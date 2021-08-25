@@ -62,11 +62,11 @@ trait UserDAO extends DatabaseDAO {
    */
   def save(user: User): Future[User]
 
-//  /**
-//   * Удаляет информацию о пользователе
-//   *
-//   * @param userID ID пользователя
-//   * @return
-//   */
-//  def remove(userID: Int): Future[Unit]
+  /**
+   * Удаляет информацию о пользователе
+   *
+   * @param userID ID пользователя
+   * @return
+   */
+  def remove(userID: UUID): Future[Unit]
 }

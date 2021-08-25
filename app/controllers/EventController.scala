@@ -10,7 +10,6 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import utils.auth.JWTEnvironment
 
-import java.time.LocalDate
 import java.util.UUID
 
 /**
@@ -24,15 +23,20 @@ class EventController @Inject() (silhouette: Silhouette[JWTEnvironment], control
                                 (implicit ex: ExecutionContext) extends AbstractController(controllerComponents) {
 
   //TODO: Заметка для Егора: Перепиши сообщение об ошибке при `InvalidEndDate`
-  def addEvent: Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
+
+  /**
+   * Обрабатывает добавление нового события
+   *
+   * @return
+   */
+  def addEvent(): Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
     val members: List[UUID] = request.body.asJson.get("members").as[List[String]].map(UUID.fromString)
 
     EventForm.form.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),
       data => {
         eventService.saveEvent(data, members).flatMap {
-            case EventCreated(event) => Future.successful(Ok(Json.obj("result" -> "Событие успешно добавлено!")))
-//            case EventCreated(event) => Future.successful(Ok(Json.toJson(event)))
+            case EventCreated(_) => Future.successful(Ok(Json.obj("result" -> "Событие успешно добавлено!")))
             case InvalidEndDate => Future.successful(Ok(Json.obj("error" -> "Событие не может заканчиваться в прошлом!")))
             case TimeEqualException => Future.successful(Ok(Json.obj("error" -> "Событие не может начинаться и заканчиваться в одно и то же время!")))
             case EventAlreadyExists => Future.successful(BadRequest(Json.obj("error" -> "На указанное время запланировано другое событие!")))
