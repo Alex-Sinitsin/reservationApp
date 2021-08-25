@@ -6,9 +6,10 @@ import slick.jdbc.PostgresProfile.api._
 import slick.lifted.ProvenShape
 
 import java.sql.Timestamp
-import java.time.{LocalDate, LocalTime}
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 import java.util.UUID
 import models._
+import slick.ast.BaseTypedType
 
 /**
  * Трейт, содержит модель базы данных Slick и описание таблиц
@@ -78,23 +79,19 @@ trait TableDefinitions {
     def * = (hasher, password, salt, loginInfoId).<> (DBPasswordInfo.tupled, DBPasswordInfo.unapply)
   }
 
-  implicit val OptListUserMappedColumnType: BaseColumnType[Option[JsValue]] =
-    MappedColumnType.base[Option[JsValue], String](
-      list => Json.stringify(Json.toJson(list)),
-      column => Json.parse(column).asOpt[JsValue]
-    )
+  implicit val jsValueMappedColumnType: BaseColumnType[JsValue] =
+    MappedColumnType.base[JsValue, String](Json.stringify, Json.parse)
 
   class Events(tag: Tag) extends Table[Event](tag, Some("app"), "events") {
     def id = column[Long]("id", O.SqlType("SERIAL"), O.PrimaryKey, O.AutoInc)
     def title = column[String]("title")
-    def date = column[LocalDate]("date")
-    def startAt = column[LocalTime]("startat")
-    def endAt = column[LocalTime]("endat")
-    def orgUserId = column[UUID]("orguserid")
-    def members = column[Option[JsValue]]("members", O.SqlType("json"))
-    def itemId = column[Long]("itemid")
+    def startDateTime = column[LocalDateTime]("start_datetime")
+    def endDateTime = column[LocalDateTime]("end_datetime")
+    def orgUserId = column[UUID]("org_user_id")
+    def members = column[Option[JsValue]]("members", O.SqlType("JSON"))
+    def itemId = column[Long]("item_id")
     def description = column[Option[String]]("description")
-    def * = (id, title, date, startAt, endAt, orgUserId, members, itemId, description).<> ((Event.apply _).tupled, Event.unapply)
+    def * = (id, title, startDateTime, endDateTime, orgUserId, members, itemId, description).<> ((Event.apply _).tupled, Event.unapply)
   }
 
   class Items(tag: Tag) extends Table[Item](tag, Some("app"), "items") {
