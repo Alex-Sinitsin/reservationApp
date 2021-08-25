@@ -23,92 +23,28 @@ import Register from "./components/register.component";
 import Profile from "./components/profile.component";
 import BoardUser from "./components/board-user.component";
 import BoardAdmin from "./components/board-admin.component";
-
+import Home from './Home';
 import PageNotFound from './PageNotFound';
 
 
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+import 'moment/locale/ru';
+import  { Admin, Resource} from "react-admin";
+import  { UserList, UserEdit, UserCreate }  from './users';
+import  { PostList, PostEdit, PostCreate }  from './posts';
+import { MyCalendar, Alarm } from './MyCalendar';
+import Header from "./Header";
+
+
+
 class App extends Component {
-    constructor(props) {
-        super(props);
-        this.logOut = this.logOut.bind(this);
-
-        this.state = {
-            showAdminBoard: false,
-            currentUser: undefined,
-        };
-    }
-
-    componentDidMount() {
-        const user = AuthService.getCurrentUser();
-
-        if (user) {
-            this.setState({
-                currentUser: user,
-                showAdminBoard: user.role.includes("Admin"),
-            });
-        }
-    }
-
-    logOut() {
-        AuthService.logout();
-    }
 
     render() {
-        const { currentUser, showAdminBoard } = this.state;
 
         return (
+
             <div>
-                <nav className="navbar navbar-expand navbar-dark bg-dark">
-                    <div className="navbar-nav mr-auto">
-
-                        {showAdminBoard && (
-                            <li className="nav-item">
-                                <Link to={"/admin"} className="nav-link">
-                                    Admin Board
-                                </Link>
-                            </li>
-                        )}
-
-                        {currentUser && (
-                            <li className="nav-item">
-                                <Link to={"/user"} className="nav-link">
-                                    User
-                                </Link>
-                            </li>
-                        )}
-                    </div>
-
-                    {currentUser ? (
-                        <div className="navbar-nav ml-auto">
-                            <li className="nav-item">
-                                <Link to={"/profile"} className="nav-link">
-                                    {currentUser.email}
-                                </Link>
-                            </li>
-                            <li className="nav-item">
-                                <a href="/" className="nav-link" onClick={this.logOut}>
-                                    Выйти
-                                </a>
-                            </li>
-                        </div>
-                    ) : (
-                        <div className="navbar-nav ml-auto">
-                            <li className="nav-item">
-                                <Link to={"/"} className="nav-link">
-                                    Вход
-                                </Link>
-                            </li>
-
-                            <li className="nav-item">
-                                <Link to={"/register"} className="nav-link">
-                                    Регистрация
-                                </Link>
-                            </li>
-                        </div>
-                    )}
-                </nav>
-
-
+                <Header/>
                 <div className="container mt-3">
                     <Switch>
                         <Route exact path="/" component={Login} />
@@ -116,6 +52,8 @@ class App extends Component {
                         <Route exact path="/profile" component={Profile} />
                         <Route path="/user" component={BoardUser} />
                         <Route path="/admin" component={BoardAdmin} />
+                        <Route path="/home" component={Home} />
+
 
                         <Route component={PageNotFound} />
 
@@ -139,19 +77,19 @@ class App extends Component {
 /*const dataProvider = jsonServerProvider('https://jsonplaceholder.typicode.com');
 
 function App()   {
+
     return (
         <div>
               <Admin  authProvider={authProvider} dataProvider={dataProvider}>
                                <Resource name='users' list={UserList} edit={UserEdit} create={UserCreate} />
                                <Resource name='posts' list={PostList} edit={PostEdit} create={PostCreate} />
                                <Resource name='MyCalendar' list = {MyCalendar} />
-                               <Alarm/>
               </Admin>
               <Home/>
-              <Alarm/>
 
         </div>
     );
+}
 }*/
 
 

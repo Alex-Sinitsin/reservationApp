@@ -41,6 +41,12 @@ const vpassword = value => {
 };
 
 export default class Register extends Component {
+
+
+    componentDidMount() {
+        document.title = 'Регистрация';
+    }
+
     constructor(props) {
         super(props);
         this.handleRegister = this.handleRegister.bind(this);
