@@ -3,18 +3,17 @@ package models
 import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
 import play.api.libs.json.{JsPath, JsValue, Reads, Writes}
 
-import java.time.{LocalDate, LocalTime}
+import java.time.LocalDateTime
 import java.util.UUID
 
-case class Event(id: Long, title: String, date: LocalDate, startAt: LocalTime, endAt: LocalTime, orgUserId: UUID, members: Option[JsValue], itemId: Long, description: Option[String])
+case class Event(id: Long, title: String, startDateTime: LocalDateTime, endDateTime: LocalDateTime, orgUserId: UUID, members: Option[JsValue], itemId: Long, description: Option[String])
 
 object Event {
   implicit val EventReads: Reads[Event] = (
     (JsPath \ "id").read[Long] and
       (JsPath \ "title").read[String] and
-      (JsPath \ "date").read[LocalDate] and
-      (JsPath \ "startAt").read[LocalTime] and
-      (JsPath \ "endAt").read[LocalTime] and
+      (JsPath \ "startDateTime").read[LocalDateTime] and
+      (JsPath \ "endDateTime").read[LocalDateTime] and
       (JsPath \ "orgUserId").read[UUID] and
       (JsPath \ "members").readNullable[JsValue] and
       (JsPath \ "itemId").read[Long] and
@@ -24,9 +23,8 @@ object Event {
   implicit val EventWrites: Writes[Event] = (
     (JsPath \ "id").write[Long] and
       (JsPath \ "title").write[String] and
-      (JsPath \ "date").write[LocalDate] and
-      (JsPath \ "startAt").write[LocalTime] and
-      (JsPath \ "endAt").write[LocalTime] and
+      (JsPath \ "startDateTime").write[LocalDateTime] and
+      (JsPath \ "endDateTime").write[LocalDateTime] and
       (JsPath \ "orgUserId").write[UUID] and
       (JsPath \ "members").writeNullable[JsValue] and
       (JsPath \ "itemId").write[Long] and
