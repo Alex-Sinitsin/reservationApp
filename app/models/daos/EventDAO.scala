@@ -1,12 +1,13 @@
 package models.daos
 
 import com.google.inject.Inject
-
-import scala.concurrent.{ExecutionContext, Future}
-import play.api.db.slick.DatabaseConfigProvider
-import slick.jdbc.PostgresProfile.api._
 import models.Event
+import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.Json
+import slick.jdbc.PostgresProfile.api._
+
+import java.time.LocalDateTime
+import scala.concurrent.{ExecutionContext, Future}
 
 class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends DatabaseDAO {
   /**
@@ -15,12 +16,11 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
    * @param event Событие для добавления
    * @return
    */
-  def add(event: Event): Future[Event] =
+  def add(event: Event): Future[Event] = {
     db.run(events +=
-      Event(event.id, event.title, event.date, event.startAt, event.endAt, event.orgUserId, Some(Json.toJson(event.members)), event.itemId, event.description))
+        Event(event.id, event.title, event.startDateTime, event.endDateTime, event.orgUserId, event.members, event.itemId, event.description))
       .map(_ => event)
-
-  //TODO: Продумать уникальное поле
+  }
 
   /**
    * Извлекает событие по его названию
@@ -28,8 +28,11 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
    * @param title Название события
    * @return Событие, если найдено, иначе None
    */
-  def getByTitle(title: String): Future[Option[Event]] = {
-    db.run(events.filter(_.title === title).result.headOption)
+  def getByDateTime(startDateTime: LocalDateTime, endDateTime: LocalDateTime): Future[Option[Event]] = {
+    db.run(events.filter(evt =>
+      evt.startDateTime >= startDateTime && evt.endDateTime <= endDateTime ||
+      evt.endDateTime >= startDateTime && evt.endDateTime <= endDateTime
+    ).result.headOption)
   }
 
   /**
@@ -40,8 +43,8 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
    */
   def update(event: Event): Future[Event] =
     db.run(events.filter(_.id === event.id)
-      .map(evt => (evt.title, evt.date, evt.startAt, evt.endAt, evt.orgUserId, evt.members, evt.itemId, evt.description))
-      .update((event.title, event.date, event.startAt, event.endAt, event.orgUserId, Some(Json.toJson(event.members)), event.itemId, event.description)).map(_ => event))
+      .map(evt => (evt.title, evt.startDateTime, evt.endDateTime, evt.orgUserId, evt.members, evt.itemId, evt.description))
+      .update((event.title, event.startDateTime, event.endDateTime, event.orgUserId, Some(Json.toJson(event.members)), event.itemId, event.description)).map(_ => event))
 
   /**
    * Удаляет данные события
