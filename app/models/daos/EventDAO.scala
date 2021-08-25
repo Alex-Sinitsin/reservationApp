@@ -11,18 +11,6 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends DatabaseDAO {
   /**
-   * Добавление нового события
-   *
-   * @param event Событие для добавления
-   * @return
-   */
-  def add(event: Event): Future[Event] = {
-    db.run(events +=
-        Event(event.id, event.title, event.startDateTime, event.endDateTime, event.orgUserId, event.members, event.itemId, event.description))
-      .map(_ => event)
-  }
-
-  /**
    * Извлекает событие по дате начала и дате окончания
    *
    * @param startDateTime Дата и время начала события
@@ -32,8 +20,30 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
   def getByDateTime(startDateTime: LocalDateTime, endDateTime: LocalDateTime): Future[Option[Event]] = {
     db.run(events.filter(evt =>
       evt.startDateTime >= startDateTime && evt.endDateTime <= endDateTime ||
-      evt.endDateTime >= startDateTime && evt.endDateTime <= endDateTime
+        evt.endDateTime >= startDateTime && evt.endDateTime <= endDateTime
     ).result.headOption)
+  }
+
+  /**
+   * Извлекает событие по его ID
+   *
+   * @param eventID ID события
+   * @return
+   */
+  def getByID(eventID: String): Future[Option[Event]] = {
+    db.run(events.filter(_.id === eventID.toLong).result.headOption)
+  }
+
+  /**
+   * Добавление нового события
+   *
+   * @param event Событие для добавления
+   * @return
+   */
+  def add(event: Event): Future[Event] = {
+    db.run(events +=
+        Event(event.id, event.title, event.startDateTime, event.endDateTime, event.orgUserId, event.members, event.itemId, event.description))
+      .map(_ => event)
   }
 
   /**

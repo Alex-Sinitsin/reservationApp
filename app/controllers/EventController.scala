@@ -2,7 +2,7 @@ package controllers
 
 import com.mohiva.play.silhouette.api.Silhouette
 import forms.EventForm
-import models.services.{EventAlreadyExists, EventCreated, EventService, InvalidEndDate, TimeEqualException}
+import models.services.{DateTimeEqualException, EventAlreadyExists, EventCreated, EventNotFound, EventService, EventUpdated, InvalidEndDate}
 import play.api.libs.json.Json
 import play.api.mvc._
 
@@ -38,9 +38,33 @@ class EventController @Inject() (silhouette: Silhouette[JWTEnvironment], control
         eventService.saveEvent(data, members).flatMap {
             case EventCreated(_) => Future.successful(Ok(Json.obj("result" -> "Событие успешно добавлено!")))
             case InvalidEndDate => Future.successful(Ok(Json.obj("error" -> "Событие не может заканчиваться в прошлом!")))
-            case TimeEqualException => Future.successful(Ok(Json.obj("error" -> "Событие не может начинаться и заканчиваться в одно и то же время!")))
+            case DateTimeEqualException => Future.successful(Ok(Json.obj("error" -> "Событие не может начинаться и заканчиваться в одно и то же время!")))
             case EventAlreadyExists => Future.successful(BadRequest(Json.obj("error" -> "На указанное время запланировано другое событие!")))
             case _ => Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при добавлении события!")))
+        }
+      }
+    )
+  }
+
+  /**
+   * Обрабатывает обновление существующего события
+   *
+   * @return
+   */
+  def updateEvent(eventID: String): Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
+    val members: List[UUID] = request.body.asJson.get("members").as[List[String]].map(UUID.fromString)
+
+    EventForm.form.bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),
+      data => {
+        println(data)
+        eventService.updateEvent(eventID, data, members).flatMap {
+          case EventUpdated(_) => Future.successful(Ok(Json.obj("result" -> "Событие успешно обновлено!")))
+          case EventNotFound => Future.successful(Ok(Json.obj("result" -> "Событие не найдено!")))
+          case InvalidEndDate => Future.successful(Ok(Json.obj("error" -> "Событие не может заканчиваться в прошлом!")))
+          case DateTimeEqualException => Future.successful(Ok(Json.obj("error" -> "Событие не может начинаться и заканчиваться в одно и то же время!")))
+          case EventAlreadyExists => Future.successful(BadRequest(Json.obj("error" -> "На указанное время запланировано другое событие!")))
+          case _ => Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при добавлении события!")))
         }
       }
     )
