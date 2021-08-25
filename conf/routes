@@ -8,7 +8,6 @@ GET         /signUp                         controllers.SignUpController.signUp
 # Регистрация и авторизация
 POST        /signUp                          controllers.SignUpController.submit
 POST        /signIn                          controllers.SignInController.submit
-POST        /users                           controllers.SignInController.users
 
 # Страницы POST запросов
 POST        /events/add                       controllers.EventController.addEvent
