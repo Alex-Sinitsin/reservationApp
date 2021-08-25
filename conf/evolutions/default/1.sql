@@ -12,9 +12,9 @@ VALUES ('User'),
 
 CREATE TABLE auth.silhouette_users (
   id         UUID    NOT NULL PRIMARY KEY,
-  name VARCHAR NOT NULL,
+  name       VARCHAR NOT NULL,
   last_name  VARCHAR NOT NULL,
-  position  VARCHAR NOT NULL,
+  position   VARCHAR NOT NULL,
   email      VARCHAR NOT NULL,
   role_id    INT     NOT NULL,
   CONSTRAINT auth_user_role_id_fk FOREIGN KEY (role_id) REFERENCES auth.silhouette_user_roles (id)
@@ -54,7 +54,7 @@ DROP TABLE auth.silhouette_tokens;
 DROP TABLE auth.silhouette_password_info;
 DROP TABLE auth.silhouette_user_login_info;
 DROP TABLE auth.silhouette_login_info;
-DROP CASCADE TABLE auth.silhouette_users;
+DROP TABLE auth.silhouette_users CASCADE;
 DROP TABLE auth.silhouette_user_roles;
 DROP SCHEMA auth;
 
@@ -70,17 +70,16 @@ INSERT INTO app.items (name)
 VALUES ('Переговорная');
 
 CREATE TABLE app.events (
-  id      BIGSERIAL   NOT NULL PRIMARY KEY,
-  title   VARCHAR     NOT NULL,
-  date    DATE        NOT NULL,
-  startAt TIME        NOT NULL,
-  endAt   TIME        NOT NULL,
-  orgUserID UUID      NOT NULL,
-  members VARCHAR,
-  itemID BIGINT         NOT NULL,
-  description VARCHAR,
-  CONSTRAINT events_user_id_fk FOREIGN KEY (orgUserID) REFERENCES auth.silhouette_users (id) ON DELETE CASCADE,
-  CONSTRAINT events_item_id_fk FOREIGN KEY (itemID) REFERENCES app.items (id) ON DELETE CASCADE
+  id              BIGSERIAL NOT NULL PRIMARY KEY,
+  title           VARCHAR   NOT NULL,
+  start_datetime  TIMESTAMP NOT NULL,
+  end_datetime    TIMESTAMP NOT NULL,
+  org_user_id     UUID      NOT NULL,
+  members         VARCHAR,
+  item_id         BIGINT    NOT NULL,
+  description     VARCHAR,
+  CONSTRAINT events_user_id_fk FOREIGN KEY (org_user_id) REFERENCES auth.silhouette_users (id) ON DELETE CASCADE,
+  CONSTRAINT events_item_id_fk FOREIGN KEY (item_id) REFERENCES app.items (id) ON DELETE CASCADE
 );
 
 # --- !Downs
