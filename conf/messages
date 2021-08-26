@@ -2,11 +2,15 @@
 
 # TODO: Переписать на русский язык
 
+# Custom messages
+
+success.password.changed = Пароль успешно изменен!
+current.password.invalid = Текущий пароль введен не правильно!
 
 # Default messages
 
 # --- Constraints
-constraint.required=Обязательное поле
+constraint.required = Обязательное поле
 constraint.min=Minimum value: {0}
 constraint.max=Maximum value: {0}
 constraint.minLength=Minimum length: {0}
