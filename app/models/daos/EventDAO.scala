@@ -37,8 +37,8 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
    * @param eventID ID события
    * @return
    */
-  def getByID(eventID: String): Future[Option[Event]] = {
-    db.run(events.filter(_.id === eventID.toLong).result.headOption)
+  def getByID(eventID: Long): Future[Option[Event]] = {
+    db.run(events.filter(_.id === eventID).result.headOption)
   }
 
   /**

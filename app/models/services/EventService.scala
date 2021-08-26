@@ -63,11 +63,11 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
    * @param newEndDateTime Обработанные дата и время окончания события
    * @return Результат выполнения операции и событие, которое было обновлено
    */
-  private def updateEventFunction(eventID: String, eventData: EventData, members: List[UUID], newEndDateTime: LocalDateTime): Future[EventResult] = {
+  private def updateEventFunction(eventID: Long, eventData: EventData, members: List[UUID], newEndDateTime: LocalDateTime): Future[EventResult] = {
     for {
       memberUsers <- userDAO.findUsersByID(members).map(data => data.toList)
       updatedEvent <-
-        eventDAO.update(Event(eventID.toLong, eventData.title, eventData.startDateTime, newEndDateTime, UUID.fromString(eventData.orgUserID), Some(Json.toJson(memberUsers)), eventData.itemID, eventData.description))
+        eventDAO.update(Event(eventID, eventData.title, eventData.startDateTime, newEndDateTime, UUID.fromString(eventData.orgUserID), Some(Json.toJson(memberUsers)), eventData.itemID, eventData.description))
     } yield EventUpdated(updatedEvent)
   }
 
@@ -79,7 +79,7 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
    * @param members ID пользователей
    * @return Результат выполнения операции и событие, которое было обновлено
    */
-  def updateEvent(eventID: String, eventData: EventData, members: List[UUID]): Future[EventResult] = {
+  def updateEvent(eventID: Long, eventData: EventData, members: List[UUID]): Future[EventResult] = {
     val newEndDateTime: LocalDateTime = newEventDateTimeBuilder(eventData.endDateTime)
 
     val compareDateTimeValue = eventData.startDateTime compareTo eventData.endDateTime
@@ -92,7 +92,7 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
           if (eventWithID.startDateTime != eventData.startDateTime && eventWithID.endDateTime != eventData.endDateTime) {
             eventDAO.getByDateTime(eventData.startDateTime, eventData.endDateTime).flatMap {
               case Some(eventWithDateTime) =>
-                if(eventWithDateTime.id == eventID.toLong) updateEventFunction(eventID, eventData, members, newEndDateTime)
+                if(eventWithDateTime.id == eventID) updateEventFunction(eventID, eventData, members, newEndDateTime)
                 else Future.successful(EventAlreadyExists)
               case None => updateEventFunction(eventID, eventData, members, newEndDateTime)
             }
@@ -103,10 +103,10 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
     }
   }
 
-  def deleteEvent(eventID: String) : Future[EventResult] = {
+  def deleteEvent(eventID: Long) : Future[EventResult] = {
     eventDAO.getByID(eventID).flatMap {
       case Some(_) =>
-        eventDAO.delete(eventID.toLong).flatMap {delResult =>
+        eventDAO.delete(eventID).flatMap {delResult =>
           if (delResult) Future.successful(EventDeleted)
           else Future.successful(Error("Неизвестная ошибка"))
         }
