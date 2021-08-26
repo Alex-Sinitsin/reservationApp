@@ -2,15 +2,14 @@ package controllers
 
 import com.mohiva.play.silhouette.api.Silhouette
 import forms.EventForm
-import models.services.{DateTimeEqualException, EventAlreadyExists, EventCreated, EventDeleted, EventNotFound, EventService, EventUpdated, InvalidEndDate}
+import models.services._
 import play.api.libs.json.Json
 import play.api.mvc._
-
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 import utils.auth.JWTEnvironment
 
 import java.util.UUID
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * Контроллер для работы с событиями
@@ -27,7 +26,8 @@ class EventController @Inject() (silhouette: Silhouette[JWTEnvironment], control
    *
    * @return
    */
-  def addEvent(): Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
+  def addEvent(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
+
     val members: List[UUID] = request.body.asJson.get("members").as[List[String]].map(UUID.fromString)
 
     EventForm.form.bindFromRequest().fold(
@@ -49,7 +49,7 @@ class EventController @Inject() (silhouette: Silhouette[JWTEnvironment], control
    *
    * @return
    */
-  def updateEvent(eventID: String): Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
+  def updateEvent(eventID: Long): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
     val members: List[UUID] = request.body.asJson.get("members").as[List[String]].map(UUID.fromString)
 
     EventForm.form.bindFromRequest().fold(
@@ -57,7 +57,7 @@ class EventController @Inject() (silhouette: Silhouette[JWTEnvironment], control
       data => {
         println(data)
         eventService.updateEvent(eventID, data, members).flatMap {
-          case EventUpdated(_) => Future.successful(Ok(Json.obj("result" -> "Событие успешно обновлено!")))
+          case EventUpdated(_) => Future.successful(Ok(Json.obj("success" -> "Событие успешно обновлено!")))
           case EventNotFound => Future.successful(NotFound(Json.obj("error" -> "Событие не найдено!")))
           case InvalidEndDate => Future.successful(BadRequest(Json.obj("error" -> "Событие не может заканчиваться в прошлом!")))
           case DateTimeEqualException => Future.successful(BadRequest(Json.obj("error" -> "Событие не может начинаться и заканчиваться в одно и то же время!")))
@@ -68,9 +68,9 @@ class EventController @Inject() (silhouette: Silhouette[JWTEnvironment], control
     )
   }
 
-  def deleteEvent(eventID: String): Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
+  def deleteEvent(eventID: Long): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
     eventService.deleteEvent(eventID).flatMap {
-      case EventDeleted => Future.successful(Ok(Json.obj("result" -> "Событие успешно удалено!")))
+      case EventDeleted => Future.successful(Ok(Json.obj("success" -> "Событие успешно удалено!")))
       case EventNotFound => Future.successful(NotFound(Json.obj("error" -> "Событие не найдено!")))
       case _ => Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при удалении события!")))
     }
