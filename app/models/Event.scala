@@ -1,7 +1,8 @@
 package models
 
 import play.api.libs.functional.syntax.{toFunctionalBuilderOps, unlift}
-import play.api.libs.json.{JsPath, JsValue, Reads, Writes}
+import play.api.libs.json.{JsPath, JsValue, Json, Reads, Writes}
+import slick.jdbc.GetResult
 
 import java.time.LocalDateTime
 import java.util.UUID
@@ -30,4 +31,6 @@ object Event {
       (JsPath \ "itemId").write[Long] and
       (JsPath \ "description").writeNullable[String]
     )(unlift(Event.unapply))
+
+  implicit val getR: GetResult[Event] = GetResult(r => Event(r.nextLong(), r.nextString(), r.nextTimestamp().toLocalDateTime, r.nextTimestamp().toLocalDateTime, UUID.fromString(r.nextString()), Json.toJson(r.nextString()).asOpt[JsValue], r.nextLong(), r.nextStringOption()))
 }

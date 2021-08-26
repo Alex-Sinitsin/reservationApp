@@ -6,6 +6,7 @@ import play.api.db.slick.DatabaseConfigProvider
 import play.api.libs.json.Json
 import slick.jdbc.PostgresProfile.api._
 
+import java.sql.Timestamp
 import java.time.LocalDateTime
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -17,11 +18,17 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
    * @param endDateTime Дата и время окончанния события
    * @return
    */
+
   def getByDateTime(startDateTime: LocalDateTime, endDateTime: LocalDateTime): Future[Option[Event]] = {
-    db.run(events.filter(evt =>
-      evt.startDateTime >= startDateTime && evt.endDateTime <= endDateTime ||
-        evt.endDateTime >= startDateTime && evt.endDateTime <= endDateTime
-    ).result.headOption)
+    val startTimestamp = Timestamp.valueOf(startDateTime)
+    val endTimestamp = Timestamp.valueOf(endDateTime)
+
+    db.run(
+      sql"""SELECT * FROM app.events WHERE app.events.start_datetime BETWEEN $startTimestamp AND $endTimestamp OR
+                           app.events.end_datetime BETWEEN $startTimestamp AND $endTimestamp OR
+                           $startTimestamp BETWEEN app.events.start_datetime AND app.events.end_datetime OR
+                           $endTimestamp BETWEEN app.events.start_datetime AND app.events.end_datetime"""
+        .as[Event].headOption)
   }
 
   /**
@@ -63,6 +70,6 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
    * @param eventID ID события
    * @return
    */
-  def remove(eventID: Long): Future[Unit] =
-    db.run(items.filter(_.id === eventID).delete).map(_ => ())
+  def delete(eventID: Long): Future[Boolean] =
+    db.run(events.filter(_.id === eventID).delete).map(_ > 0)
 }
