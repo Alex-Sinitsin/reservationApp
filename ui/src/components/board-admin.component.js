@@ -22,12 +22,7 @@ export default class BoardAdmin extends Component {
 
     render() {
 
-        return(
-            <Admin  authProvider={authProvider} dataProvider={dataProvider}>
-                <Resource name='users' list={UserList} edit={UserEdit} create={UserCreate} />
-                <Resource name='posts' list={PostList} edit={PostEdit} create={PostCreate} />
-                <Resource name='MyCalendar' list = {MyCalendar} />
-            </Admin>
-        )
+        return
+
     }
 }

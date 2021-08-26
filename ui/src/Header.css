@@ -1,39 +1,19 @@
-.Header {
-  color: white;
-  background-color: #039BE5;
-  height: 80px;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
+.navbar
+{
+    height: 60px;
+    display: flex; align-items: center
 }
 
-.Header-Body {
-  width: 100%;
-  max-width: 800px;
-  min-width: 500px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+.profile-img-card
+{
+    width: 20%;
+    height: auto;
+    margin-top: 14px;
 }
 
-.Header-Icon {
-  width: 45px;
-  height: 45px;
-  fill: white;
-  margin-right: 20px;
+.header-text
+{
+    font-size: 14px !important;
+    white-space: nowrap;
 }
 
-.Header-Title {
-  font-size: 24px;
-}
-
-.Header-UserName {
-  font-size: 14px;
-  margin-right: 20px;
-}
-
-.Header-ExitBtn {
-  border-width: 1px solid white;
-}

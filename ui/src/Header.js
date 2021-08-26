@@ -45,7 +45,8 @@ export default class Header extends Component {
     return (
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-primary">
-        <div className="navbar-nav mr-auto">
+        <div className="navbar-nav">
+          <a className="navbar-brand ms-5" href="/home">Бронирование</a>
 
           {showAdminBoard && (
               <li className="nav-item">
@@ -59,33 +60,36 @@ export default class Header extends Component {
 
 
         {currentUser ? (
+
             <div className="navbar-nav ms-auto">
-              <li className="nav-item">
-                <Link to={"/home"} className="nav-link">
-                  Календарь
-                </Link>
-              </li>
+
+               <li className="navbar-item">
+                 <img
+                     src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+                     alt="profile-img"
+                     className="profile-img-card me-3"
+                 />
+               </li>
 
 
-              <li className='flex-1 d-flex flex-row justify-content-end align-items-center'>
-                    <div className='header-name text-white'>
-                      {currentUser.name + ' ' + currentUser.lastName}
-                      <div className='header-email text-white'>
-                        {currentUser.email}
-                      </div>
-                      <div className='header-position text-white'>
-                        {currentUser.position}
-                      </div>
+                <li className='flex-1 d-flex flex-row justify-content-end align-items-center me-4'>
+                  <div className='nav-item header-text text-white'>
+                    {currentUser.name + ' ' + currentUser.lastName}
+                    <div className='header-text text-white'>
+                      {currentUser.position}
                     </div>
-              </li>
+                  </div>
+                </li>
 
 
-              <li className="btn btn-danger">
-                <a href="/" className="nav-link" onClick={this.logOut}>
-                  Выйти
+
+              <li className="nav-item me-3">
+                <a href="/" className="btn btn-primary btn-block border-white" onClick={this.logOut}>
+                  Выход
                 </a>
               </li>
             </div>
+
 
 
         ) : (
