@@ -11,6 +11,7 @@ GET     /signOut                            controllers.SignInController.signOut
 POST        /signUp                          controllers.SignUpController.submit
 POST        /signIn                          controllers.SignInController.submit
 POST        /password/change                 controllers.ChangePasswordController.submit
+POST        /user/:userId/delete             controllers.UserController.delete(userId: java.util.UUID)
 
 # События
 POST        /events/add                       controllers.EventController.addEvent()
