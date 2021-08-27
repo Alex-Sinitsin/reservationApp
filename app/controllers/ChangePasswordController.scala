@@ -26,8 +26,7 @@ class ChangePasswordController @Inject()(components: ControllerComponents,
    *
    * @return Результат выполнения
    */
-  def submit: Action[AnyContent] = silhouette.SecuredAction(hasSignUpMethod[JWTEnvironment#A](CredentialsProvider.ID)).async {
-    implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
+  def submit: Action[AnyContent] = silhouette.SecuredAction(hasSignUpMethod[JWTEnvironment#A](CredentialsProvider.ID)).async { implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
       ChangePasswordForm.form.bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(formWithErrors.errors.toString)),
         data => {
