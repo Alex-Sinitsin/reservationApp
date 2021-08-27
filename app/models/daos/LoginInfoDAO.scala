@@ -34,4 +34,12 @@ trait LoginInfoDAO {
    * @return
    */
   def saveUserLoginInfo(userID: UUID, loginInfo: LoginInfo): Future[Unit]
+
+  /**
+   * Удаляет данные входа для пользователя
+   *
+   * @param email Email пользователя
+   * @return
+   */
+  def deleteLoginInfo(email: String): Future[Unit]
 }

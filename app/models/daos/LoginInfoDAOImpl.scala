@@ -91,4 +91,8 @@ class LoginInfoDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
 
     db.run(action.result)
   }
+
+  override def deleteLoginInfo(email: String): Future[Unit] = {
+    db.run(loginInfos.filter(_.providerKey === email).delete).map(_ => ())
+  }
 }

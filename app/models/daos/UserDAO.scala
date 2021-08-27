@@ -11,7 +11,6 @@ import java.util.UUID
  * Предоставляет доступ к хранилищу пользователей.
  */
 trait UserDAO extends DatabaseDAO {
-  //TODO: Добавить метод для удаления информации о пользователе
 
   /**
    * Меняет роль пользователя
@@ -68,5 +67,5 @@ trait UserDAO extends DatabaseDAO {
    * @param userID ID пользователя
    * @return
    */
-  def remove(userID: UUID): Future[Unit]
+  def delete(userID: UUID): Future[Boolean]
 }

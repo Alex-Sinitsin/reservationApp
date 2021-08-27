@@ -103,5 +103,6 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
    * @param userID ID пользователя
    *  @return
    */
-  override def remove(userID: UUID): Future[Unit] = ???
+  override def delete(userID: UUID): Future[Boolean] =
+    db.run(users.filter(_.id === userID).delete.map(_ > 0))
 }
