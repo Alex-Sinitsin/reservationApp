@@ -79,9 +79,9 @@ function MyCalendar() {
         endAccessor="end"
         style={{height: 750}}
         onSelectSlot={handleSelect}
-
         />
         </div>
+
     )
 
 }

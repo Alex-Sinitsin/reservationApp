@@ -14,12 +14,10 @@ export const UserList = props => (
     <Datagrid rowClick='edit'>
       <TextField source='id' />
       <TextField source='name' />
-      <TextField source='username' />
       <TextField source='postname' />
       <EmailField source='email' />
-      <TextField source='phone' />
-    </Datagrid>
-  </List>
+  </Datagrid>
+</List>
 );
 
 
@@ -28,10 +26,8 @@ export const UserEdit = props =>(
     <SimpleForm>
       <TextInput disabled source='id' />
       <TextInput source='name' />
-      <TextInput source='username' />
       <TextInput source='postname' />
       <TextInput source='email' />
-      <TextInput source='phone' />
     </SimpleForm>
   </Edit>
 );
@@ -41,10 +37,8 @@ export const UserCreate = props => (
   <Create {...props}>
     <SimpleForm>
       <TextInput source='name' />
-      <TextInput source='username' />
       <TextInput source='postname' />
       <TextInput source='email' />
-      <TextInput source='phone' />
     </SimpleForm>
   </Create>
 );

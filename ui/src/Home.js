@@ -6,7 +6,9 @@ import 'moment/locale/ru'
 import  MyCalendar  from './MyCalendar';
 
 const TITLE = 'Домашняя'
-export const userName = 'Иванов Иван Иванович'
+const name = 'Иван'
+const last_name = 'Иванов'
+export const userName = last_name + ' ' + name
 const email = 'ivan@gmail.ru'
 const post = 'Сотрудник'
 const className = 'Home-Header'
