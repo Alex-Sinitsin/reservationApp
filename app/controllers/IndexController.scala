@@ -1,12 +1,12 @@
 package controllers
 
 import com.mohiva.play.silhouette.api.Silhouette
+import models.User
 import play.api.libs.json.Json
 import play.api.mvc._
 import utils.auth.JWTEnvironment
 
-import java.time.format.DateTimeFormatter
-import java.time.{Duration, LocalDate, LocalDateTime, LocalTime}
+import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
@@ -21,16 +21,14 @@ class IndexController @Inject() (silhouette: Silhouette[JWTEnvironment], control
                                 (implicit ex: ExecutionContext) extends AbstractController(controllerComponents) {
 
   def index: Action[AnyContent] = silhouette.UnsecuredAction { implicit request: Request[AnyContent] =>
-    val dtf: DateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
-    val ld = LocalDate.now()
-    val lt1 = LocalTime.parse("13:00")
-    val lt2 = LocalTime.parse("13:30")
+    val listUsers: List[User] = List(
+      User(UUID.fromString("8c6d9fba-18fc-4ce7-afe2-14f84a0fa0e4"), "Alex", "Sin", "Dev","alex@example.com", Some("Admin")),
+      User(UUID.randomUUID(), "Ega", "Kov", "Dev","ega@example.com", Some("User")),
+      User(UUID.randomUUID(), "Roma", "Smile", "Dev","roma@example.com", Some("User"))
+    )
 
-    val dateTimeOne: LocalDateTime = LocalDateTime.parse("2019-04-28 14:32", dtf).minus(Duration.ofMinutes(1))
-    val dateTimeTwo: LocalDateTime = LocalDateTime.parse("2019-04-28 14:32", dtf)
+    val h = listUsers.span(user => user.id == UUID.fromString("8c6d9fba-18fc-4ce7-afe2-14f84a0fa0e4"))._2
 
-    val value = dateTimeOne compareTo dateTimeTwo
-
-    Ok(Json.obj("ldt1"->dateTimeOne, "ldt2"->dateTimeTwo, "val"->value))
+    Ok(Json.obj("listUsers" -> Json.toJson(listUsers), "MembersWithDelUser" -> Json.toJson(h)))
   }
 }
