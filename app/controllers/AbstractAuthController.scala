@@ -24,7 +24,7 @@ abstract class AbstractAuthController(silhouette: Silhouette[JWTEnvironment],
                                       configuration: Configuration,
                                       clock: Clock)(implicit ex: ExecutionContext) extends InjectedController with I18nSupport {
 
-  case class UserWithToken(user: User, authToken: JWTEnvironment#A#Value)
+  case class UserWithToken(userInfo: User, accessToken: JWTEnvironment#A#Value)
 
   implicit val UserReads: OFormat[User] = Json.format[User]
   implicit val UserWithTokenReads: OFormat[UserWithToken] = Json.format[UserWithToken]

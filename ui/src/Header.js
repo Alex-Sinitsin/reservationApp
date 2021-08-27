@@ -25,7 +25,7 @@ export default class Header extends Component {
     if (user) {
       this.setState({
         currentUser: user,
-        showAdminBoard: user.role.includes("Admin"),
+        showAdminBoard: user.userInfo.role.includes("Admin"),
       });
     }
   }
@@ -46,7 +46,7 @@ export default class Header extends Component {
     <div>
       <nav className="navbar navbar-expand navbar-dark bg-primary">
         <div className="navbar-nav">
-          <a className="navbar-brand ms-5" href="/home">Бронирование</a>
+          <a className="navbar-brand ms-5">Бронирование</a>
 
           {showAdminBoard && (
               <li className="nav-item">
@@ -74,9 +74,9 @@ export default class Header extends Component {
 
                 <li className='flex-1 d-flex flex-row justify-content-end align-items-center me-4'>
                   <div className='nav-item header-text text-white'>
-                    {currentUser.name + ' ' + currentUser.lastName}
+                    {currentUser.userInfo.name + ' ' + currentUser.userInfo.lastName}
                     <div className='header-text text-white'>
-                      {currentUser.position}
+                      {currentUser.userInfo.position}
                     </div>
                   </div>
                 </li>

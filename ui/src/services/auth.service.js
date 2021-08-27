@@ -22,8 +22,8 @@ class AuthService {
                 })
             .then(
                 response => {
-                if (response.headers["x-auth-token"]) {
-                    localStorage.setItem("user", JSON.stringify(response.data).slice(0, -1) + ',"accessToken":"' + response.headers["x-auth-token"] + '"}');
+                if (response.data.accessToken) {
+                    localStorage.setItem("user", JSON.stringify(response.data));
                 }
                 return response.data;
             })
