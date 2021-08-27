@@ -3,11 +3,8 @@ import Cookies from 'js-cookie';
 
 const API_URL = "http://localhost:3000/api/";
 
-
-class AuthService {
-
     // Авторизация пользователя
-    login(email, password) {
+   const login = (email, password) => {
         return axios
             .post(API_URL + "signIn",
                 {
@@ -29,12 +26,12 @@ class AuthService {
             })
     }
 
-    logout() {
+    const logout = () => {
         localStorage.removeItem("user");
     }
 
     // Регистрация пользователя
-    register(name, lastName, position, email, password, confirmPassword) {
+    const register = (name, lastName, position, email, password, confirmPassword) => {
         return axios.post(API_URL + "signUp", {
             name,
             lastName,
@@ -48,12 +45,17 @@ class AuthService {
                     'Csrf-Token': Cookies.get('csrfCookie'),
                     'Content-Type': 'application/json'
                 }
-            }
-            );
+            });
     }
-    getCurrentUser() {
+
+
+    const getCurrentUser = () => {
         return JSON.parse(localStorage.getItem('user'));
     }
-}
 
-export default new AuthService();
+export default {
+    login,
+    register,
+    logout,
+    getCurrentUser,
+}

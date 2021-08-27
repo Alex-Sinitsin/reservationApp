@@ -1,46 +1,29 @@
-import React, { Component } from 'react'
-
+import React, { useState, useEffect } from "react";
 
 import './Header.css'
 import {Link} from "react-router-dom";
 import AuthService from "./services/auth.service";
 
 
+const Header = () => {
 
-export default class Header extends Component {
+  const [showAdminBoard, setShowAdminBoard] = useState(false);
+  const [currentUser, setCurrentUser] = useState(undefined);
 
-  constructor(props) {
-    super(props);
-    this.logOut = this.logOut.bind(this);
-
-    this.state = {
-      showAdminBoard: false,
-      currentUser: undefined,
-    };
-  }
-
-  componentDidMount() {
+  useEffect(() => {
     const user = AuthService.getCurrentUser();
 
     if (user) {
-      this.setState({
-        currentUser: user,
-        showAdminBoard: user.userInfo.role.includes("Admin"),
-      });
+      setCurrentUser(user);
+      setShowAdminBoard(user.userInfo.role.includes("Admin"));
     }
-  }
+  }, []);
 
-  logOut() {
+  const logout = () => {
     AuthService.logout();
-  }
+  };
 
 
-  render () {
-
-    const {
-      currentUser,
-      showAdminBoard,
-    } = this.state;
 
     return (
     <div>
@@ -84,7 +67,7 @@ export default class Header extends Component {
 
 
               <li className="nav-item me-3">
-                <a href="/" className="btn btn-primary btn-block border-white" onClick={this.logOut}>
+                <a href="/" className="btn btn-primary btn-block border-white" onClick={logout}>
                   Выход
                 </a>
               </li>
@@ -112,5 +95,6 @@ export default class Header extends Component {
       </nav>
       </div>
 );
-  }
-}
+};
+
+export default Header;

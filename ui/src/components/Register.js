@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {useState, useRef, useEffect} from "react";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
@@ -31,106 +31,80 @@ const correctEmail = value => {
 
 // Позволяет устанавливать допустимые размер пароля
 const vpassword = value => {
-    if (value.length < 6 || value.length > 40) {
+    if (value.length < 3 || value.length > 40) {
         return (
             <div className="alert alert-danger" role="alert">
-                Пароль должен содержать от 6 до 40 символов
+                Пароль должен содержать от 3 до 40 символов
             </div>
         );
     }
 };
 
-export default class Register extends Component {
+const Register = (props) => {
 
-
-    componentDidMount() {
+    useEffect(() => {
         document.title = 'Регистрация';
-    }
+    });
 
-    constructor(props) {
-        super(props);
-        this.handleRegister = this.handleRegister.bind(this);
-        this.onChangeName = this.onChangeName.bind(this);
-        this.onChangeLastName = this.onChangeLastName.bind(this);
-        this.onChangePosition = this.onChangePosition.bind(this);
-        this.onChangeEmail = this.onChangeEmail.bind(this);
-        this.onChangePassword = this.onChangePassword.bind(this);
-        this.onChangeConfirmPassword = this.onChangeConfirmPassword.bind(this);
+    const form = useRef();
+    const checkBtn = useRef();
 
-        this.state = {
-            name: "",
-            lastName: "",
-            position:"",
-            email: "",
-            password: "",
-            confirmPassword:"",
-            successful: false,
-            message: ""
-        };
-    }
+    const [name, setName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [position, setPosition] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
 
-    onChangeName(e) {
-        this.setState({
-            name: e.target.value
-        });
-    }
+    const [successful, setSuccessful] = useState(false);
+    const [message, setMessage] = useState("");
 
-    onChangeLastName(e) {
-        this.setState({
-            lastName: e.target.value
-        });
-    }
 
-    onChangePosition(e) {
-        this.setState({
-            position: e.target.value
-        });
-    }
+    const onChangeName = (e) => {
+        const name = e.target.value;
+        setName(name);
+    };
 
-    onChangeEmail(e) {
-        this.setState({
-            email: e.target.value
-        });
-    }
+    const onChangeLastName = (e) => {
+        const lastName = e.target.value;
+        setLastName(lastName);
+    };
 
-    onChangePassword(e) {
-        this.setState({
-            password: e.target.value
-        });
-    }
+    const onChangePosition = (e) => {
+        const position = e.target.value;
+        setPosition(position);
+    };
 
-    onChangeConfirmPassword(e) {
-        this.setState({
-            confirmPassword: e.target.value
-        });
-    }
+    const onChangeEmail = (e) => {
+        const email = e.target.value;
+        setEmail(email);
+    };
 
-    handleRegister(e) {
+    const onChangePassword = (e) => {
+        const password = e.target.value;
+        setPassword(password);
+    };
+
+    const onChangeConfirmPassword = (e) => {
+        const confirmPassword = e.target.value;
+        setConfirmPassword(confirmPassword);
+    };
+
+    const handleRegister = (e) => {
         e.preventDefault();
 
-        this.setState({
-            message: "",
-            successful: false
-        });
+        setMessage("");
+        setSuccessful(false);
 
-        this.form.validateAll();
+        form.current.validateAll();
 
-        if (this.checkBtn.context._errors.length === 0) {
-            AuthService.register(
-                this.state.name,
-                this.state.lastName,
-                this.state.position,
-                this.state.email,
-                this.state.password,
-                this.state.confirmPassword,
-            ).then(
-                response => {
-                    this.setState({
-                        message: response.data.message,
-                        successful: true
-                    });
+        if (checkBtn.current.context._errors.length === 0) {
+            AuthService.register(name, lastName, position, email, password, confirmPassword).then(
+                (response) => {
+                    setMessage(response.data.message);
+                    setSuccessful(true);
                 },
-                error => {
+                (error) => {
                     const resMessage =
                         (error.response &&
                             error.response.data &&
@@ -138,21 +112,14 @@ export default class Register extends Component {
                         error.message ||
                         error.toString();
 
-                    this.setState({
-                        successful: false,
-                        message: resMessage
-                    });
+                    setMessage(resMessage);
+                    setSuccessful(false);
                 }
             );
         }
-    }
+    };
 
 
-
-
-
-    // Вывод форм интерфейса
-    render() {
         return (
             <div className="col-md-12">
                 <div className="card card-container">
@@ -162,13 +129,8 @@ export default class Register extends Component {
                         className="profile-img-card"
                     />
 
-                    <Form
-                        onSubmit={this.handleRegister}
-                        ref={c => {
-                            this.form = c;
-                        }}
-                    >
-                        {!this.state.successful && (
+                    <Form onSubmit={handleRegister} ref={form}>
+                        {!successful && (
                             <div>
                                 <div className="form-group">
                                     <label htmlFor="name">Имя:</label>
@@ -176,8 +138,8 @@ export default class Register extends Component {
                                         type="text"
                                         className="form-control"
                                         name="name"
-                                        value={this.state.name}
-                                        onChange={this.onChangeName}
+                                        value={name}
+                                        onChange={onChangeName}
                                         validations={[required]}
                                     />
                                 </div>
@@ -188,8 +150,8 @@ export default class Register extends Component {
                                         type="text"
                                         className="form-control"
                                         name="lastName"
-                                        value={this.state.lastName}
-                                        onChange={this.onChangeLastName}
+                                        value={lastName}
+                                        onChange={onChangeLastName}
                                         validations={[required]}
                                     />
                                 </div>
@@ -200,8 +162,8 @@ export default class Register extends Component {
                                         type="text"
                                         className="form-control"
                                         name="position"
-                                        value={this.state.position}
-                                        onChange={this.onChangePosition}
+                                        value={position}
+                                        onChange={onChangePosition}
                                         validations={[required]}
                                     />
                                 </div>
@@ -212,8 +174,8 @@ export default class Register extends Component {
                                         type="text"
                                         className="form-control"
                                         name="email"
-                                        value={this.state.email}
-                                        onChange={this.onChangeEmail}
+                                        value={email}
+                                        onChange={onChangeEmail}
                                         validations={[required, correctEmail]}
                                     />
                                 </div>
@@ -224,9 +186,9 @@ export default class Register extends Component {
                                         type="password"
                                         className="form-control"
                                         name="password"
-                                        value={this.state.password}
-                                        onChange={this.onChangePassword}
-                                        validations={[required]}
+                                        value={password}
+                                        onChange={onChangePassword}
+                                        validations={[required, vpassword]}
                                     />
                                 </div>
 
@@ -237,8 +199,8 @@ export default class Register extends Component {
                                         type="password"
                                         className="form-control"
                                         name="password"
-                                        value={this.state.confirmPassword}
-                                        onChange={this.onChangeConfirmPassword}
+                                        value={confirmPassword}
+                                        onChange={onChangeConfirmPassword}
                                         validations={[required]}
                                     />
                                 </div>
@@ -252,22 +214,18 @@ export default class Register extends Component {
                             </div>
                         )}
 
-                        {this.state.message && (
+                        {message && (
                             <div className="form-group">
-                                <div className={this.state.successful ? "alert alert-success" : "alert alert-danger"} role="alert">
-                                    {this.state.message}
+                                <div className={successful ? "alert alert-success" : "alert alert-danger"} role="alert">
+                                    {message}
                                 </div>
                             </div>
                         )}
-                        <CheckButton
-                            style={{ display: "none" }}
-                            ref={c => {
-                                this.checkBtn = c;
-                            }}
-                        />
+                        <CheckButton style={{ display: "none" }} ref={checkBtn} />
                     </Form>
                 </div>
             </div>
         );
-    }
 }
+
+export default Register;

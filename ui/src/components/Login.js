@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, {useState, useRef, useEffect} from "react";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
@@ -16,51 +16,42 @@ const required = value => {
     }
 };
 
-export default class Login extends Component {
+const Login = (props) => {
+    const form = useRef();
+    const checkBtn = useRef();
 
-    componentDidMount() {
-        document.title = 'Вход';
+    useEffect(() => {
+        document.title = 'Пользователь';
+    });
+
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [loading, setLoading] = useState(false);
+    const [message, setMessage] = useState("");
+
+
+    const onChangeEmail = (e) => {
+        const email = e.target.value;
+        setEmail(email);
     }
 
-    constructor(props) {
-        super(props);
-        this.handleLogin = this.handleLogin.bind(this);
-        this.onChangeEmail = this.onChangeEmail.bind(this);
-        this.onChangePassword = this.onChangePassword.bind(this);
+    const onChangePassword = (e) => {
+        const password = e.target.value;
+        setPassword(password);
+    };
 
-        this.state = {
-            email: "",
-            loading: false,
-            message: ""
-        };
-    }
-
-    onChangeEmail(e) {
-        this.setState({
-            email: e.target.value
-        });
-    }
-
-    onChangePassword(e) {
-        this.setState({
-            password: e.target.value
-        });
-    }
-
-    handleLogin(e) {
+    const handleLogin = (e) => {
         e.preventDefault();
 
-        this.setState({
-            message: "",
-            loading: true
-        });
+        setMessage("");
+        setLoading(true);
 
-        this.form.validateAll();
+        form.current.validateAll();
 
-        if (this.checkBtn.context._errors.length === 0) {
-            AuthService.login(this.state.email, this.state.password).then(
+        if (checkBtn.current.context._errors.length === 0) {
+            AuthService.login(email, password).then(
                 () => {
-                    this.props.history.push("/home");
+                    props.history.push("/home");
                     window.location.reload();
                 },
                 error => {
@@ -71,20 +62,15 @@ export default class Login extends Component {
                         error.message ||
                         error.toString();
 
-                    this.setState({
-                        loading: false,
-                        message: resMessage
-                    });
+                    setLoading(false);
+                    setMessage(resMessage);
                 }
             );
         } else {
-            this.setState({
-                loading: false
-            });
+            setLoading(false);
         }
-    }
+    };
 
-    render() {
         return (
             <div className="col-md-12">
                 <div className="card card-container">
@@ -94,21 +80,15 @@ export default class Login extends Component {
                         className="profile-img-card"
                     />
 
-                    <Form
-                        onSubmit={this.handleLogin}
-                        ref={c => {
-                            this.form = c;
-                        }}
-                    >
-
+                    <Form onSubmit={handleLogin} ref={form}>
                         <div className="form-group">
                             <label htmlFor="email">E-mail:</label>
                             <Input
                                 type="text"
                                 className="form-control"
                                 name="email"
-                                value={this.state.email}
-                                onChange={this.onChangeEmail}
+                                value={email}
+                                onChange={onChangeEmail}
                                 validations={[required]}
                             />
                         </div>
@@ -120,21 +100,17 @@ export default class Login extends Component {
                                 type="password"
                                 className="form-control"
                                 name="password"
-                                value={this.state.password}
-                                onChange={this.onChangePassword}
+                                value={password}
+                                onChange={onChangePassword}
                                 validations={[required]}
                             />
                         </div>
 
 
-
                         <div className="form-group">
                             <div className="text-center">
-                            <button
-                                className="btn btn-primary btn-block"
-                                disabled={this.state.loading}
-                            >
-                                {this.state.loading && (
+                            <button className="btn btn-primary btn-block" disabled={loading}>
+                                {loading && (
                                     <span className="spinner-border spinner-border-sm"></span>
                                 )}
                                 <span>Войти</span>
@@ -142,22 +118,18 @@ export default class Login extends Component {
                             </div>
                         </div>
 
-                        {this.state.message && (
+                        {message && (
                             <div className="form-group">
                                 <div className="alert alert-danger" role="alert">
-                                    {this.state.message}
+                                    {message}
                                 </div>
                             </div>
                         )}
-                        <CheckButton
-                            style={{ display: "none" }}
-                            ref={c => {
-                                this.checkBtn = c;
-                            }}
-                        />
+                        <CheckButton style={{ display: "none" }} ref={checkBtn} />
                     </Form>
                 </div>
             </div>
         );
-    }
 }
+
+export default Login;
