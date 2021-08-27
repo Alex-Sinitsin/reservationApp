@@ -8,6 +8,7 @@ import slick.jdbc.PostgresProfile.api._
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
+import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends DatabaseDAO {
@@ -39,6 +40,15 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
    */
   def getByID(eventID: Long): Future[Option[Event]] = {
     db.run(events.filter(_.id === eventID).result.headOption)
+  }
+
+  /**
+   * Получение всех событий
+   *
+   * @return Список всех событий
+   */
+  def getAll: Future[Seq[Event]] = {
+    db.run(events.result)
   }
 
   /**
