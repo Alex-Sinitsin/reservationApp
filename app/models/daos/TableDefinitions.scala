@@ -1,16 +1,16 @@
 package models.daos
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import play.api.libs.json.{JsObject, JsResult, JsSuccess, JsValue, Json, OWrites, Reads}
+import models._
+import play.api.libs.json.{JsValue, Json}
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcType
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.ProvenShape
 
 import java.sql.Timestamp
-import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.time.LocalDateTime
 import java.util.UUID
-import models._
-import slick.ast.BaseTypedType
-import slick.jdbc.JdbcType
 
 /**
  * Трейт, содержит модель базы данных Slick и описание таблиц
