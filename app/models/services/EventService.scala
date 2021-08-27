@@ -1,9 +1,9 @@
 package models.services
 
 import forms.EventForm.EventData
-import models.Event
+import models.{Event, User}
 import models.daos.{EventDAO, UserDAO}
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 
 import java.time.{Duration, LocalDateTime}
 import java.util.UUID
@@ -48,7 +48,7 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
           for {
             memberUsers <- userDAO.findUsersByID(members).map(data => data.toList)
             createdEvent <-
-              eventDAO.add(Event(-1, eventData.title, eventData.startDateTime, newEndDateTime, UUID.fromString(eventData.orgUserID), Some(Json.toJson(memberUsers)), eventData.itemID, eventData.description))
+              eventDAO.add(Event(-1, eventData.title, eventData.startDateTime, newEndDateTime, UUID.fromString(eventData.orgUserID), Some(Json.obj("users" -> Json.toJson(memberUsers))), eventData.itemID, eventData.description))
           } yield EventCreated(createdEvent)
       }
     }
@@ -67,7 +67,7 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
     for {
       memberUsers <- userDAO.findUsersByID(members).map(data => data.toList)
       updatedEvent <-
-        eventDAO.update(Event(eventID, eventData.title, eventData.startDateTime, newEndDateTime, UUID.fromString(eventData.orgUserID), Some(Json.toJson(memberUsers)), eventData.itemID, eventData.description))
+        eventDAO.update(Event(eventID, eventData.title, eventData.startDateTime, newEndDateTime, UUID.fromString(eventData.orgUserID), Some(Json.obj("users" -> Json.toJson(memberUsers))), eventData.itemID, eventData.description))
     } yield EventUpdated(updatedEvent)
   }
 
@@ -108,7 +108,7 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
       case Some(_) =>
         eventDAO.delete(eventID).flatMap {delResult =>
           if (delResult) Future.successful(EventDeleted)
-          else Future.successful(Error("Неизвестная ошибка"))
+          else Future.successful(Error("Произошла ошибка при удалении события!"))
         }
       case None => Future.successful(EventNotFound)
     }
