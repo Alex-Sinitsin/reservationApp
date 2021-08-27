@@ -1,16 +1,13 @@
 package forms
 
-import forms.SignUpForm.CredentialsSignUpData
-import models.Event
-import org.joda.time.format.DateTimeFormat
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.{LocalDate, LocalTime}
+import java.time.LocalDateTime
 
 object EventForm {
-  case class EventData(title: String, date: LocalDate, startAt: LocalTime, endAt: LocalTime, orgUserID: String, members: Option[List[String]], itemID: Long, description: Option[String])
+  case class EventData(title: String, startDateTime: LocalDateTime, endDateTime: LocalDateTime, orgUserID: String, members: Option[List[String]], itemID: Long, description: Option[String])
 
   implicit val EventFormat: OFormat[EventData] = Json.format[EventData]
 
@@ -20,9 +17,8 @@ object EventForm {
   val form: Form[EventData] = Form(
     mapping(
       "title" -> nonEmptyText,
-      "date" -> localDate("yyyy-MM-dd"),
-      "startAt" -> localTime("HH:MM"),
-      "endAt" -> localTime("HH:MM"),
+      "startDateTime" -> localDateTime("yyyy-MM-dd HH:mm"),
+      "endDateTime" -> localDateTime("yyyy-MM-dd HH:mm"),
       "orgUserID" -> nonEmptyText,
       "members" -> optional(list(text)),
       "itemID" -> longNumber(1),

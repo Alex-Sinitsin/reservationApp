@@ -39,7 +39,7 @@ class SignUpController @Inject()(ControllerComponents: MessagesControllerCompone
   def submit: Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
 
     SignUpForm.form.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest),
+      formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),
       data => {
         if(data.password == data.confirmPassword) {
           signUpService.signUpByCredentials(data).map {
@@ -50,8 +50,7 @@ class SignUpController @Inject()(ControllerComponents: MessagesControllerCompone
               Conflict(Json.obj("error" -> "Пользователь уже существует!"))
           }
         } else {
-          //TODO: Сделать возврат ошибки о не совпадении паролей
-          Future.successful(BadRequest(Json.obj("errors" -> "Введенные пароли не совпадают")))
+          Future.successful(BadRequest(Json.obj("errors" -> "Введенные пароли не совпадают!")))
         }
       }
     )

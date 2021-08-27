@@ -2,6 +2,8 @@ package models.daos
 
 import com.google.inject.Inject
 import com.mohiva.play.silhouette.api.LoginInfo
+import com.mohiva.play.silhouette.api.util.PasswordInfo
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.PostgresProfile.api._
 
@@ -94,4 +96,12 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
   override def updateUserRole(userId: UUID, role: String): Future[Boolean] = {
     db.run(users.filter(_.id === userId).map(_.roleId).update(UserRoles.toDBReadable(role))).map(_ > 0)
   }
+
+  /**
+   * Удаляет пользовательские данные
+   *
+   * @param userID ID пользователя
+   *  @return
+   */
+  override def remove(userID: UUID): Future[Unit] = ???
 }

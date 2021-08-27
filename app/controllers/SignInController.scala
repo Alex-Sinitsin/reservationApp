@@ -1,13 +1,14 @@
 package controllers
 
 import com.mohiva.play.silhouette.api._
+import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.api.util.Clock
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 
 import javax.inject.Inject
 import play.api.Configuration
 import play.api.i18n.I18nSupport
-import play.api.libs.json.Json
+import play.api.libs.json.{JsString, Json}
 import play.api.mvc.{Action, AnyContent, Request}
 import forms.SignInForm
 import models.daos.UserDAO
@@ -57,5 +58,15 @@ class SignInController @Inject()(authenticateService: AuthenticateService,
           }
       }
     )
+  }
+
+  /**
+   * Обрабатывает выход из системы
+   *
+   * @return Результат выполнения
+   */
+  def signOut(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
+    silhouette.env.eventBus.publish(LogoutEvent(request.identity, request))
+    silhouette.env.authenticatorService.discard(request.authenticator, Ok)
   }
 }

@@ -2,15 +2,14 @@ package controllers
 
 import com.mohiva.play.silhouette.api.Silhouette
 import forms.EventForm
-import models.services.{EventAlreadyExists, EventCreated, EventService}
+import models.services._
 import play.api.libs.json.Json
 import play.api.mvc._
-
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
 import utils.auth.JWTEnvironment
 
 import java.util.UUID
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * Контроллер для работы с событиями
@@ -22,18 +21,58 @@ import java.util.UUID
 class EventController @Inject() (silhouette: Silhouette[JWTEnvironment], controllerComponents: ControllerComponents, eventService: EventService)
                                 (implicit ex: ExecutionContext) extends AbstractController(controllerComponents) {
 
-  def addEvent: Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
+  /**
+   * Обрабатывает добавление нового события
+   *
+   * @return
+   */
+  def addEvent(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
+
     val members: List[UUID] = request.body.asJson.get("members").as[List[String]].map(UUID.fromString)
 
     EventForm.form.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString()))),
+      formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),
       data => {
         eventService.saveEvent(data, members).flatMap {
-            case EventCreated(event) => Future.successful(Ok(Json.obj("result" -> "Событие успешно добавлено")))
-            case EventAlreadyExists => Future.successful(BadRequest(Json.obj("error" -> "Событие с таким названием уже существует")))
-            case _ => Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при добавлении события")))
+            case EventCreated(_) => Future.successful(Ok(Json.obj("result" -> "Событие успешно добавлено!")))
+            case InvalidEndDate => Future.successful(BadRequest(Json.obj("error" -> "Событие не может заканчиваться в прошлом!")))
+            case DateTimeEqualException => Future.successful(BadRequest(Json.obj("error" -> "Событие не может начинаться и заканчиваться в одно и то же время!")))
+            case EventAlreadyExists => Future.successful(Conflict(Json.obj("error" -> "На указанное время запланировано другое событие!")))
+            case _ => Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при добавлении события!")))
         }
       }
     )
+  }
+
+  /**
+   * Обрабатывает обновление существующего события
+   *
+   * @return
+   */
+  def updateEvent(eventID: Long): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
+    val members: List[UUID] = request.body.asJson.get("members").as[List[String]].map(UUID.fromString)
+
+    EventForm.form.bindFromRequest().fold(
+      formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),
+      data => {
+        println(data)
+        eventService.updateEvent(eventID, data, members).flatMap {
+          case EventUpdated(_) => Future.successful(Ok(Json.obj("success" -> "Событие успешно обновлено!")))
+          case EventNotFound => Future.successful(NotFound(Json.obj("error" -> "Событие не найдено!")))
+          case InvalidEndDate => Future.successful(BadRequest(Json.obj("error" -> "Событие не может заканчиваться в прошлом!")))
+          case DateTimeEqualException => Future.successful(BadRequest(Json.obj("error" -> "Событие не может начинаться и заканчиваться в одно и то же время!")))
+          case EventAlreadyExists => Future.successful(Conflict(Json.obj("error" -> "На указанное время запланировано другое событие!")))
+          case _ => Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при обновлении события!")))
+        }
+      }
+    )
+  }
+
+  def deleteEvent(eventID: Long): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
+    eventService.deleteEvent(eventID).flatMap {
+      case EventDeleted => Future.successful(Ok(Json.obj("success" -> "Событие успешно удалено!")))
+      case EventNotFound => Future.successful(NotFound(Json.obj("error" -> "Событие не найдено!")))
+      case _ => Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при удалении события!")))
+    }
   }
 }
