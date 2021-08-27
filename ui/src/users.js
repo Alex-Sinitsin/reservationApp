@@ -1,12 +1,21 @@
 import React from 'react';
-import { Create, List, Datagrid, TextField, EmailField, Edit, SimpleForm, TextInput } from 'react-admin';
+import { List, Datagrid, EmailField, TextField, ReferenceField, EditButton, Edit, SimpleForm, TextInput, ReferenceInput, SelectInput, Create, Filter } from 'react-admin';
+
+const UserFilter = (props) => (
+  <Filter {...props}>
+        <ReferenceInput label='Name' source='id' reference='users' allowEmpty>
+          <SelectInput optionText='name' />
+        </ReferenceInput>
+  </Filter>
+);
 
 export const UserList = props => (
-  <List {...props}>
+<List filters={<UserFilter />} {...props}>
     <Datagrid rowClick='edit'>
       <TextField source='id' />
       <TextField source='name' />
       <TextField source='username' />
+      <TextField source='postname' />
       <EmailField source='email' />
       <TextField source='phone' />
     </Datagrid>
@@ -20,6 +29,7 @@ export const UserEdit = props =>(
       <TextInput disabled source='id' />
       <TextInput source='name' />
       <TextInput source='username' />
+      <TextInput source='postname' />
       <TextInput source='email' />
       <TextInput source='phone' />
     </SimpleForm>
@@ -32,6 +42,7 @@ export const UserCreate = props => (
     <SimpleForm>
       <TextInput source='name' />
       <TextInput source='username' />
+      <TextInput source='postname' />
       <TextInput source='email' />
       <TextInput source='phone' />
     </SimpleForm>
