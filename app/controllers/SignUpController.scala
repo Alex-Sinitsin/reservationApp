@@ -1,22 +1,14 @@
 package controllers
 
-import javax.inject.Inject
-
 import com.mohiva.play.silhouette.api._
-
-import play.api.data.Form
-import play.api.http.Writeable
+import forms.SignUpForm
+import models.services._
 import play.api.i18n.I18nSupport
 import play.api.libs.json._
 import play.api.mvc._
-
-import forms.SignUpForm
-import forms.SignUpForm.CredentialsSignUpData
-import models.services._
 import utils.auth.JWTEnvironment
 
-import play.api.http.Writeable
-
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 /**

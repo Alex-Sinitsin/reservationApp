@@ -1,10 +1,8 @@
 package models.services
 
 import java.util.UUID
-
 import com.mohiva.play.silhouette.api.LoginInfo
 import com.mohiva.play.silhouette.api.services.IdentityService
-
 import models.User
 
 import scala.concurrent.Future
@@ -44,4 +42,13 @@ trait UserService extends IdentityService[User] {
    * @return
    */
   def createOrUpdate(loginInfo: LoginInfo, email: String, name: String, lastName: String, position: String): Future[User]
+
+  /**
+   * Удаляет данные пользователя
+   *
+   * @param userID ID пользователя
+   * @param email Email пользователя
+   * @return
+   */
+  def delete(userID: UUID, email: String): Future[Boolean]
 }

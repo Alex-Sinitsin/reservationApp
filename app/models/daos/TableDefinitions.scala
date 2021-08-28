@@ -1,15 +1,16 @@
 package models.daos
 
 import com.mohiva.play.silhouette.api.LoginInfo
+import models._
 import play.api.libs.json.{JsValue, Json}
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcType
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.ProvenShape
 
 import java.sql.Timestamp
-import java.time.{LocalDate, LocalDateTime, LocalTime}
+import java.time.LocalDateTime
 import java.util.UUID
-import models._
-import slick.ast.BaseTypedType
 
 /**
  * Трейт, содержит модель базы данных Slick и описание таблиц
@@ -79,8 +80,10 @@ trait TableDefinitions {
     def * = (hasher, password, salt, loginInfoId).<> (DBPasswordInfo.tupled, DBPasswordInfo.unapply)
   }
 
-  implicit val jsValueMappedColumnType: BaseColumnType[JsValue] =
-    MappedColumnType.base[JsValue, String](Json.stringify, Json.parse)
+  implicit val JsValueColumnType: JdbcType[JsValue] with BaseTypedType[JsValue] = MappedColumnType.base[JsValue, String](
+    jsValue => Json.stringify(Json.toJson(jsValue)),
+    column => Json.parse(column).as[JsValue]
+  )
 
   class Events(tag: Tag) extends Table[Event](tag, Some("app"), "events") {
     def id = column[Long]("id", O.SqlType("SERIAL"), O.PrimaryKey, O.AutoInc)

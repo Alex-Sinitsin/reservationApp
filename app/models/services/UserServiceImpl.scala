@@ -1,14 +1,12 @@
 package models.services
 
 import com.mohiva.play.silhouette.api.LoginInfo
-
-import javax.inject.Inject
-
-import scala.concurrent.{ExecutionContext, Future}
-
 import models.User
 import models.daos.{LoginInfoDAO, UserDAO}
+
 import java.util.UUID
+import javax.inject.Inject
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * Обрабатывает действия для пользователей
@@ -18,13 +16,14 @@ import java.util.UUID
  * @param ec Контекст выполнения
  */
 class UserServiceImpl @Inject()(userDAO: UserDAO,
-                                loginInfoDAO: LoginInfoDAO)(implicit ec: ExecutionContext) extends UserService {
+                                loginInfoDAO: LoginInfoDAO)
+                               (implicit ec: ExecutionContext) extends UserService {
 
   /**
    * Извлекает информацию о пользователе, который удовлетворяет условию.
    *
    * @param loginInfo Информация для входа
-   * @return Полученный пользователь или None, если ни один пользователь не может быть получен для данной информации для входа
+   *  @return Полученный пользователь или None, если ни один пользователь не может быть получен для данной информации для входа
    */
   override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = userDAO.findByLoginInfo(loginInfo)
 
@@ -33,7 +32,7 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
    *
    * @param id         ID пользователя
    * @param providerID ID провайдера
-   * @return Полученный пользователь или None, если не удалось получить пользователя для данного идентификатора
+   *  @return Полученный пользователь или None, если не удалось получить пользователя для данного идентификатора
    */
   override def retrieveUserLoginInfo(id: UUID, providerID: String): Future[Option[(User, LoginInfo)]] = {
     loginInfoDAO.find(id, providerID)
@@ -86,4 +85,16 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
       }
     }
   }
+
+  /**
+   * Удаляет данные пользователя
+   *
+   * @param userID ID пользователя
+   * @param email Email пользователя
+   * @return
+   */
+   override def delete(userID: UUID, email: String): Future[Boolean] = {
+     loginInfoDAO.deleteLoginInfo(email)
+     userDAO.delete(userID)
+   }
 }
