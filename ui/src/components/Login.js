@@ -77,7 +77,7 @@ const Login = (props) => {
                 <Header/>
                 <div className="card card-container">
                     <img
-                        src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
+                        src="/avatar.png"
                         alt="profile-img"
                         className="profile-img-card"
                     />
