@@ -13,8 +13,11 @@ const Home = () =>  {
 
 
         return (
-            <div className='Home'>
-                    <MyCalendar />
+            <div className="col-md-12">
+                     <header><Header/></header>
+                    <body className="container">
+                        <MyCalendar/>
+                    </body>
                 </div>
         )
 }

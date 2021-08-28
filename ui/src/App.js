@@ -16,9 +16,7 @@ import Header from "./Header";
 
 function App() {
         return (
-            <div>
-                <Header/>
-                <div className="container mt-3">
+            <div id="appContent">
                     <Switch>
                         <Route exact path="/" component={Login} />
                         <Route exact path="/register" component={Register} />
@@ -26,12 +24,8 @@ function App() {
                         <Route path="/user" component={BoardUser} />
                         <Route path="/admin" component={BoardAdmin} />
                         <Route path="/home" component={Home} />
-
-
                         <Route component={PageNotFound} />
-
                     </Switch>
-                </div>
             </div>
         );
 }

@@ -5,6 +5,7 @@ import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
 
 import AuthService from "../services/auth.service";
+import Header from "../Header";
 
 
 // Требование заполненности поля
@@ -122,6 +123,7 @@ const Register = (props) => {
 
         return (
             <div className="col-md-12">
+                    <Header/>
                 <div className="card card-container">
                     <img
                         src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"

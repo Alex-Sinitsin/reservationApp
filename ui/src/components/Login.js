@@ -4,6 +4,7 @@ import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 
 import AuthService from "../services/auth.service";
+import Header from "../Header";
 
 
 const required = value => {
@@ -73,6 +74,7 @@ const Login = (props) => {
 
         return (
             <div className="col-md-12">
+                <Header/>
                 <div className="card card-container">
                     <img
                         src="//ssl.gstatic.com/accounts/ui/avatar_2x.png"
