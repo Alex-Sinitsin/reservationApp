@@ -26,6 +26,7 @@ class SignUpController @Inject()(ControllerComponents: MessagesControllerCompone
                                  signUpService: SignUpService,
                                  hasSignUpMethod: HasSignUpMethod
                                 )(implicit ex: ExecutionContext) extends MessagesAbstractController(ControllerComponents) with I18nSupport {
+
   /**
    * Обработка данных отправленной формы регистрации.
    *
@@ -52,8 +53,7 @@ class SignUpController @Inject()(ControllerComponents: MessagesControllerCompone
               }
             }
           )
-        case _ => Future.successful(Forbidden("Недостаточно прав для выполнения операции!"))
+        case _ => Future.successful(Forbidden(Json.obj("error" -> "Недостаточно прав для выполнения операции!")))
       }
-
   }
 }
