@@ -34,11 +34,11 @@ class EventController @Inject()(silhouette: Silhouette[JWTEnvironment],
    */
   def addEvent(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
 
-    val members: List[UUID] = request.body.asJson.get("members").as[List[String]].map(UUID.fromString)
-
     EventForm.form.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),
       data => {
+        val members: List[UUID] = data.members.get.map(UUID.fromString)
+
         eventService.saveEvent(data, members).flatMap {
           case EventCreated(_) => Future.successful(Ok(Json.obj("result" -> "Событие успешно добавлено!")))
           case InvalidEndDate => Future.successful(BadRequest(Json.obj("error" -> "Событие не может заканчиваться в прошлом!")))
@@ -58,12 +58,13 @@ class EventController @Inject()(silhouette: Silhouette[JWTEnvironment],
   def updateEvent(eventID: Long): Action[AnyContent] = silhouette.SecuredAction(hasSignUpMethod[JWTEnvironment#A](CredentialsProvider.ID)).async {
     implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
 
-      val members: List[UUID] = request.body.asJson.get("members").as[List[String]].map(UUID.fromString)
       val currentUser: User = request.identity
 
       EventForm.form.bindFromRequest().fold(
         formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),
         data => {
+          val members: List[UUID] = data.members.get.map(UUID.fromString)
+
           eventService.updateEvent(eventID, data, members, currentUser).flatMap {
             case EventUpdated(_) => Future.successful(Ok(Json.obj("success" -> "Событие успешно обновлено!")))
             case EventNotFound => Future.successful(NotFound(Json.obj("error" -> "Событие не найдено!")))
