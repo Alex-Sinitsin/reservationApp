@@ -30,7 +30,7 @@ const AddEvent = (props) => {
     const [startDateTime, setStartDateTime] = useState("");
     const [endDateTime, setEndDateTime] = useState("");
     const [orgUserID, setOrgUserID] = useState(currentUser.userInfo.id);
-    const [members, setMembers] = useState("[]");
+    const [members, setMembers] = useState("");
     const [itemID, setItemID] = useState("");
     const [description, setDescription] = useState("");
 
@@ -106,10 +106,6 @@ const AddEvent = (props) => {
                     {!successful && (
                         <div>
                             <div className="title-form">Создание события</div>
-                            <select>
-                                <option>Пункт 1</option>
-                                <option>Пункт 2</option>
-                            </select>
 
                             <div className="form-group">
                                 <label htmlFor="itemID">Помещение/Предмет: *</label>
