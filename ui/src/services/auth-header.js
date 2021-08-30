@@ -1,8 +1,10 @@
+import AuthService from "../services/auth.service";
+
 export default function authHeader() {
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = AuthService.getCurrentUser();
 
     if (user && user.accessToken) {
-        return { 'x-auth-token': user.accessToken};
+        return { 'X-Auth-Token': user.accessToken};
     } else {
         return {};
     }

@@ -4,7 +4,7 @@ import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
 
 import AuthService from "../services/auth.service";
-import Header from "../Header";
+import Header from "./Header";
 
 
 const required = value => {

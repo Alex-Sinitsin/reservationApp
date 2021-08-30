@@ -1,6 +1,6 @@
 import React from 'react';
 import { List, Filter, SimpleList, Create, Datagrid, TextField, ReferenceField, EditButton, SelectInput, Edit, SimpleForm, TextInput, ReferenceInput } from 'react-admin';
-import userName from './Home';
+import userName from './components/Home';
 
 const PostFilter = (props) => (
   <Filter {...props}>

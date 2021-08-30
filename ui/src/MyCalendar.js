@@ -6,7 +6,7 @@ import { Calendar, momentLocalizer } from 'react-big-calendar'
 import moment from 'moment'
 import 'moment/locale/ru'
 import { Alert, useAlert } from 'react-alert'
-import {userName} from './Home';
+import {userName} from './components/Home';
 import Clock from 'react-clock';
 
 function MyCalendar() {
@@ -55,8 +55,8 @@ function MyCalendar() {
         <Calendar
         step={15}
         messages={{
-                  next: 'Следущий',
-                  previous: 'Предыдущий',
+                  next: '>>',
+                  previous: '<<',
                   today: 'Сегодня',
                   month: 'Месяц',
                   week: 'Неделя',

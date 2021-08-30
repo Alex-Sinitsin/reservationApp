@@ -1,6 +1,6 @@
 import React from "react";
 import AuthService from "../services/auth.service";
-import Header from "../Header";
+import Header from "./Header";
 
 const Profile = () => {
     const currentUser = AuthService.getCurrentUser();

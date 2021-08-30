@@ -8,9 +8,8 @@ import Register from "./components/Register";
 import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
 import BoardAdmin from "./components/BoardAdmin";
-import Home from './Home';
-import PageNotFound from './PageNotFound';
-import Header from "./Header";
+import Home from './components/Home';
+import PageNotFound from './components/PageNotFound';
 
 
 

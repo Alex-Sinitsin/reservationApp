@@ -3,7 +3,8 @@ import './Home.css'
 import Header from './Header'
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import 'moment/locale/ru'
-import  MyCalendar  from './MyCalendar';
+import  MyCalendar  from '../MyCalendar';
+import Event from "./Event";
 
 const Home = () =>  {
 
@@ -13,12 +14,21 @@ const Home = () =>  {
 
 
         return (
-            <div className="col-md-12">
+            <div>
                      <header><Header/></header>
-                    <body className="container">
-                        <MyCalendar/>
-                    </body>
+
+                <div className="row">
+                    <div className="col-md-4"><Event/></div>
+                    <div className="col-md-7"><MyCalendar/></div>
+                    <div className="col-md-1"></div>
                 </div>
+
+
+
+
+
+
+            </div>
         )
 }
 

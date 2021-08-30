@@ -5,7 +5,7 @@ import CheckButton from "react-validation/build/button";
 import { isEmail } from "validator";
 
 import AuthService from "../services/auth.service";
-import Header from "../Header";
+import Header from "./Header";
 
 
 // Требование заполненности поля

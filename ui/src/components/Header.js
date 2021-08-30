@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 import './Header.css'
 import {Link} from "react-router-dom";
-import AuthService from "./services/auth.service";
+import AuthService from "../services/auth.service";
 
 
 const Header = () => {
