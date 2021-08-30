@@ -1,4 +1,4 @@
-import React, {useState, useRef} from "react";
+import React, {useState, useRef, useEffect} from "react";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
@@ -6,6 +6,7 @@ import CheckButton from "react-validation/build/button";
 import AuthService from "../services/auth.service";
 import EventService from "../services/event.service";
 import "./Event.css";
+import Select from 'react-select'
 
 
 // Требование заполненности поля
@@ -30,8 +31,13 @@ const AddEvent = (props) => {
     const [startDateTime, setStartDateTime] = useState("");
     const [endDateTime, setEndDateTime] = useState("");
     const [orgUserID, setOrgUserID] = useState(currentUser.userInfo.id);
+
     const [members, setMembers] = useState("");
+    const [membersList, setMembersList] = useState("");
+
     const [itemID, setItemID] = useState("");
+    const [itemList, setItemList] = useState([]);
+
     const [description, setDescription] = useState("");
 
     const [successful, setSuccessful] = useState(false);
@@ -51,16 +57,6 @@ const AddEvent = (props) => {
     const onChangeEndDateTime = (e) => {
         const endDateTime = e.target.value;
         setEndDateTime(endDateTime);
-    };
-
-    const onChangeMembers = (e) => {
-        const members = e.target.value;
-        setMembers(members);
-    };
-
-    const onChangeItemID = (e) => {
-        const itemID = e.target.value;
-        setItemID(itemID);
     };
 
     const onChangeDescription = (e) => {
@@ -99,6 +95,67 @@ const AddEvent = (props) => {
     };
 
 
+    useEffect(() => {
+        async function getItemData() {
+            try {
+                const response = await fetch(
+                    "http://localhost:3000/api/events/items"
+                );
+                const responseJson = await response.json()
+
+                const parsedList = responseJson.results && responseJson.results.map(({name,id}) => {
+
+                    return{
+                        value: id.value,
+                        label: `${name.first} ${name.last}`
+                    }
+                })
+
+                setItemList(parsedList);
+            } catch (err) {
+                console.log(err, "API ERROR");
+            }
+        }
+        getItemData();
+    }, []);
+
+
+
+    useEffect(() => {
+        async function getMembersData() {
+            try {
+                const response = await fetch(
+                    "http://localhost:3000/api/users"
+                );
+                const responseJson = await response.json()
+
+                const parsedList = responseJson.results && responseJson.results.map(({name, id}) => {
+
+                    return{
+                        value: id.value,
+                        label: `${name.first} ${name.lastName}`
+                    }
+                })
+
+                setMembersList(parsedList);
+            } catch (err) {
+                console.log(err, "API ERROR");
+            }
+        }
+        getMembersData();
+    }, []);
+
+
+
+
+    function handleChangeItem(selectedItem) {
+        setItemID(selectedItem);
+    }
+
+    function handleChangeMembers(selectedMembers) {
+        setMembers(selectedMembers);
+    }
+
     return (
             <div className="card card-container">
 
@@ -109,13 +166,10 @@ const AddEvent = (props) => {
 
                             <div className="form-group">
                                 <label htmlFor="itemID">Помещение/Предмет: *</label>
-                                <Input
-                                    type="text"
-                                    className="form-control"
-                                    name="itemID"
+                                <Select
                                     value={itemID}
-                                    onChange={onChangeItemID}
-                                    validations={[required]}
+                                    onChange={handleChangeItem}
+                                    options={itemList}
                                 />
                             </div>
 
@@ -158,13 +212,15 @@ const AddEvent = (props) => {
 
                             <div className="form-group">
                                 <label htmlFor="members">Участники:</label>
-                                <Input
-                                    type="text"
-                                    className="form-control"
-                                    name="members"
-                                    value={members}
-                                    onChange={onChangeMembers}
-                                />
+                            <Select
+                                isMulti
+                                name="members"
+                                value={members}
+                                options={membersList}
+                                onChange={handleChangeMembers}
+                                className="basic-multi-select"
+                                classNamePrefix="select"
+                            />
                             </div>
 
                             <div className="form-group">

@@ -11,7 +11,14 @@ const API_URL = 'http://localhost:3000/api/';
         return axios.get(API_URL + 'admin', { headers: authHeader() });
     }
 
+
+    const getUsers = () => {
+    return axios.get(API_URL + 'users', { headers: authHeader() });
+}
+
 export default{
         getUserBoard,
         getAdminBoard,
+
+        getUsers,
 }
