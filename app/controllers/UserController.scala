@@ -5,6 +5,8 @@ import com.mohiva.play.silhouette.api.actions.SecuredRequest
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.PasswordInfo
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import forms.UserRoleForm
+import models.UserRoles
 import models.services._
 import play.api.libs.json.Json
 import play.api.mvc._
@@ -19,6 +21,7 @@ import scala.concurrent.{ExecutionContext, Future}
  *
  * @param silhouette           Стек Silhouette
  * @param controllerComponents Экземпляр трейта `ControllerComponents`
+ * @param userService          Сервис для работы с пользователями
  * @param credentialsProvider  Провайдер аутентификации по логину/паролю (Silhouette)
  * @param authInfoRepository   Репозиторий информации об авторизации (Silhouette)
  * @param hasSignUpMethod      Вспомогательная утилита для проверки наличия метода аутентификации
@@ -32,7 +35,6 @@ class UserController @Inject()(silhouette: Silhouette[JWTEnvironment],
                                hasSignUpMethod: HasSignUpMethod)
                               (implicit ex: ExecutionContext) extends AbstractController(controllerComponents) {
 
-
   /**
    * Выводит список всех пользователей
    *
@@ -43,7 +45,22 @@ class UserController @Inject()(silhouette: Silhouette[JWTEnvironment],
   }
 
   //TODO: Сделать метод обновления данных пользователя
-  //TODO: Сделать метод смены роли пользователя
+
+  def changeUserRole(userID: UUID): Action[AnyContent] = silhouette.SecuredAction(hasSignUpMethod[JWTEnvironment#A](CredentialsProvider.ID)).async {
+    implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
+
+    UserRoleForm.form.bindFromRequest().fold(
+      _ => Future.successful(BadRequest),
+      roleId =>
+        request.identity.role match {
+          case Some("Admin") =>
+            userService.changeUserRole(userID, UserRoles.toHumanReadable(roleId)).flatMap(updResult =>
+              if(updResult) Future.successful(Ok(Json.obj("success" -> "Роль пользователя успешно обновлена!")))
+              else Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при изменении роли пользователя!"))))
+          case _ => Future.successful(Forbidden(Json.obj("error" -> "Недостаточно прав для выполнения операции!")))
+        }
+    )
+  }
 
   /**
    * Обрабатывает удаление данных пользователя
