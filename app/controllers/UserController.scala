@@ -19,7 +19,6 @@ import scala.concurrent.{ExecutionContext, Future}
  *
  * @param silhouette           Стек Silhouette
  * @param controllerComponents Экземпляр трейта `ControllerComponents`
- * @param eventService         Сервис для работы с событиями
  * @param credentialsProvider  Провайдер аутентификации по логину/паролю (Silhouette)
  * @param authInfoRepository   Репозиторий информации об авторизации (Silhouette)
  * @param hasSignUpMethod      Вспомогательная утилита для проверки наличия метода аутентификации
@@ -27,12 +26,24 @@ import scala.concurrent.{ExecutionContext, Future}
  */
 class UserController @Inject()(silhouette: Silhouette[JWTEnvironment],
                                controllerComponents: ControllerComponents,
-                               eventService: EventService,
                                userService: UserService,
                                credentialsProvider: CredentialsProvider,
                                authInfoRepository: AuthInfoRepository,
                                hasSignUpMethod: HasSignUpMethod)
                               (implicit ex: ExecutionContext) extends AbstractController(controllerComponents) {
+
+
+  /**
+   * Выводит список всех пользователей
+   *
+   * @return
+   */
+  def listAll(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
+    userService.retrieveAll.flatMap { users => Future.successful(Ok(Json.toJson(users))) }
+  }
+
+  //TODO: Сделать метод обновления данных пользователя
+  //TODO: Сделать метод смены роли пользователя
 
   /**
    * Обрабатывает удаление данных пользователя

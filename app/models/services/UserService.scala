@@ -11,6 +11,15 @@ import scala.concurrent.Future
  * Обрабатывает действия для пользователей
  */
 trait UserService extends IdentityService[User] {
+
+
+  /**
+   * Извлекает список пользователей
+   *
+   * @return
+   */
+  def retrieveAll: Future[Seq[User]]
+
   /**
    * Меняет роль пользователя
    *

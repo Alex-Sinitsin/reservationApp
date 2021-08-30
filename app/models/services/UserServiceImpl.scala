@@ -19,6 +19,14 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
                                 loginInfoDAO: LoginInfoDAO)
                                (implicit ec: ExecutionContext) extends UserService {
 
+
+  /**
+   * Извлекает список пользователей
+   *
+   * @return
+   */
+  override def retrieveAll: Future[Seq[User]] = userDAO.getAll
+
   /**
    * Извлекает информацию о пользователе, который удовлетворяет условию.
    *
