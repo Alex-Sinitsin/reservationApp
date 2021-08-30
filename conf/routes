@@ -7,7 +7,8 @@ GET         /signOut                         controllers.SignInController.signOu
 POST        /api/signUp                      controllers.SignUpController.submit
 POST        /api/signIn                      controllers.SignInController.submit
 POST        /password/change                 controllers.ChangePasswordController.submit
-POST        /user/:userId/delete             controllers.UserController.delete(userId: java.util.UUID)
+POST        /users/:userId/role              controllers.UserController.changeUserRole(userId: java.util.UUID)
+POST        /users/:userId/delete            controllers.UserController.delete(userId: java.util.UUID)
 
 # События
 GET         /events                          controllers.EventController.listAll()

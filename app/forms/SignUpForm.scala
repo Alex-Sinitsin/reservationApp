@@ -5,7 +5,7 @@ import play.api.data.Forms._
 import play.api.libs.json.{Json, OFormat}
 
 /**
- * Форма, которая принимает данные для регистрации со стороны клиента.
+ * Форма, которая принимает данные для регистрации со стороны клиента
  */
 object SignUpForm {
 

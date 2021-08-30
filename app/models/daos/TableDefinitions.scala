@@ -2,7 +2,7 @@ package models.daos
 
 import com.mohiva.play.silhouette.api.LoginInfo
 import models._
-import play.api.libs.json.{JsValue, Json}
+import play.api.libs.json.{JsValue, Json, OFormat}
 import slick.ast.BaseTypedType
 import slick.jdbc.JdbcType
 import slick.jdbc.PostgresProfile.api._
