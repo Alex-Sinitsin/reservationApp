@@ -27,12 +27,22 @@ class EventController @Inject()(silhouette: Silhouette[JWTEnvironment],
                                 hasSignUpMethod: HasSignUpMethod)
                                (implicit ex: ExecutionContext) extends AbstractController(controllerComponents) {
 
+
+  /**
+   * Выводит список всех событий
+   *
+   * @return
+   */
+  def listAll(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
+    eventService.retrieveAll.flatMap { events => Future.successful(Ok(Json.toJson(events))) }
+  }
+
   /**
    * Обрабатывает добавление нового события
    *
    * @return
    */
-  def addEvent(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
+  def createEvent(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
 
     EventForm.form.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),

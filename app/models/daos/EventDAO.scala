@@ -8,10 +8,10 @@ import slick.jdbc.PostgresProfile.api._
 
 import java.sql.Timestamp
 import java.time.LocalDateTime
-import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
 
 class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext) extends DatabaseDAO {
+
   /**
    * Извлекает событие по дате начала и дате окончания
    *

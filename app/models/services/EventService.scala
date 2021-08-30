@@ -13,6 +13,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: ExecutionContext) {
 
   /**
+   * Извлекает список событий
+   *
+   * @return
+   */
+  def retrieveAll: Future[Seq[Event]] = eventDAO.getAll
+
+  /**
    * Функция обрабатывает дату и время окончания события
    *
    * Если время, например, 13:00, то от него отнимается 1 минута и возвращается 12:59, иначе возвращается необработанное время
@@ -119,7 +126,7 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
         if (currentUser.id == eventData.orgUserId || currentUser.role.contains("Admin"))
           eventDAO.delete(eventID).flatMap { delResult =>
             if (delResult) Future.successful(EventDeleted)
-            else Future.successful(Error("Произошла ошибка при удалении события!"))
+            else Future.successful(EventDeleteError("Произошла ошибка при удалении события!"))
           }
         else Future.successful(EventCreatedByAnotherUser("delete"))
       case None => Future.successful(EventNotFound)
@@ -141,4 +148,4 @@ case object EventDeleted extends EventResult
 case class EventCreated(event: Event) extends EventResult
 case class EventCreatedByAnotherUser(action: String) extends EventResult
 case class EventUpdated(event: Event) extends EventResult
-case class Error(msg: String) extends EventResult
+case class EventDeleteError(msg: String) extends EventResult
