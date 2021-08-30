@@ -2,15 +2,12 @@ package models.daos
 
 import com.google.inject.Inject
 import com.mohiva.play.silhouette.api.LoginInfo
-import com.mohiva.play.silhouette.api.util.PasswordInfo
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+import models.{User, UserRoles}
 import play.api.db.slick.DatabaseConfigProvider
 import slick.jdbc.PostgresProfile.api._
 
-import scala.concurrent.{ExecutionContext, Future}
-import models.{User, UserRoles}
-
 import java.util.UUID
+import scala.concurrent.{ExecutionContext, Future}
 
 /**
  * Реализация объекта для доступа к хранилищу пользователей
@@ -69,6 +66,14 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
    */
   override def findUsersByID(userIDs: Seq[UUID]): Future[Seq[User]] =
     db.run(users.filter(_.id inSetBind userIDs).result).map(_.map {usrs => DBUser.toUser(usrs)})
+
+  /**
+   * Извлекает список всех пользователей
+   *
+   *  @return
+   */
+  override def getAll: Future[Seq[User]] =
+    db.run(users.result).map(_ map DBUser.toUser)
 
   /**
    * Сохраняет информацию о пользователе

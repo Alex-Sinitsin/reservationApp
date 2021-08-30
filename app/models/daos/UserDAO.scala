@@ -54,6 +54,13 @@ trait UserDAO extends DatabaseDAO {
   def findUsersByID(userIDs: Seq[UUID]): Future[Seq[User]]
 
   /**
+   * Извлекает список всех пользователей
+   *
+   * @return
+   */
+  def getAll: Future[Seq[User]]
+
+  /**
    * Сохраняет или обновляет информацию о пользователе
    *
    * @param user Информация о пользователе, которого необходимо сохранить
