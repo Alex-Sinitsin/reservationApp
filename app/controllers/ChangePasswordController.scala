@@ -35,11 +35,11 @@ class ChangePasswordController @Inject()(components: ControllerComponents,
           credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
             val passwordInfo = passwordHasherRegistry.current.hash(newPassword)
             authInfoRepository.update[PasswordInfo](loginInfo, passwordInfo).map { _ =>
-              Ok(Json.obj("success" -> Messages("success.password.changed")))
+              Ok(Json.toJson(Json.obj("status" -> "success", "message" -> Messages("success.password.changed"))))
             }
           }.recover {
             case _: ProviderException =>
-              BadRequest(Json.obj("error" -> Messages("current.password.invalid")))
+              BadRequest(Json.toJson(Json.obj("status" -> "error", "message" -> Messages("current.password.invalid"))))
           }
         }
       )

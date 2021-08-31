@@ -48,13 +48,13 @@ class SignInController @Inject()(authenticateService: AuthenticateService,
             val loginInfo = LoginInfo(CredentialsProvider.ID, user.email)
             authenticateUser(user, loginInfo)
           case InvalidPassword(msg) =>
-            Future.successful(Forbidden(Json.obj("errors" -> msg)))
-          case UserNotFound => Future.successful(Forbidden(Json.obj("errors" -> "Пользователь не найден!")))
+            Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "message" -> msg))))
+          case UserNotFound => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error",  "code" -> NOT_FOUND, "message" -> "Пользователь не найден!"))))
           }
           .recover {
             case e =>
               logger.error(s"Ошибка авторизации по email = ${data.email}", e)
-              InternalServerError(Json.obj("errorCode" -> "SystemError"))
+              InternalServerError(Json.toJson(Json.obj("status" -> "error", "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при авторизации по Email")))
           }
       }
     )

@@ -44,16 +44,16 @@ class SignUpController @Inject()(ControllerComponents: MessagesControllerCompone
                 signUpService.signUpByCredentials(data).map {
                   case UserCreated(user) =>
                     silhouette.env.eventBus.publish(SignUpEvent(user, request))
-                    Ok(Json.obj("result" -> "Пользователь успешно добавлен!"))
+                    Created(Json.toJson(Json.obj("status" -> "success", "message" -> "Пользователь успешно добавлен!")))
                   case UserAlreadyExists =>
-                    Conflict(Json.obj("error" -> "Пользователь уже существует!"))
+                    Conflict(Json.toJson(Json.obj("status" -> "error", "code" -> CONFLICT, "message" -> "Пользователь уже существует!")))
                 }
               } else {
-                Future.successful(BadRequest(Json.obj("errors" -> "Введенные пароли не совпадают!")))
+                Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "message" -> "Введенные пароли не совпадают!"))))
               }
             }
           )
-        case _ => Future.successful(Forbidden(Json.obj("error" -> "Недостаточно прав для выполнения операции!")))
+        case _ => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error",  "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
       }
   }
 }

@@ -41,7 +41,9 @@ class UserController @Inject()(silhouette: Silhouette[JWTEnvironment],
    * @return
    */
   def listAll(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
-    userService.retrieveAll.flatMap { users => Future.successful(Ok(Json.toJson(users))) }
+    userService.retrieveAll.flatMap { users =>
+      Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "data" -> users))))
+    }
   }
 
   //TODO: Сделать метод обновления данных пользователя
@@ -55,9 +57,9 @@ class UserController @Inject()(silhouette: Silhouette[JWTEnvironment],
         request.identity.role match {
           case Some("Admin") =>
             userService.changeUserRole(userID, UserRoles.toHumanReadable(roleId)).flatMap(updResult =>
-              if(updResult) Future.successful(Ok(Json.obj("success" -> "Роль пользователя успешно обновлена!")))
-              else Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при изменении роли пользователя!"))))
-          case _ => Future.successful(Forbidden(Json.obj("error" -> "Недостаточно прав для выполнения операции!")))
+              if(updResult) Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Роль пользователя успешно обновлена!"))))
+              else Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при изменении роли пользователя!")))))
+          case _ => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error",  "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
         }
     )
   }
