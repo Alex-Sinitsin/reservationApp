@@ -1,6 +1,10 @@
+#root, .page-wrap {
+    height: 100%;
+}
+
 #appContent {
     width: 100%;
-    height: calc(100% - 70px);
+    height: 100%;
 }
 
 label {
