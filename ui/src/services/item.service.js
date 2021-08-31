@@ -3,9 +3,13 @@ import authHeader from './auth-header';
 
 const API_URL = 'http://localhost:3000/api/';
 
-
 const getItems = () => {
-    return axios.get(API_URL + 'items', { headers: authHeader() });
+    return axios.get(API_URL + 'items',
+        {
+            headers: {
+                'X-Auth-Token': authHeader(),
+            }
+        });
 }
 
 export default{

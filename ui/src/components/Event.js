@@ -8,6 +8,9 @@ import EventService from "../services/event.service";
 import "./Event.css";
 import Select from 'react-select'
 
+import User from "../services/user.service"
+import Item from "../services/item.service"
+
 
 // Требование заполненности поля
 const required = value => {
@@ -30,12 +33,12 @@ const AddEvent = (props) => {
     const [title, setTitle] = useState("");
     const [startDateTime, setStartDateTime] = useState("");
     const [endDateTime, setEndDateTime] = useState("");
-    const [orgUserID, setOrgUserID] = useState(currentUser.userInfo.id);
+    const [orgUserID] = useState(currentUser.userInfo.id);
 
     const [members, setMembers] = useState("");
     const [membersList, setMembersList] = useState("");
 
-    const [itemID, setItemID] = useState("");
+    const [itemID, setItemID] = useState(null);
     const [itemList, setItemList] = useState([]);
 
     const [description, setDescription] = useState("");
@@ -74,7 +77,7 @@ const AddEvent = (props) => {
         form.current.validateAll();
 
         if (checkBtn.current.context._errors.length === 0) {
-            EventService.add(title, startDateTime.replace('T',' '), endDateTime.replace('T',' '), orgUserID, members, itemID, description).then(
+            EventService.add(title, startDateTime.replace('T',' '), endDateTime.replace('T',' '), orgUserID, members.map(x => x.value), itemID.value, description).then(
                 (response) => {
                     setMessage(response.data.message);
                     setSuccessful(true);
@@ -94,20 +97,16 @@ const AddEvent = (props) => {
         }
     };
 
-
+// Получение данных об Items в Select
     useEffect(() => {
         async function getItemData() {
             try {
-                const response = await fetch(
-                    "http://localhost:3000/api/events/items"
-                );
-                const responseJson = await response.json()
-
-                const parsedList = responseJson.results && responseJson.results.map(({name,id}) => {
+                const response = await Item.getItems();
+                const parsedList = response.data && response.data.map((item) => {
 
                     return{
-                        value: id.value,
-                        label: `${name.first} ${name.last}`
+                        value: item.id,
+                        label: `${item.name}`
                     }
                 })
 
@@ -120,20 +119,17 @@ const AddEvent = (props) => {
     }, []);
 
 
-
+// Получение данных о Users в Select
     useEffect(() => {
         async function getMembersData() {
             try {
-                const response = await fetch(
-                    "http://localhost:3000/api/users"
-                );
-                const responseJson = await response.json()
+                const response = await User.getUsers()
 
-                const parsedList = responseJson.results && responseJson.results.map(({name, id}) => {
+                const parsedList = response.data && response.data.map((user) => {
 
                     return{
-                        value: id.value,
-                        label: `${name.first} ${name.lastName}`
+                        value: user.id,
+                        label: `${user.name} ${user.lastName} - ${user.position}`
                     }
                 })
 
@@ -156,6 +152,7 @@ const AddEvent = (props) => {
         setMembers(selectedMembers);
     }
 
+
     return (
             <div className="card card-container">
 
@@ -170,6 +167,9 @@ const AddEvent = (props) => {
                                     value={itemID}
                                     onChange={handleChangeItem}
                                     options={itemList}
+                                    placeholder={null}
+                                    components={{IndicatorSeparator: () => null}}
+                                    validations={[required]}
                                 />
                             </div>
 
@@ -217,7 +217,9 @@ const AddEvent = (props) => {
                                 name="members"
                                 value={members}
                                 options={membersList}
+                                placeholder={null}
                                 onChange={handleChangeMembers}
+                                components={{IndicatorSeparator: () => null}}
                                 className="basic-multi-select"
                                 classNamePrefix="select"
                             />
