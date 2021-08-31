@@ -15,7 +15,7 @@ const Header = () => {
 
     if (user) {
       setCurrentUser(user);
-      setShowAdminBoard(user.role.includes("Admin"));
+      setShowAdminBoard(user.userInfo.role.includes("Admin"));
     }
   }, []);
 
@@ -43,7 +43,7 @@ const Header = () => {
 
         {currentUser && (
 
-          <div className="navbar-nav ms-auto">
+          <div className="navbar-nav">
             <li className="navbar-item">
               <img
                 src="/avatar.png"
@@ -55,9 +55,9 @@ const Header = () => {
 
             <li className='flex-1 d-flex flex-row justify-content-end align-items-center me-4'>
               <div className='nav-item header-text text-white'>
-                {currentUser.name + ' ' + currentUser.lastName}
+                {currentUser.userInfo.name + ' ' + currentUser.userInfo.lastName}
                 <div className='header-text text-white'>
-                  {currentUser.position}
+                  {currentUser.userInfo.position}
                 </div>
               </div>
             </li>
