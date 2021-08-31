@@ -33,7 +33,7 @@ const AddEvent = (props) => {
     const [title, setTitle] = useState("");
     const [startDateTime, setStartDateTime] = useState("");
     const [endDateTime, setEndDateTime] = useState("");
-    const [orgUserID] = useState(currentUser.userInfo.id);
+    const [orgUserID] = useState(currentUser.id);
 
     const [members, setMembers] = useState("");
     const [membersList, setMembersList] = useState("");

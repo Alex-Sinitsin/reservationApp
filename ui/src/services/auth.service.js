@@ -20,10 +20,10 @@ const API_URL = "http://localhost:3000/api/";
                 })
             .then(
                 response => {
-                if (response.data.accessToken) {
-                    localStorage.setItem("user", JSON.stringify(response.data));
+                if (response.data.data.accessToken) {
+                    localStorage.setItem("user", JSON.stringify(response.data.data.userInfo));
                 }
-                return response.data;
+                return response.data.data;
             })
     }
 
