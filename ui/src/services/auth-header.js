@@ -4,7 +4,7 @@ export default function authHeader() {
     const user = AuthService.getCurrentUser();
 
     if (user && user.accessToken) {
-        return { 'X-Auth-Token': user.accessToken};
+        return user.accessToken;
     } else {
         return {};
     }

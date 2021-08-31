@@ -1,5 +1,6 @@
 import axios from "axios";
 import Cookies from 'js-cookie';
+import authHeader from "./auth-header";
 
 const API_URL = "http://localhost:3000/api/";
 
@@ -43,11 +44,11 @@ const API_URL = "http://localhost:3000/api/";
             {
                 headers: {
                     'Csrf-Token': Cookies.get('csrfCookie'),
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-Auth-Token': authHeader(),
                 }
             });
     }
-
 
     const getCurrentUser = () => {
         return JSON.parse(localStorage.getItem('user'));

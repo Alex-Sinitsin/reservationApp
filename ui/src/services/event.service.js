@@ -1,8 +1,6 @@
 import axios from "axios";
 import Cookies from "js-cookie";
-import AuthService from "./auth.service";
-
-const user = AuthService.getCurrentUser();
+import authHeader from "./auth-header";
 
 const API_URL = "http://localhost:3000/api/events/";
 
@@ -22,7 +20,7 @@ const add = (title, startDateTime, endDateTime, orgUserID, members, itemID, desc
             headers: {
                 'Csrf-Token': Cookies.get('csrfCookie'),
                 'Content-Type': 'application/json',
-                'X-Auth-Token': user.accessToken,
+                'X-Auth-Token': authHeader(),
             }
         });
 }

@@ -38,14 +38,14 @@ const Header = () => {
                 </Link>
               </li>
           )}
+
         </div>
 
 
 
-        {currentUser ? (
+        {currentUser && (
 
             <div className="navbar-nav ms-auto">
-
                <li className="navbar-item">
                  <img
                      src="/avatar.png"
@@ -65,30 +65,10 @@ const Header = () => {
                 </li>
 
 
-
               <li className="nav-item me-3">
                 <a href="/" className="btn btn-primary btn-block border-white" onClick={logout}>
                   Выход
                 </a>
-              </li>
-            </div>
-
-
-
-        ) : (
-
-
-            <div className="navbar-nav ms-auto">
-              <li className="nav-item">
-                <Link to={"/"} className="nav-link">
-                  Вход
-                </Link>
-              </li>
-
-              <li className="nav-item">
-                <Link to={"/register"} className="nav-link">
-                  Регистрация
-                </Link>
               </li>
             </div>
         )}
