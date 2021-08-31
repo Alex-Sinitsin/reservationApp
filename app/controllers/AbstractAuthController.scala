@@ -1,16 +1,16 @@
 package controllers
 
-import com.mohiva.play.silhouette.api.{LoginEvent, LoginInfo, Silhouette}
 import com.mohiva.play.silhouette.api.services.AuthenticatorResult
 import com.mohiva.play.silhouette.api.util.Clock
+import com.mohiva.play.silhouette.api.{LoginEvent, LoginInfo, Silhouette}
+import models.User
 import play.api.Configuration
 import play.api.i18n.I18nSupport
 import play.api.libs.json.{Json, OFormat}
 import play.api.mvc._
+import utils.auth.JWTEnvironment
 
 import scala.concurrent.{ExecutionContext, Future}
-import models.{AuthToken, User}
-import utils.auth.JWTEnvironment
 
 /**
  * `AbstractAuthController` контроллер с поддержкой аутентификации пользователя.
@@ -27,7 +27,7 @@ abstract class AbstractAuthController(silhouette: Silhouette[JWTEnvironment],
   case class UserWithToken(user: User, authToken: JWTEnvironment#A#Value)
 
   implicit val UserReads: OFormat[User] = Json.format[User]
-  implicit val UserWithTokenReads: OFormat[UserWithToken] = Json.format[UserWithToken]
+  implicit val UserWithTokenFormat: OFormat[UserWithToken] = Json.format[UserWithToken]
 
   /**
    * Производит аутентификацию пользователя
@@ -41,7 +41,7 @@ abstract class AbstractAuthController(silhouette: Silhouette[JWTEnvironment],
     silhouette.env.authenticatorService.create(loginInfo).map(authenticator => authenticator).flatMap { authenticator =>
       silhouette.env.eventBus.publish(LoginEvent(user, request))
       silhouette.env.authenticatorService.init(authenticator).flatMap { token =>
-        silhouette.env.authenticatorService.embed(token, Ok(Json.toJson(UserWithToken(user, token))))
+        silhouette.env.authenticatorService.embed(token, Ok(Json.toJson(Json.obj("status" -> "success", "data" -> UserWithToken(user, token)))))
       }
     }
   }

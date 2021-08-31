@@ -34,7 +34,9 @@ class EventController @Inject()(silhouette: Silhouette[JWTEnvironment],
    * @return
    */
   def listAll(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
-    eventService.retrieveAll.flatMap { events => Future.successful(Ok(Json.toJson(events))) }
+    eventService.retrieveAll.flatMap { events =>
+      Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "data" -> events))))
+    }
   }
 
   /**
@@ -50,11 +52,11 @@ class EventController @Inject()(silhouette: Silhouette[JWTEnvironment],
         val members: List[UUID] = data.members.get.map(UUID.fromString)
 
         eventService.saveEvent(data, members).flatMap {
-          case EventCreated(_) => Future.successful(Ok(Json.obj("result" -> "Событие успешно добавлено!")))
-          case InvalidEndDate => Future.successful(BadRequest(Json.obj("error" -> "Событие не может заканчиваться в прошлом!")))
-          case DateTimeEqualException => Future.successful(BadRequest(Json.obj("error" -> "Событие не может начинаться и заканчиваться в одно и то же время!")))
-          case EventAlreadyExists => Future.successful(Conflict(Json.obj("error" -> "На указанное время запланировано другое событие!")))
-          case _ => Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при добавлении события!")))
+          case EventCreated(_) => Future.successful(Created(Json.toJson(Json.obj("status" -> "success", "message" -> "Событие успешно добавлено!"))))
+          case InvalidEndDate => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "message" -> "Событие не может заканчиваться в прошлом!"))))
+          case DateTimeEqualException => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "message" -> "Событие не может начинаться и заканчиваться в одно и то же время!"))))
+          case EventAlreadyExists => Future.successful(Conflict(Json.toJson(Json.obj("status" -> "error",  "code" -> CONFLICT, "message" -> "На указанное время запланировано другое событие!"))))
+          case _ => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error",  "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при добавлении события!"))))
         }
       }
     )
@@ -76,15 +78,15 @@ class EventController @Inject()(silhouette: Silhouette[JWTEnvironment],
           val members: List[UUID] = data.members.get.map(UUID.fromString)
 
           eventService.updateEvent(eventID, data, members, currentUser).flatMap {
-            case EventUpdated(_) => Future.successful(Ok(Json.obj("success" -> "Событие успешно обновлено!")))
-            case EventNotFound => Future.successful(NotFound(Json.obj("error" -> "Событие не найдено!")))
-            case InvalidEndDate => Future.successful(BadRequest(Json.obj("error" -> "Событие не может заканчиваться в прошлом!")))
-            case DateTimeEqualException => Future.successful(BadRequest(Json.obj("error" -> "Событие не может начинаться и заканчиваться в одно и то же время!")))
-            case EventAlreadyExists => Future.successful(Conflict(Json.obj("error" -> "На указанное время запланировано другое событие!")))
+            case EventUpdated(_) => Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Событие успешно обновлено!"))))
+            case EventNotFound => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error",  "code" -> NOT_FOUND, "message" -> "Событие не найдено!"))))
+            case InvalidEndDate => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "message" -> "Событие не может заканчиваться в прошлом!"))))
+            case DateTimeEqualException => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "message" -> "Событие не может начинаться и заканчиваться в одно и то же время!"))))
+            case EventAlreadyExists => Future.successful(Conflict(Json.toJson(Json.obj("status" -> "error",  "code" -> CONFLICT, "message" -> "На указанное время запланировано другое событие!"))))
             case EventCreatedByAnotherUser(action) =>
-              if (action == "update") Future.successful(BadRequest(Json.obj("error" -> "Событие создано другим пользователем и недоступно для редактирования!")))
+              if (action == "update") Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "message" -> "Событие создано другим пользователем и недоступно для редактирования!"))))
               else Future.successful(Ok)
-            case _ => Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при обновлении события!")))
+            case _ => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при обновлении события!"))))
           }
         }
       )
@@ -102,12 +104,12 @@ class EventController @Inject()(silhouette: Silhouette[JWTEnvironment],
       val currentUser: User = request.identity
 
       eventService.deleteEvent(eventID, currentUser).flatMap {
-        case EventDeleted => Future.successful(Ok(Json.obj("success" -> "Событие успешно удалено!")))
+        case EventDeleted => Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Событие успешно удалено!"))))
         case EventCreatedByAnotherUser(action) =>
-          if (action == "delete") Future.successful(BadRequest(Json.obj("error" -> "Событие создано другим пользователем и недоступно для удаления!")))
+          if (action == "delete") Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "message" -> "Событие создано другим пользователем и недоступно для удаления!"))))
           else Future.successful(Ok)
-        case EventNotFound => Future.successful(NotFound(Json.obj("error" -> "Событие не найдено!")))
-        case _ => Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при удалении события!")))
+        case EventNotFound => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error",  "code" -> NOT_FOUND, "message" -> "Событие не найдено!"))))
+        case _ => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при удалении события!"))))
       }
   }
 }
