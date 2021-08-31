@@ -31,8 +31,8 @@ object SignUpForm {
       "lastName" -> nonEmptyText,
       "position" -> nonEmptyText,
       "email" -> nonEmptyText,
-      "password" -> nonEmptyText,
-      "confirmPassword" -> nonEmptyText
+      "password" -> nonEmptyText(minLength = 8),
+      "confirmPassword" -> nonEmptyText(minLength = 8)
     )(CredentialsSignUpData.apply)(CredentialsSignUpData.unapply)
   )
 }
