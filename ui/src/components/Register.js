@@ -32,10 +32,10 @@ const correctEmail = value => {
 
 // Позволяет устанавливать допустимые размер пароля
 const vpassword = value => {
-    if (value.length < 3 || value.length > 40) {
+    if (value.length < 8) {
         return (
             <div className="alert alert-danger" role="alert">
-                Пароль должен содержать от 3 до 40 символов
+                Пароль должен содержать минимум 8 символов
             </div>
         );
     }
