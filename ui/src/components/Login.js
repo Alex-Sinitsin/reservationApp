@@ -79,6 +79,7 @@ const Login = (props) => {
 
           setLoading(false);
           setMessage(resMessage);
+          console.log(error.response)
         }
       );
     } else {
