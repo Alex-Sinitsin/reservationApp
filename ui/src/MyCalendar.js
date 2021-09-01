@@ -1,17 +1,18 @@
-import React, {useState, Component, useEffect, setState} from "react";
-import ReactDOM from "react-dom";
+import React, {useState, useEffect} from "react";
 import './App.css';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import {Calendar, momentLocalizer} from 'react-big-calendar'
 import moment from 'moment'
 import 'moment/locale/ru'
-import {Alert, useAlert} from 'react-alert'
-import {userName} from './components/Home';
-import Clock from 'react-clock';
+import EventService from "./services/event.service";
+
+
+
+
 
 function MyCalendar() {
   const localizer = momentLocalizer(moment);
-  const [eventsList, setEventsList] = useState([]);
+  const [eventList, setEventList] = useState([]);
   const [alarmTime2, setAlarm] = useState([]);
   const [seconds, setSeconds] = useState([]);
 
@@ -27,20 +28,39 @@ function MyCalendar() {
     return () => clearInterval(timer);
   });
 
-  function handleSelect({start, end, userName}) {
-    const title = window.prompt("New Event name");
-    if (title) {
-      var newEvent = {
-        userName: {userName},
-        start: start,
-        end: end,
-        title: title,
-        alarmTime1: start.toLocaleTimeString('ru', {hour12: false})
-      };
-      setEventsList([...eventsList, newEvent]);
-      setAlarm([...alarmTime2, newEvent.alarmTime1]);
+// Получение данных о событиях
+    useEffect(() => {
+        async function getEventData() {
+            try {
+                const response = await EventService.getEvents();
+                const parsedList = response.data.data && response.data.data.map((event) => {
+
+                    return {
+                        id: event.id,
+                        title: event.title,
+                        start: moment(event.startDateTime, 'YYYY-MM-DD HH:mm').toDate(),
+                        end: moment(event.endDateTime, 'YYYY-MM-DD HH:mm').toDate(),
+                        members: event.members.users,
+                        desc: event.description
+
+
+                    }
+                })
+
+                setEventList(parsedList);
+            } catch (err) {
+                console.log(err, "API ERROR");
+            }
+        }
+
+        getEventData();
+    }, []);
+
+
+
+  function handleEvents(eventList) {
+      setEventList(eventList);
     }
-  }
 
   var counter = 0;
   while (counter != 100) {
@@ -52,39 +72,42 @@ function MyCalendar() {
   }
 
 
-  return (
-    <div>
-      <Calendar
-        step={15}
-        messages={{
-          next: '>>',
-          previous: '<<',
-          today: 'Сегодня',
-          month: 'Месяц',
-          week: 'Неделя',
-          day: 'День',
-          yesterday: 'Вчера',
-          tomorrow: 'Завтра',
-          agenda: 'Мероприятия',
-          noEventsInRange: 'Не найдено никаких мероприятий в текущем периоде.',
-          showMore: function showMore(total) {
-            return '+' + total + 'событий';
-          }
+    return (
+        <div>
+            <Calendar
+                step={15}
+                messages={{
+                    next: '>>',
+                    previous: '<<',
+                    today: 'Сегодня',
+                    month: 'Месяц',
+                    week: 'Неделя',
+                    day: 'День',
+                    yesterday: 'Вчера',
+                    tomorrow: 'Завтра',
+                    agenda: 'Мероприятия',
+                    date: 'Дата',
+                    time: 'Время',
+                    event: 'Событие',
+                    noEventsInRange: 'Не найдено никаких мероприятий в текущем периоде.',
+                    showMore: function showMore(total) {
+                        return '+' + total + 'событий';
+                    }
 
-        }}
-        selectable
-        defaultView="week"
-        defaultDate={new Date()}
-        localizer={localizer}
-        events={eventsList}
-        startAccessor="start"
-        endAccessor="end"
-        style={{height: 620}}
-        // onSelectSlot={handleSelect}
+                }}
+                selectable
+                defaultView="month"
+                defaultDate={new Date()}
+                localizer={localizer}
+                events={eventList}
+                startAccessor="start"
+                endAccessor="end"
+                style={{height: 620}}
+                // events={handleEvents}
 
-      />
-    </div>
-  )
+            />
+        </div>
+    )
 
 }
 

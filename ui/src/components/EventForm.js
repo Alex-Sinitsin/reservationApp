@@ -8,8 +8,8 @@ import EventService from "../services/event.service";
 import "./EventForm.css";
 import Select from 'react-select'
 
-import User from "../services/user.service"
-import Item from "../services/item.service"
+import UserService from "../services/user.service"
+import ItemService from "../services/item.service"
 
 
 // Требование заполненности поля
@@ -74,10 +74,22 @@ const AddEvent = (props) => {
     setMessage("");
     setSuccessful(false);
 
+
     form.current.validateAll();
 
+
     if (checkBtn.current.context._errors.length === 0) {
-      EventService.add(title, startDateTime.replace('T', ' '), endDateTime.replace('T', ' '), orgUserID, members ? members.map(x => x.value) : "[]", itemID.value, description).then(
+      EventService.add
+      (
+          title,
+          startDateTime.replace('T', ' '),
+          endDateTime.replace('T', ' '),
+          orgUserID,
+          members ? members.map(x => x.value) : "[]",
+          itemID.value,
+          description
+      )
+          .then(
         (response) => {
           setMessage(response.data.message);
           setSuccessful(true);
@@ -101,7 +113,7 @@ const AddEvent = (props) => {
   useEffect(() => {
     async function getItemData() {
       try {
-        const response = await Item.getItems();
+        const response = await ItemService.getItems();
         const parsedList = response.data.data && response.data.data.map((item) => {
 
           return {
@@ -124,7 +136,7 @@ const AddEvent = (props) => {
   useEffect(() => {
     async function getMembersData() {
       try {
-        const response = await User.getUsers()
+        const response = await UserService.getUsers()
 
         let userList = response.data.data && response.data.data.filter(user => user.id !== currentUser.userInfo.id)
 
