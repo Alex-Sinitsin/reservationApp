@@ -89,11 +89,11 @@ const AddEvent = (props) => {
           itemID.value,
           description
       )
-          .then(
-        (response) => {
-          setMessage(response.data.message);
-          setSuccessful(true);
-        },
+        .then(
+          (response) => {
+            setMessage(response.data.message);
+            setSuccessful(true);
+          },
         (error) => {
           const resMessage =
             (error.response &&
