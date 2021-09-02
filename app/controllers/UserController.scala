@@ -42,7 +42,7 @@ class UserController @Inject()(silhouette: Silhouette[JWTEnvironment],
    */
   def listAll(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
     userService.retrieveAll.flatMap { users =>
-      Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "data" -> users))).withHeaders("X-Total-Count" -> users.size.toString))
+      Future.successful(Ok(Json.toJson(users)).withHeaders("X-Total-Count" -> users.size.toString))
     }
   }
 
