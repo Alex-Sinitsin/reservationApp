@@ -35,7 +35,7 @@ class EventController @Inject()(silhouette: Silhouette[JWTEnvironment],
    */
   def listAll(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
     eventService.retrieveAll.flatMap { events =>
-      Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "data" -> events))))
+      Future.successful(Ok(Json.toJson(events)).withHeaders("X-Total-Count" -> events.size.toString))
     }
   }
 

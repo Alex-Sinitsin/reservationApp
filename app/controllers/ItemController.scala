@@ -25,7 +25,7 @@ class ItemController @Inject()(silhouette: Silhouette[JWTEnvironment],
    */
   def listAll(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
     itemService.retrieveAll.flatMap { items =>
-      Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "data" -> items))))
+      Future.successful(Ok(Json.toJson(items)).withHeaders("X-Total-Count" -> items.size.toString))
     }
   }
 
