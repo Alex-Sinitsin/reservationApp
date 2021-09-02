@@ -30,6 +30,25 @@ const Header = () => {
         <div className="navbar-nav">
           <a className="navbar-brand ms-5">Бронирование</a>
 
+
+
+          {currentUser && (
+              <li className="nav-item">
+                <Link to={"/home"} className="nav-link">
+                  Календарь
+                </Link>
+              </li>
+          )}
+
+          {currentUser && (
+              <li>
+                <Link to={"/profile"} className="nav-link">
+                  Управление
+                </Link>
+              </li>
+          )}
+
+
           {showAdminBoard && (
             <li className="nav-item">
               <Link to={"/admin"} className="nav-link">
@@ -37,7 +56,6 @@ const Header = () => {
               </Link>
             </li>
           )}
-
         </div>
 
 
