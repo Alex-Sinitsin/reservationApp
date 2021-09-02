@@ -1,22 +1,34 @@
-import React, {useState, useEffect} from "react";
-
-import UserService from "../services/user.service";
+import React, {useEffect, useState} from "react";
 import Header from "./Header";
-import {Link} from "react-router-dom";
-import EventForm from "./EventForm";
-import MyCalendar from "../MyCalendar";
+import SideMenu from "./AdminNavigation/SideMenu";
+
+import "../BoardAdmin.css"
+
+import {Admin, Resource} from 'react-admin';
+import UserIcon from '@material-ui/icons/Group';
 
 const BoardAdmin = () => {
 
+  const [users, setUsers] = useState()
+
   useEffect(() => {
     document.title = 'Панель администратора';
-  });
-
+  }, []);
 
   return (
     <div>
       <Header/>
-      <div className="row">
+      <div className="container contentWrapper">
+        <div className="row">
+          <div className="col-md-10">
+            Контент
+          </div>
+          <div className="col-md-2">
+            <SideMenu />
+          </div>
+        </div>
+      </div>
+      {/*<div className="row">
         <div className="card card-container col-md-4">
           <div className="d-flex flex-column bd-highlight mb-3">
             <div className="p-2 bd-highlight">
@@ -26,7 +38,7 @@ const BoardAdmin = () => {
             </div>
           </div>
         </div>
-      </div>
+      </div>*/}
     </div>
   )
 };
