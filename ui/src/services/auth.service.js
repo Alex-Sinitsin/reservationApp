@@ -33,7 +33,7 @@ const logout = () => {
 
 // Регистрация пользователя
 const register = (name, lastName, position, email, password, confirmPassword) => {
-  return axios.post(API_URL + "signUp", {
+  return axios.put(API_URL + "signUp", {
       name,
       lastName,
       position,

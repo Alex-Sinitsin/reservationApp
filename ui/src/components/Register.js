@@ -132,7 +132,6 @@ const Register = (props) => {
                     />
 
                     <Form onSubmit={handleRegister} ref={form}>
-                        {!successful && (
                             <div>
                                 <div className="form-group">
                                     <label htmlFor="name">Имя:</label>
@@ -214,7 +213,6 @@ const Register = (props) => {
                                     </div>
                                 </div>
                             </div>
-                        )}
 
                         {message && (
                             <div className="form-group">
