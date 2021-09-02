@@ -59,7 +59,7 @@ const Login = (props) => {
     setMessage("");
     setLoading(true);
 
-    //Здесь был метод валидации формы
+    form.current.validateAll();
 
     if (checkBtn.current.context._errors.length === 0) {
       AuthService.login(email, password).then(
@@ -68,18 +68,9 @@ const Login = (props) => {
           window.location.reload();
         },
         error => {
-          // const resMessage =
-          //   (error.response &&
-          //     error.response.data.error &&
-          //     error.response.data.message) ||
-          //   error.message ||
-          //   error.toString();
-
-          const resMessage = error.response.data.errors ? error.response.data.errors : error.response.statusText
-
-          setLoading(false);
+          const resMessage = error.response.data.message
           setMessage(resMessage);
-          console.log(error.response)
+          setLoading(false)
         }
       );
     } else {
@@ -102,6 +93,14 @@ const Login = (props) => {
                 className="login-form-img"
               />
 
+              {message ? (
+                <div className="form-group">
+                  <div className="alert alert-danger" role="alert">
+                    {message}
+                  </div>
+                </div>
+              ) : null}
+
               <Form className="login-form" onSubmit={handleLogin} ref={form}>
                 <div className="form-group">
                   <label htmlFor="email">E-mail:</label>
@@ -115,7 +114,6 @@ const Login = (props) => {
                     validations={[required, emailCheck]}
                   />
                 </div>
-
 
                 <div className="form-group">
                   <label htmlFor="Password">Пароль:</label>
@@ -140,13 +138,6 @@ const Login = (props) => {
                   </button>
                 </div>
 
-                {message && (
-                  <div className="form-group">
-                    <div className="alert alert-danger" role="alert">
-                      {message}
-                    </div>
-                  </div>
-                )}
                 <CheckButton style={{display: "none"}} ref={checkBtn}/>
               </Form>
             </div>
