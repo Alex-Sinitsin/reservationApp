@@ -4,19 +4,38 @@ import SideMenu from "./AdminNavigation/SideMenu";
 
 import "../BoardAdmin.css"
 
-import {Admin, Datagrid, EmailField, fetchUtils, List, Resource, TextField} from 'react-admin';
-import simpleRestProvider from 'ra-data-simple-rest';
+import {
+  Admin,
+  Datagrid,
+  EmailField,
+  fetchUtils,
+  List,
+  Resource,
+  TextField,
+  FunctionField,
+  Show,
+  SimpleShowLayout
+} from 'react-admin';
+
+import polyglotI18nProvider from 'ra-i18n-polyglot';
+import russianMessages from 'ra-language-russian';
+import UserIcon from '@material-ui/icons/Group';
+
+import jsonServerProvider from 'ra-data-json-server';
 import Cookies from "js-cookie";
 import authHeader from "../services/auth-header";
 
 const usersList = props => (
   <List {...props}>
-    <Datagrid rowClick='edit'>
-      <TextField source='id' />
-      <TextField source='name' />
-      <TextField source='postname' />
-      <EmailField source='email' />
-    </Datagrid>
+      <Datagrid rowClick='edit'>
+        <TextField source='name' label="Имя" sortable={false}/>
+        <TextField source='lastName' label="Фамилия" sortable={false}/>
+        <TextField source='position' label="Должность" sortable={false}/>
+        <EmailField source='email' label="Почта" sortable={false}/>
+        <FunctionField
+          label="Роль"
+          render={record => record.role == "User" ? "Пользователь" : "Администратор"}/>
+      </Datagrid>
   </List>
 );
 
@@ -27,35 +46,25 @@ const BoardAdmin = () => {
   const API_URL = "http://localhost:3000/api";
   const fetchJson = (url, options = {}) => {
     if (!options.headers) {
-      options.headers = new Headers({ Accept: 'application/json' });
+      options.headers = new Headers({Accept: 'application/json'});
     }
     options.headers.set('Content-Type', 'application/json');
     options.headers.set('Csrf-Token', Cookies.get('csrfCookie'));
     options.headers.set('X-Auth-Token', authHeader());
     return fetchUtils.fetchJson(url, options);
   };
-  const dataProvider = simpleRestProvider(API_URL, fetchJson);
+
+  const dataProvider = jsonServerProvider(API_URL, fetchJson);
+  const i18nProvider = polyglotI18nProvider(() => russianMessages, 'ru');
 
   useEffect(() => {
     document.title = 'Панель администратора';
   }, []);
 
   return (
-    <div>
-      <Header/>
-      <div className="container contentWrapper">
-        <div className="row">
-          <div className="col-md-10">
-            <Admin dataProvider={dataProvider}>
-              <Resource name="users" list={usersList} />
-            </Admin>
-          </div>
-          <div className="col-md-2">
-            <SideMenu />
-          </div>
-        </div>
-      </div>
-    </div>
+    <Admin dataProvider={dataProvider} i18nProvider={i18nProvider} title="Список пользователей">
+      <Resource name="users" label="Пользователи" list={usersList} icon={UserIcon}/>
+    </Admin>
   )
 };
 

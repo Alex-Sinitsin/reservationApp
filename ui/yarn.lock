@@ -12336,6 +12336,11 @@ ra-language-english@^3.17.3:
   dependencies:
     ra-core "^3.17.3"
 
+ra-language-russian@^3.13.5:
+  version "3.13.5"
+  resolved "https://registry.yarnpkg.com/ra-language-russian/-/ra-language-russian-3.13.5.tgz#576f668e6d1ad6b18839df9d4d13123a692a72ca"
+  integrity sha512-Ppgb6BvBTCCsvqZWs9GN5kIWOZh2/DxRxAAPV31bUGavD4i8a9BN7pBzy30fjHJbutn2qwXHkZtvaIxdzn9y/A==
+
 ra-ui-materialui@^3.17.3:
   version "3.17.3"
   resolved "https://registry.yarnpkg.com/ra-ui-materialui/-/ra-ui-materialui-3.17.3.tgz#93acf32cef11fef0f711d2d67b6de65dc7c9b4f4"
