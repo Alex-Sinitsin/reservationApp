@@ -23,7 +23,7 @@ const emailCheck = (value) => {
   if (!validator.isEmail(value)) {
     return (
       <div className="invalid-feedback d-block">
-        {value} - недействительный Email
+        Некорректный E-mail
       </div>
     );
   }
