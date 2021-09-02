@@ -27,9 +27,18 @@ const login = (email, password) => {
       })
 }
 
+// Выход пользователя
 const logout = () => {
-  localStorage.removeItem("user");
+localStorage.removeItem("user");
+    return axios.get(API_URL + 'signOut',
+        {
+            headers: {
+                "Csrf-Token": Cookies.get("csrfCookie"),
+                'X-Auth-Token': authHeader(),
+            },
+        })
 }
+
 
 // Регистрация пользователя
 const register = (name, lastName, position, email, password, confirmPassword) => {
