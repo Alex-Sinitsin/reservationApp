@@ -1,0 +1,21 @@
+
+.card
+{
+    margin-left: 400px;
+    margin-right: -400px;
+    margin-top: 50px;
+}
+
+.container
+{
+    margin-right: 300px;
+margin-top: 40px;
+}
+
+
+.row
+{
+    margin-top: 5px;
+    white-space: nowrap;
+}
+

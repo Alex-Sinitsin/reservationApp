@@ -139,7 +139,7 @@ const ChangePassword = (props) => {
 
 
                     <div className="form-group">
-                        <button className="btn eventSubmitBtn btn-block btn-primary">Добавить событие</button>
+                        <button className="btn eventSubmitBtn btn-block btn-primary">Изменить</button>
                     </div>
                 </div>
 
