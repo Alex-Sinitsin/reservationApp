@@ -1,8 +1,5 @@
 import * as React from 'react';
-import { cloneElement } from 'react';
-import { List, EmailField, useListContext, DateField, SortButton, Filter, SimpleList, Create, Datagrid, TextField, ReferenceField, EditButton, SelectInput, Edit, SimpleForm, TextInput, ReferenceInput } from 'react-admin';
-import {userName} from './Home';
-import  { UserList }  from './users';
+import { List, useListContext, Filter, Create, TextField, ReferenceField, EditButton, SelectInput, Edit, SimpleForm, TextInput, ReferenceInput } from 'react-admin';
 import { Card, CardActions, CardContent, CardHeader, Avatar } from '@material-ui/core';
 import PersonIcon from '@material-ui/icons/Person';
 
@@ -22,7 +19,7 @@ const cardStyle = {
     verticalAlign: 'top'
 };
 const CommentGrid = () => {
-    const { ids, data, basePath } = useListContext();
+    const { ids, data } = useListContext();
     return (
         <div style={{ margin: '1em' }}>
         {ids.map(id =>

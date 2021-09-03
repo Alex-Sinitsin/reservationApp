@@ -1,89 +1,122 @@
-import React, { useState, Component, useEffect, setState  } from "react";
-import ReactDOM from "react-dom";
-import './App.css';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Calendar, momentLocalizer } from 'react-big-calendar'
-import moment from 'moment'
-import 'moment/locale/ru'
-import { Alert, useAlert } from 'react-alert'
+import React, { useState, useEffect } from "react";
 import {userName} from './Home';
 import Clock from 'react-clock';
 
-function MyCalendar() {
-    const localizer = momentLocalizer(moment);
+import FullCalendar from "@fullcalendar/react";
+import dayGridPlugin from "@fullcalendar/daygrid";
+import timeGridPlugin from "@fullcalendar/timegrid";
+import interactionPlugin from '@fullcalendar/interaction';
+
+import "@fullcalendar/common/main.css";
+import "@fullcalendar/daygrid/main.css";
+import "@fullcalendar/timegrid/main.css";
+
+import 'bootstrap/dist/css/bootstrap.css';
+import '@fortawesome/fontawesome-free/css/all.css';
+
+import bootstrapPlugin from '@fullcalendar/bootstrap';
+
+export default function MyCalendar() {
     const [eventsList, setEventsList] = useState([]);
     const [alarmTime2, setAlarm] = useState([]);
     const [seconds, setSeconds] = useState([]);
 
-    var state = {
-       currentTime: new Date().toLocaleTimeString('ru', { hour12: false }),
-       }
+        var state = {
+           currentTime: new Date().toLocaleTimeString('ru', { hour12: false }),
+           }
 
-    useEffect(() => {
-             const timer = setInterval(() => {
-                  setSeconds(
-                  state.currentTime )
-             }, 1000);
-             return () => clearInterval(timer);
-    });
+        useEffect(() => {
+                 const timer = setInterval(() => {
+                      setSeconds(
+                      state.currentTime )
+                 }, 1000);
+                 return () => clearInterval(timer);
+        });
 
-    function handleSelect({ start, end, userName }) {
-        const title = window.prompt("New Event name");
-        if (title) {
-          var newEvent = {
-            userName: {userName},
-            start: start,
-            end: end,
-            title: title,
-            alarmTime1: start.toLocaleTimeString('ru', { hour12: false })
-          };
-          setEventsList([...eventsList, newEvent]);
-          setAlarm([...alarmTime2, newEvent.alarmTime1]);
-          }
-        }
-    var counter = 0;
-    while(counter != 100){
-         if(state.currentTime === alarmTime2[counter]) {
-                 alert("its time!");
-                 };
-          counter = counter + 1;
-         }
+        var counter = 0;
+        while(counter != 100){
+             if(state.currentTime === alarmTime2[counter]) {
+                     alert("its time!");
+                     };
+              counter = counter + 1;
+             }
 
-
-    return (
-        <div>
-        <Calendar
-        step={15}
-        messages={{
-                  next: 'Следущий',
-                  previous: 'Предыдущий',
-                  today: 'Сегодня',
-                  month: 'Месяц',
-                  week: 'Неделя',
-                  day: 'День',
-                  yesterday: 'Вчера',
-                  tomorrow: 'Завтра',
-                  agenda: 'Мероприятия',
-                  noEventsInRange: 'Не найдено никаких мероприятий в текущем периоде.',
-                  showMore: function showMore(total) {
-                    return '+' + total + 'событий';
-                  }
-
+  return (
+      <FullCalendar
+        firstDay={1}
+        businessHours={{
+          daysOfWeek: [ 1, 2, 3, 4, 5 ],
         }}
-        selectable
-        defaultView="week"
-        defaultDate={new Date()}
-        localizer={localizer}
+        navLinks={true}
+        nowIndicator={true}
+        themeSystem={'bootstrap'}
+        height={750}
+        slotDuration={'00:30:00'}
+        defaultView="dayGridMonth"
+                buttonText={{
+                      today:    'сегодня',
+                      month:    'месяц',
+                      week:     'неделя',
+                      day:      'день',
+                }}
+                headerToolbar={{
+                  left: "prev today next",
+                  center: "title myDeleteEvent",
+                  right: "dayGridMonth,timeGridWeek,timeGridDay"
+                }}
+                footerToolbar={{
+                    left: "myCustomButton"
+                }}
+                customButtons={{
+                        myDeleteEvent: {
+                            text: 'Удалить',
+                               click: function() {
+                                 var event = eventsList.event;
+                                 alert("Are You Remove Event "+event);
+                                 event.remove();
+                                    }
+                                    },
+                        myCustomButton: {
+                            text: 'Создать',
+                                    click: function() {
+                                      var startDateStr = prompt('Введите время начала события (ГГГГ-ММ-ДД ЧЧ:ММ):');
+                                      var startDate = new Date(startDateStr);
+                                      var endDateStr = prompt('Введите время конца события (ГГГГ-ММ-ДД ЧЧ:ММ):');
+                                      var endDate = new Date(endDateStr);
+                                      const title = window.prompt("Введите название события:");
+                                      const members = window.prompt("Введите имена участников:");
+                                      if (members) {
+                                      if (title) {
+                                      if (!isNaN(startDate.valueOf())) {
+                                      if (!isNaN(endDate.valueOf())) {
+                                        var addEvent ={
+                                          title: title,
+                                          start: startDate,
+                                          end: endDate,
+                                          userName: {userName},
+                                          members: members,
+                                          alarmTime1: startDate.toLocaleTimeString('ru', { hour12: false })
+                                        };
+                                        alert('Хорошо! Вы создали новое событие.');
+                                        setEventsList([...eventsList, addEvent]);
+                                        setAlarm([...alarmTime2, addEvent.alarmTime1]);
+                                      } else {
+                                        alert('Invalid date.');
+                                        }
+                                      }
+                                      }
+                                      }
+                                    },
+                        },
+                    }}
+
+        plugins={[dayGridPlugin, timeGridPlugin, bootstrapPlugin, interactionPlugin ]}
         events={eventsList}
-        startAccessor="start"
-        endAccessor="end"
-        style={{height: 750}}
-        onSelectSlot={handleSelect}
-        />
-        </div>
+        editable={true}
+        droppable={true}
+        eventResizableFromStart={true}
+        locale="ru"
 
-    )
-
+      />
+  );
 }
-
-export default MyCalendar;
