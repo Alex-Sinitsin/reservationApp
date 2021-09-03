@@ -29,15 +29,32 @@ const Header = () => {
       <nav className="navbar navbar-expand navbar-dark bg-primary">
         <div className="container-fluid">
           <div className="navbar-nav">
-            <a className="navbar-brand ms-5">Бронирование</a>
+            <a className="navbar-brand">Бронирование</a>
 
-            {showAdminBoard && (
+            {currentUser && (
+                <li className="nav-item">
+                  <Link to={"/home"} className="nav-link">
+                    Календарь
+                  </Link>
+                </li>
+            )}
+
+            {currentUser && (
               <li className="nav-item">
-                <Link to={"/admin"} className="nav-link">
-                  Панель администратора
-                </Link>
+                  <Link to={"/profile"} className="nav-link">
+                    Профиль
+                  </Link>
               </li>
             )}
+
+            {showAdminBoard && (
+                <li className="nav-item">
+                  <Link to={"/admin"} className="nav-link">
+                    Панель администратора
+                  </Link>
+                </li>
+            )}
+
           </div>
 
           {currentUser && (
@@ -47,7 +64,7 @@ const Header = () => {
                 <img
                   src="/avatar.png"
                   alt="profile-img"
-                  className="profile-img-card me-3"
+                  className="profile-img-card"
                 />
               </li>
 
