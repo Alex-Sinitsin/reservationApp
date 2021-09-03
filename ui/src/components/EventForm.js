@@ -114,7 +114,7 @@ const AddEvent = (props) => {
     async function getItemData() {
       try {
         const response = await ItemService.getItems();
-        const parsedList = response.data.data && response.data.data.map((item) => {
+        const parsedList = response.data && response.data.map((item) => {
 
           return {
             value: item.id,
@@ -138,7 +138,7 @@ const AddEvent = (props) => {
       try {
         const response = await UserService.getUsers()
 
-        let userList = response.data.data && response.data.data.filter(user => user.id !== currentUser.userInfo.id)
+        let userList = response.data && response.data.filter(user => user.id !== currentUser.userInfo.id)
 
         const parsedList = userList && userList.map((user) => {
 

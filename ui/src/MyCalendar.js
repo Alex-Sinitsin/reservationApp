@@ -33,7 +33,7 @@ function MyCalendar() {
         async function getEventData() {
             try {
                 const response = await EventService.getEvents();
-                const parsedList = response.data.data && response.data.data.map((event) => {
+                const parsedList = response.data && response.data.map((event) => {
 
                     return {
                         id: event.id,
