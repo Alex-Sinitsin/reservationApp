@@ -1,47 +1,50 @@
 package controllers
 
-import javax.inject.Inject
 import com.mohiva.play.silhouette.api._
 import forms.SignUpForm
 import models.services._
 import play.api.i18n.I18nSupport
 import play.api.libs.json._
-import play.api.mvc.{AbstractController, Action, AnyContent, ControllerComponents, MessagesAbstractController, MessagesControllerComponents, Request}
+import play.api.mvc._
 import utils.auth.JWTEnvironment
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
- * Контроллер `Sign Up`.
+ * Контроллер регистрации пользователей
  *
- * @param components             Компоненты Play контроллера.
- * @param silhouette             Компоненты Silhouette.
- * @param ex                     Контекст выполнения.
+ * @param ControllerComponents Экземпляр трейта `ControllerComponents`
+ * @param silhouette Стек Silhouette
+ * @param signUpService Служба регистрации пользователей
+ * @param ex Контекст выполнения
  */
-class SignUpController @Inject()(components: MessagesControllerComponents,
+class SignUpController @Inject()(ControllerComponents: MessagesControllerComponents,
                                  silhouette: Silhouette[JWTEnvironment],
                                  signUpService: SignUpService,
-                                )(implicit ex: ExecutionContext) extends MessagesAbstractController(components) with I18nSupport {
+                                )(implicit ex: ExecutionContext) extends MessagesAbstractController(ControllerComponents) with I18nSupport {
   /**
-   * Обработка данных формы регистрации.
+   * Обработка данных отправленной формы регистрации.
    *
    * @return Результат выполнения.
    */
   def submit: Action[AnyContent] = silhouette.UnsecuredAction.async { implicit request: Request[AnyContent] =>
-    //TODO: Сделать возврат формы с ошибками в результат
+
     SignUpForm.form.bindFromRequest().fold(
-      formWithErrors => Future.successful(BadRequest(formWithErrors.errors.toString())),
+      formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),
       data => {
-        signUpService.signUpByCredentials(data).map {
-          case UserCreated(user) =>
-            silhouette.env.eventBus.publish(SignUpEvent(user, request))
-            Ok(Json.obj("result" -> "Пользователь успешно добавлен"))
-          case UserAlreadyExists =>
-            Conflict(Json.obj("error" -> "Пользователь уже существует"))
+        if(data.password == data.confirmPassword) {
+          signUpService.signUpByCredentials(data).map {
+            case UserCreated(user) =>
+              silhouette.env.eventBus.publish(SignUpEvent(user, request))
+              Ok(Json.obj("result" -> "Пользователь успешно добавлен!"))
+            case UserAlreadyExists =>
+              Conflict(Json.obj("error" -> "Пользователь уже существует!"))
+          }
+        } else {
+          Future.successful(BadRequest(Json.obj("errors" -> "Введенные пароли не совпадают!")))
         }
       }
     )
   }
-
-
 }

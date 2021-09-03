@@ -1,14 +1,20 @@
 package models.daos
 
-import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
-import models.{AuthToken, DBAuthToken, User, UserRoles}
+import com.mohiva.play.silhouette.api.LoginInfo
+import models._
+import play.api.libs.json.{JsValue, Json}
+import slick.ast.BaseTypedType
+import slick.jdbc.JdbcType
 import slick.jdbc.PostgresProfile.api._
 import slick.lifted.ProvenShape
 
 import java.sql.Timestamp
-import java.time.ZonedDateTime
+import java.time.LocalDateTime
 import java.util.UUID
 
+/**
+ * Трейт, содержит модель базы данных Slick и описание таблиц
+ */
 trait TableDefinitions {
   class AuthTokens(tag: Tag) extends Table[DBAuthToken](tag, Some("auth"),"silhouette_tokens") {
     def id = column[UUID]("id", O.PrimaryKey)
@@ -74,7 +80,32 @@ trait TableDefinitions {
     def * = (hasher, password, salt, loginInfoId).<> (DBPasswordInfo.tupled, DBPasswordInfo.unapply)
   }
 
+  implicit val JsValueColumnType: JdbcType[JsValue] with BaseTypedType[JsValue] = MappedColumnType.base[JsValue, String](
+    jsValue => Json.stringify(Json.toJson(jsValue)),
+    column => Json.parse(column).as[JsValue]
+  )
+
+  class Events(tag: Tag) extends Table[Event](tag, Some("app"), "events") {
+    def id = column[Long]("id", O.SqlType("SERIAL"), O.PrimaryKey, O.AutoInc)
+    def title = column[String]("title")
+    def startDateTime = column[LocalDateTime]("start_datetime")
+    def endDateTime = column[LocalDateTime]("end_datetime")
+    def orgUserId = column[UUID]("org_user_id")
+    def members = column[Option[JsValue]]("members", O.SqlType("JSON"))
+    def itemId = column[Long]("item_id")
+    def description = column[Option[String]]("description")
+    def * = (id, title, startDateTime, endDateTime, orgUserId, members, itemId, description).<> ((Event.apply _).tupled, Event.unapply)
+  }
+
+  class Items(tag: Tag) extends Table[Item](tag, Some("app"), "items") {
+    def id = column[Long]("id", O.SqlType("SERIAL"), O.PrimaryKey, O.AutoInc)
+    def name = column[String]("name")
+    def * = (id, name).<> ((Item.apply _).tupled, Item.unapply)
+  }
+
   val users = TableQuery[Users]
+  val items = TableQuery[Items]
+  val events = TableQuery[Events]
   val authTokens = TableQuery[AuthTokens]
   val userRoles = TableQuery[UserRoles]
   val loginInfos = TableQuery[LoginInfos]

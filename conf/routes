@@ -1,20 +1,23 @@
-# Routes
-# This file defines all application routes (Higher priority routes first)
-# https://www.playframework.com/documentation/latest/ScalaRouting
-# ~~~~
-
-# An example controller showing a sample home page
-GET         /                               controllers.FrontendController.index()
+# Маршруты
 
 
+GET         /                                    controllers.FrontendController.index()
+GET         /signOut                             controllers.SignInController.signOut()
 
-# TODO: Настроить у форм CSRF токены
-+noCSRF
+
+# Регистрация и авторизация
 POST        /api/signUp                          controllers.SignUpController.submit
 POST        /api/signIn                          controllers.SignInController.submit
+POST        /password/change                 controllers.ChangePasswordController.submit
+POST        /user/:userId/delete             controllers.UserController.delete(userId: java.util.UUID)
+
+# События
+POST        /events/add                       controllers.EventController.addEvent()
+POST        /events/:eventId/update           controllers.EventController.updateEvent(eventId: Long)
+POST        /events/:eventId/delete           controllers.EventController.deleteEvent(eventId: Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                            controllers.Assets.versioned(path="/public", file: Asset)
 
 # Serve static assets under public directory
-GET     /*file                      controllers.FrontendController.assetOrDefault(file)
+GET     /*file                                   controllers.FrontendController.assetOrDefault(file)

@@ -5,26 +5,35 @@ import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
 import com.mohiva.play.silhouette.api.util.Credentials
 import com.mohiva.play.silhouette.impl.exceptions.{IdentityNotFoundException, InvalidPasswordException}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
+
+import javax.inject.Inject
+
+import scala.concurrent.{ExecutionContext, Future}
+
 import models.User
 import models.daos.LoginInfoDAO
-
 import java.util.UUID
-import javax.inject.{Inject, Named}
-import scala.concurrent.{ExecutionContext, Future}
-import scala.concurrent.duration.DurationInt
 
 /**
+ * Служба аутентификации
  *
- * @param userService             The user service implementation.
- * @param credentialsProvider     The credentials provider.
- * @param authInfoRepository      The auth info repository implementation.
- * @param ec                      The execution context.
+ * @param userService             Сервис управления пользователями.
+ * @param credentialsProvider     Поставщик учетных данных.
+ * @param authInfoRepository      Репозиторий информации об авторизации.
+ * @param ec                      Контекст выполнения
  */
 class AuthenticateService @Inject()(credentialsProvider: CredentialsProvider,
                                     userService: UserService,
                                     authInfoRepository: AuthInfoRepository,
                                     loginInfoDAO: LoginInfoDAO)(implicit ec: ExecutionContext) {
 
+  /**
+   * Учетные данные
+   *
+   * @param email Электронная почта
+   * @param password Пароль
+   * @return
+   */
   def credentials(email: String, password: String): Future[AuthenticateResult] = {
     val credentials = Credentials(email, password)
     credentialsProvider.authenticate(credentials).flatMap { loginInfo =>
@@ -36,7 +45,7 @@ class AuthenticateService @Inject()(credentialsProvider: CredentialsProvider,
       }
     }.recoverWith {
       case _: InvalidPasswordException =>
-        Future.successful(InvalidPassword("Неправильный логин или пароль"))
+        Future.successful(InvalidPassword("Неправильный логин или пароль!"))
       case _: IdentityNotFoundException =>
         Future.successful(UserNotFound)
       case e =>
@@ -45,12 +54,12 @@ class AuthenticateService @Inject()(credentialsProvider: CredentialsProvider,
   }
 
   /**
-   * Adds authentication method to user
+   * Добавляет метод аутентификации для пользователя
    *
-   * @param userId    user id
-   * @param loginInfo login info
-   * @param authInfo  auth info
-   * @tparam T type of auth info
+   * @param userId    ID пользователя
+   * @param loginInfo Данные для входа
+   * @param authInfo  Данные об авторизации
+   * @tparam T тип данных информации об авторизации
    * @return
    */
   def addAuthenticateMethod[T <: AuthInfo](userId: UUID, loginInfo: LoginInfo, authInfo: T): Future[Unit] = {
@@ -61,20 +70,20 @@ class AuthenticateService @Inject()(credentialsProvider: CredentialsProvider,
   }
 
   /**
-   * Checks whether user have authentication method for given provider id
+   * Проверяет наличие метода аутентификации у пользователя для выбранного провайдера
    *
-   * @param userId     user id
-   * @param providerId authentication provider id
-   * @return true if user has authentication method for given provider id, otherwise false
+   * @param userId     ID пользователя
+   * @param providerId ID провайдера аутентификации
+   * @return true, если есть метод аутентификации, иначе false
    */
   def userHasAuthenticationMethod(userId: UUID, providerId: String): Future[Boolean] = {
     loginInfoDAO.find(userId, providerId).map(_.nonEmpty)
   }
 
   /**
-   * Get list of providers of user authentication methods
+   * Получение списка провайдеров и методов аутентификации пользователей
    *
-   * @param email user email
+   * @param email Электронная почта пользователя
    * @return
    */
   def getAuthenticationProviders(email: String): Future[Seq[String]] = loginInfoDAO.getAuthenticationProviders(email)

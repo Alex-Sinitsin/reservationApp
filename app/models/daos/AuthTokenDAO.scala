@@ -2,30 +2,36 @@ package models.daos
 
 import java.time.ZonedDateTime
 import java.util.UUID
+
 import javax.inject.Inject
+
 import play.api.db.slick.DatabaseConfigProvider
+
 import slick.jdbc.PostgresProfile.api._
 
 import scala.concurrent.Future
+
 import models.{AuthToken, DBAuthToken}
 
 /**
- * Give access to the [[AuthToken]] object.
+ * Предоставляет доступ к объекту `AuthToken`
+ *
+ * @param dbConfigProvider Провайдер конфигурации базы данных
  */
 class AuthTokenDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider) extends DatabaseDAO {
 
   /**
-   * Finds a token by its ID.
+   * Находит токен по его ID
    *
-   * @param id The unique token ID.
-   * @return The found token or None if no token for the given ID could be found.
+   * @param id Уникальный ID токена
+   * @return Найденный токен или None, если токен с таким ID не был найден
    */
   def find(id: UUID): Future[Option[DBAuthToken]] = {
     db.run(authTokens.filter(_.id === id).result.headOption)
   }
 
   /**
-   * Finds expired tokens.
+   * Находит недействующие токены
    *
    */
   def findExpired(): Future[Seq[DBAuthToken]] = {
@@ -34,20 +40,20 @@ class AuthTokenDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProv
 
 
   /**
-   * Saves a token.
+   * Сохраняет токен
    *
-   * @param token The token to save.
-   * @return The saved token.
+   * @param token Данные токена
+   * @return Сохраненный токен
    */
   def save(token: DBAuthToken): Future[Int] = {
     db.run(authTokens.insertOrUpdate(token))
   }
 
   /**
-   * Removes the token for the given ID.
+   * Удаляет токен с указанным ID
    *
-   * @param id The ID for which the token should be removed.
-   * @return A future to wait for the process to be completed.
+   * @param id ID токена, который должен быть удален
+   * @return Количество затронутых записей, возвращается в объекте Future
    */
   def remove(id: UUID): Future[Int] = {
     db.run(authTokens.filter(_.id === id).delete)

@@ -1,30 +1,33 @@
 package utils.auth
 
 import com.mohiva.play.silhouette.api.{Authenticator, Authorization}
+
 import javax.inject.Inject
-import models.User
-import models.services.AuthenticateService
+
 import play.api.mvc.Request
 
 import scala.concurrent.Future
 
+import models.User
+import models.services.AuthenticateService
+
 class HasSignUpMethod @Inject()(authenticateService: AuthenticateService) {
 
   /**
-   * Grants only access if a user has authentication method with the given provider
+   * Предоставляет доступ только в том случае, если у пользователя есть метод аутентификации с данным провайдером.
    *
-   * @param provider The provider ID the user must have authentication method with.
-   * @tparam A The type of the authenticator.
+   * @param provider ID провайдера, с которым пользователь должен иметь метод аутентификации
+   * @tparam A Тип аутентификатора
    */
   case class HasMethod[A <: Authenticator](provider: String) extends Authorization[User, A] {
     /**
-     * Indicates if a user is authorized to access an action.
+     * Указывает, авторизован ли пользователь для доступа к действию.
      *
-     * @param user          The usr object.
-     * @param authenticator The authenticator instance.
-     * @param request       The current request.
-     * @tparam B The type of the request body.
-     * @return True if the user is authorized, false otherwise.
+     * @param user          Объекта пользователя
+     * @param authenticator Экземпляр аутентификатора.
+     * @param request       Текущий запрос
+     * @tparam B Тип тела запроса
+     * @return Истина, если пользователь авторизован, иначе ложь
      */
     override def isAuthorized[B](user: User, authenticator: A)(implicit request: Request[B]): Future[Boolean] = {
       authenticateService.userHasAuthenticationMethod(user.id, provider)

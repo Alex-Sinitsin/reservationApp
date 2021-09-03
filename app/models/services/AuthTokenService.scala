@@ -1,38 +1,38 @@
 package models.services
 
-import models.{AuthToken, DBAuthToken}
-
+import models.DBAuthToken
 import java.util.UUID
+
 import scala.concurrent.Future
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
 /**
- * Handles actions to auth tokens.
+ * Обрабатывает действия с токенами
  */
 trait AuthTokenService {
 
   /**
-   * Creates a new auth token and saves it in the backing store.
+   * Создает новый токен и сохраняет его в хранилище
    *
-   * @param userID The user ID for which the token should be created.
-   * @param expiry The duration a token expires.
-   * @return The saved auth token.
+   * @param userID ID пользователя, для которого должен создаться новый токен
+   * @param expiry Дата действия нового токена
+   * @return Сохраненный токен авторизации
    */
   def create(userID: UUID, expiry: FiniteDuration = 5 minutes): Future[DBAuthToken]
 
   /**
-   * Validates a token ID.
+   * Валидация токена по его ID
    *
-   * @param id The token ID to validate.
-   * @return The token if it's valid, None otherwise.
+   * @param id ID токена для проверки
+   * @return Токен, если он действителен, иначе None
    */
   def validate(id: UUID): Future[Option[DBAuthToken]]
 
   /**
-   * Cleans expired tokens.
+   * Очищает недействующие токены
    *
-   * @return The list of deleted tokens.
+   * @return Список удаленных токенов
    */
   def clean: Future[Seq[DBAuthToken]]
 }

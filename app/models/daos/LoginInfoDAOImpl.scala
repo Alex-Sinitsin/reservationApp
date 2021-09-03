@@ -1,28 +1,30 @@
 package models.daos
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import models.User
-import play.api.db.slick.DatabaseConfigProvider
 
-import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
+import models.User
+
+import java.util.UUID
+import play.api.db.slick.DatabaseConfigProvider
+import slick.dbio.Effect
+import slick.jdbc.PostgresProfile
 import slick.jdbc.PostgresProfile.api._
+import slick.sql.FixedSqlAction
 
 class LoginInfoDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigProvider)(implicit ec: ExecutionContext)
   extends LoginInfoDAO with DatabaseDAO {
+
   /**
-   * Saves a login info for user
+   * Сохраняет информацию для входа пользователя
    *
-   * @param userID The user id.
-   * @param loginInfo login info
-   * @return unit
+   * @param userID ID пользователя
+   * @param loginInfo Данные для входа
+   *  @return
    */
   override def saveUserLoginInfo(userID: UUID, loginInfo: LoginInfo): Future[Unit] = {
-
     val dbLoginInfo = DBLoginInfo(None, loginInfo.providerID, loginInfo.providerKey)
-    // We don't have the LoginInfo id so we try to get it first.
-    // If there is no LoginInfo yet for this user we retrieve the id on insertion.
     val loginInfoAction = {
       val retrieveLoginInfo = loginInfos.filter(
         info => info.providerID === loginInfo.providerID &&
@@ -35,7 +37,6 @@ class LoginInfoDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
       } yield dbLoginInfo
     }
 
-    // combine database actions to be run sequentially
     val actions = (for {
       dbLoginInfo <- loginInfoAction
       userLoginInfo = DBUserLoginInfo(userID, dbLoginInfo.id.get)
@@ -43,20 +44,25 @@ class LoginInfoDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
       _ <- if (exists) DBIO.successful(()) else userLoginInfos += userLoginInfo
     } yield ()).transactionally
 
-    // run actions and return user afterwards
     db.run(actions)
   }
 
-  private def existsUserLoginInfo(uli: DBUserLoginInfo) = {
+  /**
+   * Проверяет наличие данных для входа у пользователя
+   *
+   * @param uli Пользовательские данные для входа
+   * @return
+   */
+   def existsUserLoginInfo(uli: DBUserLoginInfo): FixedSqlAction[Boolean, PostgresProfile.api.NoStream, Effect.Read] = {
     userLoginInfos.filter(e => e.loginInfoId === uli.loginInfoId && e.userID === uli.userID).exists.result
   }
 
   /**
-   * Finds a user, login info pair by userID and login info providerID
+   * Ищет пару пользователя и его данные для входа по ID пользователя и ID провайдера
    *
-   * @param userId     user id
-   * @param providerId provider id
-   * @return Some(User, LoginInfo) if there is a user by userId which has login method for provider by provider ID, otherwise None
+   * @param userId     ID пользователя
+   * @param providerId ID провайдера аутентификации
+   * @return Some(User, LoginInfo), если пользователь с данным ID имеет метод аутентификации для данного провайдера по ID провайдера, иначе None
    */
   def find(userId: UUID, providerId: String): Future[Option[(User, LoginInfo)]] = {
     val action = for {
@@ -71,10 +77,10 @@ class LoginInfoDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
   }
 
   /**
-   * Get list of user authentication methods providers
+   * Получает список провайдеров аутентификации пользователей
    *
-   * @param email user email
-   * @return
+   * @param email Электронная почта пользователя
+   *  @return
    */
   override def getAuthenticationProviders(email: String): Future[Seq[String]] = {
     val action = for {
@@ -84,5 +90,9 @@ class LoginInfoDAOImpl @Inject()(protected val dbConfigProvider: DatabaseConfigP
     } yield li.providerID
 
     db.run(action.result)
+  }
+
+  override def deleteLoginInfo(email: String): Future[Unit] = {
+    db.run(loginInfos.filter(_.providerKey === email).delete).map(_ => ())
   }
 }

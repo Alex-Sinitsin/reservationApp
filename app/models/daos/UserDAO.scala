@@ -1,44 +1,71 @@
 package models.daos
 
 import com.mohiva.play.silhouette.api.LoginInfo
-import models.User
 
 import scala.concurrent.Future
+import models.User
+
+import java.util.UUID
 
 /**
- * Gives access to the user storage.
+ * Предоставляет доступ к хранилищу пользователей.
  */
 trait UserDAO extends DatabaseDAO {
 
   /**
-   * Finds a user by its login info.
+   * Меняет роль пользователя
    *
-   * @param loginInfo The login info of the user to find.
-   * @return The found user or None if no user for the given login info could be found.
+   * @param userId ID пользователя
+   * @param role   Новая роль, которую необходимо присвоить пользователю
+   * @return
+   */
+  def updateUserRole(userId: UUID, role: String): Future[Boolean]
+
+  /**
+   * Находит пользователя по информации для входа
+   *
+   * @param loginInfo Информация для входа пользователя, которого необходимо найти
+   * @return Найденный пользователь или None, если пользователь не найден
    */
   def findByLoginInfo(loginInfo: LoginInfo): Future[Option[User]]
 
   /**
-   * Finds a user by its email
+   * Находит пользователя по его Email
    *
-   * @param email email of the user to find
-   * @return The found user or None if no user for the given login info could be found
+   * @param email Электронная почта пользователя, которого необходимо найти
+   * @return Найденный пользователь или None, если пользователь не найден
    */
   def findByEmail(email: String): Future[Option[User]]
 
   /**
-   * Saves a user.
+   * Находит пользователя по его ID
    *
-   * @param user The user to save.
-   * @return The saved user.
+   * @param userID ID пользователя, которого необходимо найти
+   * @return Найденный пользователь или None, если пользователь не найден
+   */
+  def findByID(userID: UUID): Future[Option[User]]
+
+  /**
+   * Находит пользователей по их ID
+   *
+   * @param userIDs ID пользователей, которых необходимо найти
+   * @return Найденные пользователи
+   */
+  def findUsersByID(userIDs: Seq[UUID]): Future[Seq[User]]
+
+  /**
+   * Сохраняет или обновляет информацию о пользователе
+   *
+   * @param user Информация о пользователе, которого необходимо сохранить
+   * @return Сохраненный пользователь
    */
   def save(user: User): Future[User]
 
   /**
-   * Updates a user.
+   * Удаляет информацию о пользователе
    *
-   * @param user The user to update.
-   * @return The saved user.
+   * @param userID ID пользователя
+   * @return
    */
-//  def update(user: User): Future[User]
+  def delete(userID: UUID): Future[Boolean]
 }

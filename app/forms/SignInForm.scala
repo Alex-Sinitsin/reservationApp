@@ -2,27 +2,30 @@ package forms
 
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.libs.json.{Json, OFormat}
 
 /**
- * The form which handles the submission of the credentials.
+ * Форма, которая принимает данные для авторизации со стороны клиента.
  */
 object SignInForm {
 
   /**
-   * A play framework form.
+   * Данные формы.
+   *
+   * @param email Электронная почта пользователя.
+   * @param password Пароль пользователя.
    */
-  val form: Form[CredentialsSingInData] = Form(
+  case class CredentialsSignInData(email: String, password: String)
+
+  implicit val CredentialsSignInFormat: OFormat[CredentialsSignInData] = Json.format[CredentialsSignInData]
+
+  /**
+   * Форма Play Framework.
+   */
+  val form: Form[CredentialsSignInData] = Form(
     mapping(
       "email" -> email,
       "password" -> nonEmptyText
-    )(CredentialsSingInData.apply)(CredentialsSingInData.unapply)
+    )(CredentialsSignInData.apply)(CredentialsSignInData.unapply)
   )
-
-  /**
-   * The form data.
-   *
-   * @param email The email of the user.
-   * @param password The password of the user.
-   */
-  case class CredentialsSingInData(email: String, password: String)
 }

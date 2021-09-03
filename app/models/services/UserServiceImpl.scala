@@ -1,65 +1,65 @@
 package models.services
 
-import java.util.UUID
-
 import com.mohiva.play.silhouette.api.LoginInfo
-import javax.inject.Inject
 import models.User
 import models.daos.{LoginInfoDAO, UserDAO}
 
+import java.util.UUID
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 /**
- * Handles actions to users.
+ * Обрабатывает действия для пользователей
  *
- * @param userDAO The user DAO implementation.
- * @param ec Execution Context
+ * @param userDAO Объект доступа к Бд для работы с пользователями
+ * @param loginInfoDAO Объект доступа к Бд для работы с данными для входа
+ * @param ec Контекст выполнения
  */
 class UserServiceImpl @Inject()(userDAO: UserDAO,
-                                loginInfoDAO: LoginInfoDAO)(implicit ec: ExecutionContext) extends UserService {
+                                loginInfoDAO: LoginInfoDAO)
+                               (implicit ec: ExecutionContext) extends UserService {
 
   /**
-   * Retrieves a user that matches the specified login info.
+   * Извлекает информацию о пользователе, который удовлетворяет условию.
    *
-   * @param loginInfo The login info to retrieve a user.
-   * @return The retrieved user or None if no user could be retrieved for the given login info.
+   * @param loginInfo Информация для входа
+   *  @return Полученный пользователь или None, если ни один пользователь не может быть получен для данной информации для входа
    */
-  def retrieve(loginInfo: LoginInfo): Future[Option[User]] = userDAO.findByLoginInfo(loginInfo)
+  override def retrieve(loginInfo: LoginInfo): Future[Option[User]] = userDAO.findByLoginInfo(loginInfo)
 
   /**
-   * Retrieves a user and login info pair by userID and login info providerID
+   * Извлекает пару информации о пользователе и информации для входа по идентификатору пользователя и идентификатору поставщика информации для входа
    *
-   * @param id         The ID to retrieve a user.
-   * @param providerID The ID of login info provider.
-   * @return The retrieved user or None if no user could be retrieved for the given ID.
+   * @param id         ID пользователя
+   * @param providerID ID провайдера
+   *  @return Полученный пользователь или None, если не удалось получить пользователя для данного идентификатора
    */
-  def retrieveUserLoginInfo(id: UUID, providerID: String): Future[Option[(User, LoginInfo)]] = {
+  override def retrieveUserLoginInfo(id: UUID, providerID: String): Future[Option[(User, LoginInfo)]] = {
     loginInfoDAO.find(id, providerID)
   }
 
   /**
-   * Changes role of user
+   * Меняет роль пользователя
    *
-   * @param userId user id
-   * @param role   role to assign to user
-   * @return
+   * @param userId ID пользователя
+   * @param role   Новая роль, которую необходимо присвоить пользователю
+   *  @return
    */
-  override def changeUserRole(userId: UUID, role: String): Future[Boolean] = ???
-//  override def changeUserRole(userId: UUID, role: UserRoles.Value): Future[Boolean] = {
-//    userDAO.updateUserRole(userId, role)
-//  }
+  override def changeUserRole(userId: UUID, role: String): Future[Boolean] = {
+    userDAO.updateUserRole(userId, role)
+  }
 
   /**
-   * Creates or updates user
+   * Создает или обновляет информацию о пользователе
    *
-   * If a user exists for given login info or email then update the user, otherwise create a new user with the given data
+   * Если пользователь существует для данной информации для входа или электронной почты, обновляет пользователя, в противном случае создает нового пользователя с заданными данными
    *
-   * @param loginInfo social profile
-   * @param email     user email
-   * @param name first name
-   * @param lastName  last name
-   * @param position company position
-   * @return
+   * @param loginInfo Данные для входа
+   * @param email     Электронная почта пользователя
+   * @param name      Имя пользователя
+   * @param lastName  Фамилия пользователя
+   * @param position  Должность пользователя в компании
+   *  @return
    */
   override def createOrUpdate(loginInfo: LoginInfo, email: String, name: String, lastName: String, position: String): Future[User] = {
 
@@ -70,19 +70,31 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
           userDAO.save(user.copy(
             name = name,
             lastName = lastName,
-            email = email,
-            position = position
+            position = position,
+            email = email
           ))
         case None =>
           userDAO.save(User(
             id = UUID.randomUUID(),
             name = name,
             lastName = lastName,
-            email = email,
             position = position,
+            email = email,
             role = None
           ))
       }
     }
   }
+
+  /**
+   * Удаляет данные пользователя
+   *
+   * @param userID ID пользователя
+   * @param email Email пользователя
+   * @return
+   */
+   override def delete(userID: UUID, email: String): Future[Boolean] = {
+     loginInfoDAO.deleteLoginInfo(email)
+     userDAO.delete(userID)
+   }
 }

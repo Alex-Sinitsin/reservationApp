@@ -6,17 +6,21 @@ import com.mohiva.play.silhouette.api.services.AuthenticatorService
 import com.mohiva.play.silhouette.api.util.{Clock, PasswordHasherRegistry}
 import com.mohiva.play.silhouette.api.{EventBus, Silhouette}
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import models.services.UserService
+
 import play.api.Logging
 import play.api.http.FileMimeTypes
 import play.api.i18n.{I18nSupport, Langs, MessagesApi}
 import play.api.mvc._
+
+import models.services.UserService
 import utils.auth.JWTEnvironment
 
 import javax.inject.Inject
 
 /**
- * Abstract silhouette controller which contains all components to work with authentication
+ * Абстактный Silhouette контролле, который содежит компоненты для работы с аутентификацией
+ *
+ * @param controllerComponents Компоненты Silhouette
  */
 abstract class SilhouetteController(override protected val controllerComponents: SilhouetteControllerComponents)
   extends MessagesAbstractController(controllerComponents) with SilhouetteComponents with I18nSupport with Logging {
@@ -36,7 +40,7 @@ abstract class SilhouetteController(override protected val controllerComponents:
 }
 
 /**
- * Contains silhouette components
+ * Содержит Silhouette компоненты
  */
 trait SilhouetteComponents {
   type EnvType = JWTEnvironment
@@ -53,12 +57,12 @@ trait SilhouetteComponents {
 }
 
 /**
- * Contains silhouette components and messages api components
+ * Содержит Silhouette компоненты и сообщения api компонентов
  */
 trait SilhouetteControllerComponents extends MessagesControllerComponents with SilhouetteComponents
 
 /**
- * Default Silhouette controller implementation
+ * Стандартная реализация контроллера Silhouette
  */
 final case class DefaultSilhouetteControllerComponents @Inject() (
   silhouette: Silhouette[JWTEnvironment],

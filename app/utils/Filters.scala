@@ -8,7 +8,7 @@ import play.filters.headers.SecurityHeadersFilter
 import javax.inject.Inject
 
 /**
- * Provides filters.
+ * Предоставляет фильтры.
  */
 class Filters @Inject() (csrfFilter: CSRFFilter, securityHeadersFilter: SecurityHeadersFilter) extends HttpFilters {
   override def filters: Seq[EssentialFilter] = Seq(csrfFilter, securityHeadersFilter)
