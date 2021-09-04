@@ -1,15 +1,10 @@
-import React, {useState, useRef, useEffect} from "react";
+import React, {useState, useRef} from "react";
 import Form from "react-validation/build/form";
 import Input from "react-validation/build/input";
 import CheckButton from "react-validation/build/button";
-
-import AuthService from "../services/auth.service";
-import EventService from "../services/event.service";
 import "./EventForm.css";
-import Select from 'react-select'
-
 import UserService from "../services/user.service"
-import ItemService from "../services/item.service"
+
 
 
 // Требование заполненности поля
@@ -39,7 +34,7 @@ const ChangePassword = (props) => {
     const form = useRef();
     const checkBtn = useRef();
 
-    const [oldPassword, setOldPassword] = useState("");
+    const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -47,9 +42,9 @@ const ChangePassword = (props) => {
     const [message, setMessage] = useState("");
 
 
-    const onChangeOldPassword = (e) => {
-        const oldPassword = e.target.value;
-        setOldPassword(oldPassword);
+    const onChangeCurrentPassword = (e) => {
+        const currentPassword = e.target.value;
+        setCurrentPassword(currentPassword);
     };
 
     const onChangeNewPassword = (e) => {
@@ -72,7 +67,7 @@ const ChangePassword = (props) => {
         form.current.validateAll();
 
         if (checkBtn.current.context._errors.length === 0) {
-            AuthService.register(oldPassword, newPassword, confirmPassword).then(
+            UserService.changePassword(currentPassword, newPassword, confirmPassword).then(
                 (response) => {
                     setMessage(response.data.message);
                     setSuccessful(true);
@@ -101,13 +96,13 @@ const ChangePassword = (props) => {
                     <div className="title-form">Изменение пароля</div>
 
                     <div className="form-group">
-                        <label htmlFor="password">Старый пароль:</label>
+                        <label htmlFor="password">Действующий пароль:</label>
                         <Input
                             type="password"
                             className="form-control"
-                            name="oldPassword"
-                            value={oldPassword}
-                            onChange={onChangeOldPassword}
+                            name="currentPassword"
+                            value={currentPassword}
+                            onChange={onChangeCurrentPassword}
                             validations={[required, vpassword]}
                         />
                     </div>
@@ -152,8 +147,6 @@ const ChangePassword = (props) => {
                         </div>
                     </div>
                 )}
-
-
             </Form>
         </div>
     );
