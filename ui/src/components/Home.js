@@ -20,7 +20,7 @@ const Home = () => {
       <div className="container">
         <div className="row">
           <div className="col-md-4"><EventForm/></div>
-          <div className="col-md-8"><MyCalendar/></div>
+          <div className="calendar col-md-8"><MyCalendar/></div>
         </div>
       </div>
 

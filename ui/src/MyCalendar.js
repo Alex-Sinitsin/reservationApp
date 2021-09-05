@@ -1,20 +1,21 @@
-import React, {useState, useEffect} from "react";
-import './App.css';
-import 'react-big-calendar/lib/css/react-big-calendar.css';
-import {Calendar, momentLocalizer} from 'react-big-calendar'
-import moment from 'moment'
-import 'moment/locale/ru'
+import React, { useState, useEffect } from "react";
+
+import FullCalendar from "@fullcalendar/react";
+
+import ruLocale from '@fullcalendar/core/locales/ru';
+import listPlugin from '@fullcalendar/list';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import timeGridPlugin from '@fullcalendar/timegrid'
+import interactionPlugin from '@fullcalendar/interaction'
+import bootstrapPlugin from '@fullcalendar/bootstrap'
 import EventService from "./services/event.service";
+import moment from 'moment';
 
 
-
-
-
-function MyCalendar() {
-  const localizer = momentLocalizer(moment);
-  const [eventList, setEventList] = useState([]);
-  const [alarmTime2, setAlarm] = useState([]);
-  const [seconds, setSeconds] = useState([]);
+export default function MyCalendar() {
+    const [eventList, setEventList] = useState([]);
+    const [alarmTime2, setAlarm] = useState([]);
+    const [seconds, setSeconds] = useState([]);
 
   var state = {
     currentTime: new Date().toLocaleTimeString('ru', {hour12: false}),
@@ -28,7 +29,7 @@ function MyCalendar() {
     return () => clearInterval(timer);
   });
 
-// Получение данных о событиях
+    // Получение данных о событиях
     useEffect(() => {
         async function getEventData() {
             try {
@@ -56,13 +57,11 @@ function MyCalendar() {
         getEventData();
     }, []);
 
-
-
   function handleEvents(eventList) {
       setEventList(eventList);
     }
 
-  var counter = 0;
+  let counter = 0;
   while (counter != 100) {
     if (state.currentTime === alarmTime2[counter]) {
       alert("its time!");
@@ -71,44 +70,49 @@ function MyCalendar() {
     counter = counter + 1;
   }
 
-
     return (
-        <div>
-            <Calendar
-                step={15}
-                messages={{
-                    next: '>>',
-                    previous: '<<',
-                    today: 'Сегодня',
-                    month: 'Месяц',
-                    week: 'Неделя',
-                    day: 'День',
-                    yesterday: 'Вчера',
-                    tomorrow: 'Завтра',
-                    agenda: 'Мероприятия',
-                    date: 'Дата',
-                    time: 'Время',
-                    event: 'Событие',
-                    noEventsInRange: 'Не найдено никаких мероприятий в текущем периоде.',
-                    showMore: function showMore(total) {
-                        return '+' + total + 'событий';
+        <FullCalendar
+            firstDay={1}
+            businessHours={{
+                daysOfWeek: [ 1, 2, 3, 4, 5 ],
+            }}
+            navLinks={true}
+            nowIndicator={true}
+            height={800}
+            slotDuration={'00:30:00'}
+            themeSystem={'bootstrap'}
+            defaultView="dayGridMonth"
+            headerToolbar={{
+                left: 'prev,today,next',
+                center: 'title',
+                right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
+            }}
+            buttonText={{
+                prev: '<<',
+                next: '>>'
+            }}
+            dayMaxEvents = {true}
+            footerToolbar={{
+                right: "deleteEvent"
+            }}
+            locales = {ruLocale}
+            locale = 'ru'
+            customButtons={{
+                deleteEvent: {
+                    text: 'Удалить',
+                    click: function() {
+                        let event = eventList.event;
+                        alert("Are You Remove Event "+event);
+                        event.remove();
                     }
+                },
+            }}
 
-                }}
-                selectable
-                defaultView="month"
-                defaultDate={new Date()}
-                localizer={localizer}
-                events={eventList}
-                startAccessor="start"
-                endAccessor="end"
-                style={{height: 620}}
-                // events={handleEvents}
-
-            />
-        </div>
-    )
-
+            plugins={[dayGridPlugin, listPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin]}
+            events={eventList}
+            editable={true}
+            droppable={true}
+            eventResizableFromStart={true}
+        />
+    );
 }
-
-export default MyCalendar;
