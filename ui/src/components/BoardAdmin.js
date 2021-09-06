@@ -1,21 +1,10 @@
 import React, {useEffect, useState} from "react";
-import Header from "./Header";
-import SideMenu from "./AdminNavigation/SideMenu";
 
-import "../BoardAdmin.css"
+import "./BoardAdmin.css"
+import usersList from "./BoardAdmin/Users/usersList"
+import usersCreate from "./BoardAdmin/Users/usersCreate"
 
-import {
-  Admin,
-  Datagrid,
-  EmailField,
-  fetchUtils,
-  List,
-  Resource,
-  TextField,
-  FunctionField,
-  Show,
-  SimpleShowLayout
-} from 'react-admin';
+import {Admin, fetchUtils, Resource} from 'react-admin';
 
 import polyglotI18nProvider from 'ra-i18n-polyglot';
 import russianMessages from 'ra-language-russian';
@@ -24,20 +13,6 @@ import UserIcon from '@material-ui/icons/Group';
 import jsonServerProvider from 'ra-data-json-server';
 import Cookies from "js-cookie";
 import authHeader from "../services/auth-header";
-
-const usersList = props => (
-  <List {...props}>
-      <Datagrid rowClick='edit'>
-        <TextField source='name' label="Имя" sortable={false}/>
-        <TextField source='lastName' label="Фамилия" sortable={false}/>
-        <TextField source='position' label="Должность" sortable={false}/>
-        <EmailField source='email' label="Почта" sortable={false}/>
-        <FunctionField
-          label="Роль"
-          render={record => record.role == "User" ? "Пользователь" : "Администратор"}/>
-      </Datagrid>
-  </List>
-);
 
 const BoardAdmin = () => {
 
@@ -63,7 +38,7 @@ const BoardAdmin = () => {
 
   return (
     <Admin dataProvider={dataProvider} i18nProvider={i18nProvider} title="Список пользователей">
-      <Resource name="users" label="Пользователи" list={usersList} icon={UserIcon}/>
+      <Resource name="users" options={{ label: 'Пользователи' }} list={usersList} create={usersCreate} icon={UserIcon}/>
     </Admin>
   )
 };
