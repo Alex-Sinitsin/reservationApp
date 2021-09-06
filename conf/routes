@@ -4,9 +4,9 @@ GET         /                                 controllers.IndexController.index(
 # Пользователи
 GET         /users                            controllers.UserController.listAll()
 GET         /signOut                          controllers.SignInController.signOut()
-PUT         /signUp                           controllers.SignUpController.submit
 POST        /signIn                           controllers.SignInController.submit
 PUT         /password/change                  controllers.ChangePasswordController.submit
+POST        /users                            controllers.SignUpController.submit
 PUT         /users/:userId/role               controllers.UserController.changeUserRole(userId: java.util.UUID)
 DELETE      /users/:userId/delete             controllers.UserController.delete(userId: java.util.UUID)
 
