@@ -2,25 +2,25 @@
 GET         /                                 controllers.IndexController.index()
 
 # Пользователи
-GET         /users                            controllers.UserController.listAll()
-GET         /signOut                          controllers.SignInController.signOut()
-POST        /signIn                           controllers.SignInController.submit
-PUT         /password/change                  controllers.ChangePasswordController.submit
-POST        /users                            controllers.SignUpController.submit
-PUT         /users/:userId/role               controllers.UserController.changeUserRole(userId: java.util.UUID)
-DELETE      /users/:userId/delete             controllers.UserController.delete(userId: java.util.UUID)
+GET         /api/users                            controllers.UserController.listAll()
+GET         /api/signOut                          controllers.SignInController.signOut()
+POST        /api/signIn                           controllers.SignInController.submit
+PATCH       /api/password/change                  controllers.ChangePasswordController.submit
+POST        /api/users                            controllers.SignUpController.submit
+PATCH       /api/users/:userId/role               controllers.UserController.changeUserRole(userId: java.util.UUID)
+DELETE      /api/users/:userId                    controllers.UserController.delete(userId: java.util.UUID)
 
 # События
-GET         /events                           controllers.EventController.listAll()
-PUT         /events/create                    controllers.EventController.createEvent()
-PUT         /events/:eventId/update           controllers.EventController.updateEvent(eventId: Long)
-DELETE      /events/:eventId/delete           controllers.EventController.deleteEvent(eventId: Long)
+GET         /api/events                           controllers.EventController.listAll()
+PUT         /api/events                           controllers.EventController.createEvent()
+PATCH       /api/events/:eventId                  controllers.EventController.updateEvent(eventId: Long)
+DELETE      /api/events/:eventId                  controllers.EventController.deleteEvent(eventId: Long)
 
 # Объекты
-GET        /items                             controllers.ItemController.listAll()
-PUT        /items/create                      controllers.ItemController.saveItem(itemId: Long = -1)
-PUT        /items/:itemId/update              controllers.ItemController.saveItem(itemId: Long)
-DELETE     /items/:itemId/delete              controllers.ItemController.deleteItem(itemId: Long)
+GET        /api/items                             controllers.ItemController.listAll()
+PUT        /api/items                             controllers.ItemController.saveItem(itemId: Long = -1)
+PATCH      /api/items/:itemId                     controllers.ItemController.saveItem(itemId: Long)
+DELETE     /api/items/:itemId                     controllers.ItemController.deleteItem(itemId: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

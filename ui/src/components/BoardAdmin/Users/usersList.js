@@ -1,16 +1,19 @@
 import React from "react";
-import {Datagrid, EmailField, FunctionField, List, TextField} from 'react-admin';
+import {Datagrid, EmailField, List, SelectField, TextField} from 'react-admin';
+
+const rolesSelectChoices = [
+  {role_type: "User", role_name: 'Пользователь'},
+  {role_type: "Admin", role_name: 'Администратор'},
+];
 
 const usersList = props => (
   <List {...props}>
-    <Datagrid rowClick='edit'>
+    <Datagrid>
       <TextField source='name' label="Имя" sortable={false}/>
       <TextField source='lastName' label="Фамилия" sortable={false}/>
       <TextField source='position' label="Должность" sortable={false}/>
       <EmailField source='email' label="Почта" sortable={false}/>
-      <FunctionField
-        label="Роль"
-        render={record => record.role == "User" ? "Пользователь" : "Администратор"}/>
+      <SelectField source='role' label="Роль" choices={rolesSelectChoices} optionText="role_name" optionValue="role_type" sortable={false} />
     </Datagrid>
   </List>
 );
