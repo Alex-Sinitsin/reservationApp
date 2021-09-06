@@ -15,7 +15,7 @@ import PageNotFound from './components/PageNotFound';
 
 function App() {
         return (
-            <div id="appContent">
+            <div>
                     <Switch>
                         <Route exact path="/" component={Login} />
                         <Route exact path="/register" component={Register} />
