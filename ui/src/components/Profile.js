@@ -13,8 +13,8 @@ const Profile = () => {
 
             <body>
             <div className="row">
-                <div className="col-4">
-            <div className="card">
+                <div className="col-sm-4">
+            <div className="card" id='profileInfo'>
                 <div className="card-body">
                     <div className="d-flex flex-column align-items-center text-center">
                         <img src="/avatar.png" className="rounded-circle" width="150"/>
@@ -49,7 +49,7 @@ const Profile = () => {
                 </div>
             </div>
 
-<div className="container col-6">
+<div className="container col-sm-4" id='changePassword'>
                 <ChangePasswordForm/>
 </div>
 
