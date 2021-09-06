@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect} from "react";
 
 import FullCalendar from "@fullcalendar/react";
 
@@ -12,11 +12,11 @@ import EventService from "./services/event.service";
 
 
 export default function MyCalendar() {
-    const [eventList, setEventList] = useState([]);
-    const [alarmTime2, setAlarm] = useState([]);
-    const [seconds, setSeconds] = useState([]);
+  const [eventList, setEventList] = useState([]);
+  const [alarmTime2, setAlarm] = useState([]);
+  const [seconds, setSeconds] = useState([]);
 
-  var state = {
+  let state = {
     currentTime: new Date().toLocaleTimeString('ru', {hour12: false}),
   }
 
@@ -28,35 +28,35 @@ export default function MyCalendar() {
     return () => clearInterval(timer);
   });
 
-    // Получение данных о событиях
-    useEffect(() => {
-        async function getEventData() {
-            try {
-                const response = await EventService.getEvents();
-                const parsedList = response.data && response.data.map((event) => {
+  // Получение данных о событиях
+  useEffect(() => {
+    async function getEventData() {
+      try {
+        const response = await EventService.getEvents();
+        const parsedList = response.data && response.data.map((event) => {
 
-                    return {
-                        id: event.id,
-                        title: event.title,
-                        start: event.startDateTime,
-                        end: event.endDateTime,
-                        members: event.members.users,
-                        description: event.description
-                    }
-                })
+          return {
+            id: event.id,
+            title: event.title,
+            start: event.startDateTime,
+            end: event.endDateTime,
+            members: event.members.users,
+            description: event.description
+          }
+        })
 
-                setEventList(parsedList);
-            } catch (err) {
-                console.log(err, "API ERROR");
-            }
-        }
+        setEventList(parsedList);
+      } catch (err) {
+        console.log(err, "API ERROR");
+      }
+    }
 
-        getEventData();
-    }, []);
+    getEventData();
+  }, []);
 
   function handleEvents(eventList) {
-      setEventList(eventList);
-    }
+    setEventList(eventList);
+  }
 
 
   let counter = 0;
@@ -69,50 +69,50 @@ export default function MyCalendar() {
   }
 
 
-    return (
-        <FullCalendar
-            firstDay={1}
-            businessHours={{
-                daysOfWeek: [ 1, 2, 3, 4, 5 ],
-            }}
-            navLinks={true}
-            nowIndicator={true}
-            height={800}
-            slotDuration={'00:30:00'}
-            defaultView="dayGridMonth"
-            headerToolbar={{
-                left: 'prev,today,next',
-                center: 'title',
-                right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
-            }}
-            buttonText={{
-                prev: '<<',
-                next: '>>',
-                listMonth: 'Расписание'
-            }}
-            dayMaxEvents = {true}
-            footerToolbar={{
-                right: "deleteEvent"
-            }}
-            locales = {ruLocale}
-            locale = 'ru'
-            customButtons={{
-                deleteEvent: {
-                    text: 'Удалить',
-                    click: function() {
-                        let event = eventList.id;
-                        alert("Вы действительно хотите удалить событие?");
-                        event.remove();
-                    }
-                },
-            }}
+  return (
+    <FullCalendar
+      firstDay={1}
+      businessHours={{
+        daysOfWeek: [1, 2, 3, 4, 5],
+      }}
+      navLinks={true}
+      nowIndicator={true}
+      height={670}
+      slotDuration={'00:30:00'}
+      defaultView="dayGridMonth"
+      headerToolbar={{
+        left: 'prev,today,next',
+        center: 'title',
+        right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
+      }}
+      buttonText={{
+        prev: '<<',
+        next: '>>',
+        listMonth: 'Расписание'
+      }}
+      dayMaxEvents={true}
+      footerToolbar={{
+        right: "deleteEvent"
+      }}
+      locales={ruLocale}
+      locale='ru'
+      customButtons={{
+        deleteEvent: {
+          text: 'Удалить',
+          click: function () {
+            let event = eventList.id;
+            alert("Вы действительно хотите удалить событие?");
+            event.remove();
+          }
+        },
+      }}
 
-            plugins={[dayGridPlugin, listPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin]}
-            events={eventList}
-            editable={false}
-            droppable={false}
-            eventResizableFromStart={true}
-            allDaySlot={false}
-        />
-    );
+      plugins={[dayGridPlugin, listPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin]}
+      events={eventList}
+      editable={false}
+      droppable={false}
+      eventResizableFromStart={true}
+      allDaySlot={false}
+    />
+  );
 }
