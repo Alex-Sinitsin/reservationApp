@@ -4,22 +4,25 @@ GET         /                                 controllers.IndexController.index(
 # Пользователи
 GET         /api/users                            controllers.UserController.listAll()
 GET         /api/signOut                          controllers.SignInController.signOut()
+
 POST        /api/signIn                           controllers.SignInController.submit
-PATCH       /api/password/change                  controllers.ChangePasswordController.submit
+
+PUT         /api/password/change                  controllers.ChangePasswordController.submit
+PUT         /api/users/:userId/role               controllers.UserController.changeUserRole(userId: java.util.UUID)
+
 POST        /api/users                            controllers.SignUpController.submit
-PATCH       /api/users/:userId/role               controllers.UserController.changeUserRole(userId: java.util.UUID)
 DELETE      /api/users/:userId                    controllers.UserController.delete(userId: java.util.UUID)
 
 # События
 GET         /api/events                           controllers.EventController.listAll()
-PUT         /api/events                           controllers.EventController.createEvent()
-PATCH       /api/events/:eventId                  controllers.EventController.updateEvent(eventId: Long)
+POST        /api/events                           controllers.EventController.createEvent()
+PUT         /api/events/:eventId                  controllers.EventController.updateEvent(eventId: Long)
 DELETE      /api/events/:eventId                  controllers.EventController.deleteEvent(eventId: Long)
 
 # Объекты
 GET        /api/items                             controllers.ItemController.listAll()
-PUT        /api/items                             controllers.ItemController.saveItem(itemId: Long = -1)
-PATCH      /api/items/:itemId                     controllers.ItemController.saveItem(itemId: Long)
+POST       /api/items                             controllers.ItemController.saveItem(itemId: Long = -1)
+PUT        /api/items/:itemId                     controllers.ItemController.saveItem(itemId: Long)
 DELETE     /api/items/:itemId                     controllers.ItemController.deleteItem(itemId: Long)
 
 # Map static resources from the /public folder to the /assets URL path
