@@ -52,7 +52,7 @@ export default function MyCalendar() {
     }
 
     getEventData();
-  }, []);
+  }, [eventList]);
 
   function handleEvents(eventList) {
     setEventList(eventList);
@@ -71,13 +71,14 @@ export default function MyCalendar() {
 
   return (
     <FullCalendar
+      themeSystem="bootstrap"
       firstDay={1}
       businessHours={{
         daysOfWeek: [1, 2, 3, 4, 5],
       }}
       navLinks={true}
       nowIndicator={true}
-      height={670}
+      height={750}
       slotDuration={'00:30:00'}
       defaultView="dayGridMonth"
       headerToolbar={{
