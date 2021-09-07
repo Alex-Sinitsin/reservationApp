@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 import AuthService from "../services/auth.service";
 import Header from "./Header";
 import ChangePasswordForm from "./ChangePasswordForm";
@@ -6,6 +6,10 @@ import './Profile.css'
 
 const Profile = () => {
     const currentUser = AuthService.getCurrentUser();
+
+    useEffect(() => {
+        document.title = 'Профиль';
+    });
 
     return (
         <div>
