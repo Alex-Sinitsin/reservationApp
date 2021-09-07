@@ -9,12 +9,16 @@ import timeGridPlugin from '@fullcalendar/timegrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import bootstrapPlugin from '@fullcalendar/bootstrap'
 import EventService from "./services/event.service";
+import AuthService from "./services/auth.service";
+import includes from "validator/es/lib/util/includes";
 
 
 export default function MyCalendar() {
   const [eventList, setEventList] = useState([]);
   const [alarmTime2, setAlarm] = useState([]);
   const [seconds, setSeconds] = useState([]);
+
+  const currentUser = AuthService.getCurrentUser();
 
   let state = {
     currentTime: new Date().toLocaleTimeString('ru', {hour12: false}),
@@ -34,14 +38,14 @@ export default function MyCalendar() {
       try {
         const response = await EventService.getEvents();
         const parsedList = response.data && response.data.map((event) => {
-
           return {
             id: event.id,
             title: event.title,
             start: event.startDateTime,
             end: event.endDateTime,
             members: event.members.users,
-            description: event.description
+            description: event.description,
+            color: (event.members.users.find(user => user.id === currentUser.userInfo.id)) ? 'red' : {} //Изменяет цвет, если в событии участвует user
           }
         })
 
