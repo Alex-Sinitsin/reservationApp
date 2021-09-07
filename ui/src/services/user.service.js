@@ -15,18 +15,18 @@ const getUsers = () => {
 }
 
 const changePassword = (currentPassword, newPassword, confirmPassword) => {
-    return axios.put(API_URL + 'password/change', {
-        currentPassword,
-        newPassword,
-        confirmPassword
+  return axios.put(API_URL + 'password/change', {
+      currentPassword,
+      newPassword,
+      confirmPassword
     },
     {
-        headers: {
-            'Csrf-Token': Cookies.get('csrfCookie'),
-    'Content-Type': 'application/json',
-    'X-Auth-Token': authHeader(),
-}
-        });
+      headers: {
+        'Csrf-Token': Cookies.get('csrfCookie'),
+        'Content-Type': 'application/json',
+        'X-Auth-Token': authHeader(),
+      }
+    });
 }
 
 export default {
