@@ -12,7 +12,6 @@ PUT         /users/:userId/role               controllers.UserController.changeU
 GET         /users                            controllers.UserController.listAll()
 GET         /users/:userId                    controllers.UserController.getUserByID(userId: java.util.UUID)
 POST        /users                            controllers.SignUpController.submit
-PUT         /users/:userId                    controllers.UserController.update(userId: java.util.UUID)
 DELETE      /users/:userId                    controllers.UserController.delete(userId: java.util.UUID)
 
 # События
