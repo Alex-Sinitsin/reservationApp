@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from "react";
+import React, {useEffect, useRef, useState} from "react";
 
 import FullCalendar from "@fullcalendar/react";
 
@@ -10,10 +10,8 @@ import interactionPlugin from '@fullcalendar/interaction'
 import bootstrapPlugin from '@fullcalendar/bootstrap'
 import EventService from "./services/event.service";
 import AuthService from "./services/auth.service";
-import ChoiceForm from "./components/ChoiceForm";
 import {Modal, ModalBody, ModalFooter} from "react-bootstrap";
 import ModalHeader from "react-bootstrap/ModalHeader";
-import moment from "moment";
 
 
 const MyCalendar = () => {
@@ -71,8 +69,7 @@ const MyCalendar = () => {
   // Получение данных о событиях
   useEffect(() => {
     getEventData();
-  }, []);
-
+  }, [eventList]);
 
   return (
     <div id="calendar" className="container" ref={calendarRef}>
@@ -116,7 +113,7 @@ const MyCalendar = () => {
 
         plugins={[dayGridPlugin, listPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin]}
         events={eventList}
-        // editable={false}
+        editable={false}
         droppable={false}
         eventResizableFromStart={true}
         allDaySlot={false}
