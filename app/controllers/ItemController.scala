@@ -58,7 +58,7 @@ class ItemController @Inject()(silhouette: Silhouette[JWTEnvironment],
       data => {
         itemService.createOrUpdate(itemID, data, currentUser).flatMap {
           case ItemCreated(_) => Future.successful(Created(Json.toJson(Json.obj("status" -> "success", "message" -> "Объект успешно добавлен!"))))
-          case ItemUpdated(_) => Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Объект успешно обновлен!"))))
+          case ItemUpdated(item) => Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Объект успешно обновлен!", "data" -> item))))
           case ItemAlreadyExist => Future.successful(Conflict(Json.toJson(Json.obj("status" -> "error", "code" -> CONFLICT, "message" -> "Объект с таким именем уже существует!"))))
           case OperationForbidden => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error",  "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
           case _ => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error",  "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при сохранении объекта!"))))
