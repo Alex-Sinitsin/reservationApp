@@ -46,22 +46,45 @@ class UserController @Inject()(silhouette: Silhouette[JWTEnvironment],
     }
   }
 
-  //TODO: Сделать метод обновления данных пользователя
+  /**
+   * Получает данные пользователя
+   *
+   * @param userID ID пользователя
+   * @return
+   */
+  def getUserByID(userID: UUID): Action[AnyContent] = silhouette.SecuredAction(hasSignUpMethod[JWTEnvironment#A](CredentialsProvider.ID)).async {
+    implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
 
+      request.identity.role match {
+        case Some("Admin") =>
+          userService.retrieveByID(userID).flatMap {
+            case Some(user) => Future.successful(Ok(Json.toJson(user)))
+            case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Пользователь не найден!"))))
+          }
+        case _ => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error", "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
+      }
+  }
+
+  /**
+   * Изменяет роль пользователя
+   *
+   * @param userID ID пользователя
+   * @return
+   */
   def changeUserRole(userID: UUID): Action[AnyContent] = silhouette.SecuredAction(hasSignUpMethod[JWTEnvironment#A](CredentialsProvider.ID)).async {
     implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
 
-    UserRoleForm.form.bindFromRequest().fold(
-      _ => Future.successful(BadRequest),
-      roleId =>
-        request.identity.role match {
-          case Some("Admin") =>
-            userService.changeUserRole(userID, UserRoles.toHumanReadable(roleId)).flatMap(updResult =>
-              if(updResult) Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Роль пользователя успешно обновлена!"))))
-              else Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при изменении роли пользователя!")))))
-          case _ => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error",  "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
-        }
-    )
+      UserRoleForm.form.bindFromRequest().fold(
+        _ => Future.successful(BadRequest),
+        roleId =>
+          request.identity.role match {
+            case Some("Admin") =>
+              userService.changeUserRole(userID, UserRoles.toHumanReadable(roleId)).flatMap(updResult =>
+                if (updResult) Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Роль пользователя успешно обновлена!"))))
+                else Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при изменении роли пользователя!")))))
+            case _ => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error", "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
+          }
+      )
   }
 
   /**
@@ -77,13 +100,14 @@ class UserController @Inject()(silhouette: Silhouette[JWTEnvironment],
           userService.retrieveUserLoginInfo(userID, credentialsProvider.id).flatMap {
             case Some((user, loginInfo)) =>
               authInfoRepository.remove[PasswordInfo](loginInfo)
-              userService.delete(userID, user.email).flatMap { delResult =>
-                if (delResult) Future.successful(Ok(Json.obj("success" -> "Пользователь успешно удален!")))
-                else Future.successful(BadRequest(Json.obj("error" -> "Произошла ошибка при удалении пользователя!")))
+              userService.delete(userID, user.email).flatMap {
+                delResult =>
+                  if (delResult) Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Пользователь успешно удален!"))))
+                  else Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "message" -> "Произошла ошибка при удалении пользователя!"))))
               }
-            case None => Future.successful(BadRequest(Json.obj("error" -> "Пользователь не найден!")))
+            case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Пользователь не найден!"))))
           }
-        case _ => Future.successful(Forbidden(Json.obj("error" -> "Недостаточно прав для выполнения операции!")))
+        case _ => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error", "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
       }
   }
 }

@@ -23,17 +23,31 @@ class ItemController @Inject()(silhouette: Silhouette[JWTEnvironment],
    *
    * @return
    */
-  def listAll(id: Long): Action[AnyContent] = silhouette.SecuredAction.async {
+  def listAll(): Action[AnyContent] = silhouette.SecuredAction.async {
     implicit request: Request[AnyContent] =>
-      if (id == -1)
-        itemService.retrieveAll.flatMap { items =>
-          Future.successful(Ok(Json.toJson(items)).withHeaders("X-Total-Count" -> items.size.toString))
-        }
-      else
-        itemService.retrieveByID(id).flatMap {
-          case Some(item) => Future.successful(Ok(Json.toJson(item)))
-          case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Объект не найден!"))))
-        }
+
+      itemService.retrieveAll.flatMap { items =>
+        Future.successful(Ok(Json.toJson(items)).withHeaders("X-Total-Count" -> items.size.toString))
+      }
+  }
+
+  /**
+   * Получает данные об объекте по его ID
+   *
+   * @param itemID ID объекта
+   * @return
+   */
+  def getItemByID(itemID: Long): Action[AnyContent] = silhouette.SecuredAction(hasSignUpMethod[JWTEnvironment#A](CredentialsProvider.ID)).async {
+    implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
+
+      request.identity.role match {
+        case Some("Admin") =>
+          itemService.retrieveByID(itemID).flatMap {
+            case Some(item) => Future.successful(Ok(Json.toJson(item)))
+            case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Объект не найден!"))))
+          }
+        case _ => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error", "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
+      }
   }
 
   /**

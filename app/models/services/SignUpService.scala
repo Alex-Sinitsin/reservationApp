@@ -37,7 +37,7 @@ class SignUpService @Inject()(authTokenService: AuthTokenService,
       case None =>
         val authInfo = passwordHasherRegistry.current.hash(data.password)
         for {
-          user <- userService.createOrUpdate(loginInfo, data.email, data.name, data.lastName, data.position)
+          user <- userService.createOrUpdate(loginInfo, data.email, data.name, data.lastName, data.position, None)
           _ <- authenticateService.addAuthenticateMethod(user.id, loginInfo, authInfo)
           authToken <- authTokenService.create(user.id)
         } yield UserCreated(user)

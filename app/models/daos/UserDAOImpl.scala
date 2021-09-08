@@ -84,7 +84,10 @@ class UserDAOImpl @Inject() (protected val dbConfigProvider: DatabaseConfigProvi
   override def save(user: User): Future[User] = {
     val actions = (for {
       userRoleId <- userRolesDAO.getUserRole
-      dbUser = DBUser(user.id, user.name, user.lastName, user.position, user.email, userRoleId)
+      dbUser = {
+          if(user.role.isEmpty) DBUser(user.id, user.name, user.lastName, user.position, user.email, userRoleId)
+          else DBUser(user.id, user.name, user.lastName, user.position, user.email, UserRoles.toDBReadable(user.role.get))
+      }
       _ <- users.insertOrUpdate(dbUser)
     } yield ()).transactionally
 

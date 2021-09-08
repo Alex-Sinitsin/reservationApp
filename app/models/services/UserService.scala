@@ -21,6 +21,14 @@ trait UserService extends IdentityService[User] {
   def retrieveAll: Future[Seq[User]]
 
   /**
+   * Извлекает данные пользователя по его ID
+   *
+   * @param userID ID пользователя
+   * @return
+   */
+  def retrieveByID(userID: UUID): Future[Option[User]]
+
+  /**
    * Меняет роль пользователя
    *
    * @param userId ID пользователя
@@ -50,7 +58,7 @@ trait UserService extends IdentityService[User] {
    * @param position  Должность пользователя в компании
    * @return
    */
-  def createOrUpdate(loginInfo: LoginInfo, email: String, name: String, lastName: String, position: String): Future[User]
+  def createOrUpdate(loginInfo: LoginInfo, email: String, name: String, lastName: String, position: String, role: Option[String]): Future[User]
 
   /**
    * Удаляет данные пользователя

@@ -28,6 +28,14 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
   override def retrieveAll: Future[Seq[User]] = userDAO.getAll
 
   /**
+   * Извлекает данные пользователя по его ID
+   *
+   * @param userID ID пользователя
+   *  @return
+   */
+  override def retrieveByID(userID: UUID): Future[Option[User]] = userDAO.findByID(userID)
+
+  /**
    * Извлекает информацию о пользователе, который удовлетворяет условию.
    *
    * @param loginInfo Информация для входа
@@ -69,7 +77,7 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
    * @param position  Должность пользователя в компании
    *  @return
    */
-  override def createOrUpdate(loginInfo: LoginInfo, email: String, name: String, lastName: String, position: String): Future[User] = {
+  override def createOrUpdate(loginInfo: LoginInfo, email: String, name: String, lastName: String, position: String, role: Option[String]): Future[User] = {
 
     Future.sequence(Seq(userDAO.findByLoginInfo(loginInfo),
       userDAO.findByEmail(email))).flatMap { users =>
@@ -79,7 +87,8 @@ class UserServiceImpl @Inject()(userDAO: UserDAO,
             name = name,
             lastName = lastName,
             position = position,
-            email = email
+            email = email,
+            role = role
           ))
         case None =>
           userDAO.save(User(

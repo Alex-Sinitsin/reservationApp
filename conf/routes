@@ -2,7 +2,6 @@
 GET         /                                 controllers.IndexController.index()
 
 # Пользователи
-GET         /users                            controllers.UserController.listAll()
 GET         /signOut                          controllers.SignInController.signOut()
 
 POST        /signIn                           controllers.SignInController.submit
@@ -10,18 +9,22 @@ POST        /signIn                           controllers.SignInController.submi
 PUT         /password/change                  controllers.ChangePasswordController.submit
 PUT         /users/:userId/role               controllers.UserController.changeUserRole(userId: java.util.UUID)
 
+GET         /users                            controllers.UserController.listAll()
+GET         /users/:userId                    controllers.UserController.getUserByID(userId: java.util.UUID)
 POST        /users                            controllers.SignUpController.submit
+PUT         /users/:userId                    controllers.UserController.update(userId: java.util.UUID)
 DELETE      /users/:userId                    controllers.UserController.delete(userId: java.util.UUID)
 
 # События
 GET         /events                           controllers.EventController.listAll()
+GET         /events/:eventId                  controllers.EventController.getEventByID(eventId: Long)
 POST        /events                           controllers.EventController.createEvent()
 PUT         /events/:eventId                  controllers.EventController.updateEvent(eventId: Long)
 DELETE      /events/:eventId                  controllers.EventController.deleteEvent(eventId: Long)
 
 # Объекты
-GET        /items                             controllers.ItemController.listAll(itemId: Long = -1)
-GET        /items/:itemId                     controllers.ItemController.listAll(itemId: Long)
+GET        /items                             controllers.ItemController.listAll()
+GET        /items/:itemId                     controllers.ItemController.getItemByID(itemId: Long)
 POST       /items                             controllers.ItemController.saveItem(itemId: Long = -1)
 PUT        /items/:itemId                     controllers.ItemController.saveItem(itemId: Long)
 DELETE     /items/:itemId                     controllers.ItemController.deleteItem(itemId: Long)
