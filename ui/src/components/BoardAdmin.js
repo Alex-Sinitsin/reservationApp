@@ -1,18 +1,22 @@
 import React, {useEffect, useState} from "react";
-
-import "./BoardAdmin.css"
-import usersList from "./BoardAdmin/Users/usersList"
-import usersCreate from "./BoardAdmin/Users/usersCreate"
-
 import {Admin, fetchUtils, Resource} from 'react-admin';
-
-import polyglotI18nProvider from 'ra-i18n-polyglot';
-import russianMessages from 'ra-language-russian';
-import UserIcon from '@material-ui/icons/Group';
-
 import jsonServerProvider from 'ra-data-json-server';
 import Cookies from "js-cookie";
 import authHeader from "../services/auth-header";
+import polyglotI18nProvider from 'ra-i18n-polyglot';
+import russianMessages from 'ra-language-russian';
+
+import "./BoardAdmin.css"
+
+import usersList from "./BoardAdmin/Users/usersList"
+import usersCreate from "./BoardAdmin/Users/usersCreate"
+import itemsCreate from "./BoardAdmin/Items/itemsCreate"
+import itemsEdit from "./BoardAdmin/Items/itemsEdit"
+import itemsList from "./BoardAdmin/Items/itemsList"
+
+import UserIcon from '@material-ui/icons/GroupOutlined';
+import ItemIcon from '@material-ui/icons/CategoryOutlined';
+
 
 const BoardAdmin = () => {
 
@@ -39,6 +43,7 @@ const BoardAdmin = () => {
   return (
     <Admin dataProvider={dataProvider} i18nProvider={i18nProvider} title="Список пользователей">
       <Resource name="users" options={{ label: 'Пользователи' }} list={usersList} create={usersCreate} icon={UserIcon}/>
+      <Resource name="items" options={{ label: 'Объекты' }} list={itemsList} create={itemsCreate} edit={itemsEdit} icon={ItemIcon}/>
     </Admin>
   )
 };
