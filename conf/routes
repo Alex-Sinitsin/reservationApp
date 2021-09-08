@@ -20,9 +20,9 @@ PUT         /events/:eventId                  controllers.EventController.update
 DELETE      /events/:eventId                  controllers.EventController.deleteEvent(eventId: Long)
 
 # Объекты
-GET        /items                             controllers.ItemController.listAll()
-GET        /items/:itemId                     controllers.ItemController.getByID(itemId: Long)
-POST       /items                             controllers.ItemController.saveItem(itemId: Long)
+GET        /items                             controllers.ItemController.listAll(itemId: Long = -1)
+GET        /items/:itemId                     controllers.ItemController.listAll(itemId: Long)
+POST       /items                             controllers.ItemController.saveItem(itemId: Long = -1)
 PUT        /items/:itemId                     controllers.ItemController.saveItem(itemId: Long)
 DELETE     /items/:itemId                     controllers.ItemController.deleteItem(itemId: Long)
 
