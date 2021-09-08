@@ -38,7 +38,7 @@ class ItemController @Inject()(silhouette: Silhouette[JWTEnvironment],
   def getByID(id: Long): Action[AnyContent] = silhouette.SecuredAction.async {
     implicit request: Request[AnyContent] =>
     itemService.retrieveByID(id).flatMap {
-      case Some(item) => Future.successful(Ok(Json.toJson(Json.obj("status" -> "error", "data" -> item))))
+      case Some(item) => Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "data" -> item))))
       case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error",  "code" -> NOT_FOUND, "message" -> "Объект не найден!"))))
     }
   }
