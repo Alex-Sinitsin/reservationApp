@@ -30,6 +30,20 @@ class ItemController @Inject()(silhouette: Silhouette[JWTEnvironment],
   }
 
   /**
+   * Получает данные объекта по его ID
+   *
+   * @param id ID объекта
+   * @return
+   */
+  def getByID(id: Long): Action[AnyContent] = silhouette.SecuredAction.async {
+    implicit request: Request[AnyContent] =>
+    itemService.retrieveByID(id).flatMap {
+      case Some(item) => Future.successful(Ok(Json.toJson(item)))
+      case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error",  "code" -> NOT_FOUND, "message" -> "Объект не найден!"))))
+    }
+  }
+
+  /**
    * Сохраняет данные объекта
    *
    * @param itemID ID объекта, который необходимо сохранить

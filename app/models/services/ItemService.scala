@@ -27,6 +27,14 @@ class ItemService @Inject()(itemDAO: ItemDAO)(implicit ex: ExecutionContext) {
   def retrieveAll: Future[Seq[Item]] = itemDAO.getAll
 
   /**
+   * Извлекает данные объекта по его ID
+   *
+   * @param id ID объекта
+   * @return Данные объекта, иначе None
+   */
+  def retrieveByID(id: Long): Future[Option[Item]] = itemDAO.getByID(id)
+
+  /**
    * Создает или обновляет объект
    *
    * @param itemID ID объекта
