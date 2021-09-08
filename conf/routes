@@ -20,7 +20,8 @@ PUT         /api/events/:eventId                  controllers.EventController.up
 DELETE      /api/events/:eventId                  controllers.EventController.deleteEvent(eventId: Long)
 
 # Объекты
-GET        /api/items                             controllers.ItemController.listAll()
+GET        /api/items                             controllers.ItemController.listAll(itemId: Long = -1)
+GET        /api/items/:itemId                     controllers.ItemController.listAll(itemId: Long)
 POST       /api/items                             controllers.ItemController.saveItem(itemId: Long = -1)
 PUT        /api/items/:itemId                     controllers.ItemController.saveItem(itemId: Long)
 DELETE     /api/items/:itemId                     controllers.ItemController.deleteItem(itemId: Long)

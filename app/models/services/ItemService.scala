@@ -27,6 +27,14 @@ class ItemService @Inject()(itemDAO: ItemDAO)(implicit ex: ExecutionContext) {
   def retrieveAll: Future[Seq[Item]] = itemDAO.getAll
 
   /**
+   * Извлекает данные объекта по его ID
+   *
+   * @param id ID объекта
+   * @return Данные объекта, иначе None
+   */
+  def retrieveByID(id: Long): Future[Option[Item]] = itemDAO.getByID(id)
+
+  /**
    * Создает или обновляет объект
    *
    * @param itemID ID объекта
@@ -39,7 +47,7 @@ class ItemService @Inject()(itemDAO: ItemDAO)(implicit ex: ExecutionContext) {
       itemDAO.getByID(itemID).flatMap {
         case Some(_) =>
           itemDAO.getByName(itemData.name).flatMap{
-            case Some(_) =>Future.successful(ItemAlreadyExist)
+            case Some(_) => Future.successful(ItemAlreadyExist)
             case None => itemDAO.update(itemID, itemData).map(ItemUpdated)
           }
         case None => itemDAO.add(itemData).map(ItemCreated)

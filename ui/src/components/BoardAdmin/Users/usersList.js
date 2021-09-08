@@ -1,13 +1,19 @@
 import React from "react";
-import {Datagrid, EmailField, List, SelectField, TextField} from 'react-admin';
+import {Datagrid, EmailField, List, SelectField, TextField, CreateButton, TopToolbar } from 'react-admin';
 
 const rolesSelectChoices = [
   {role_type: "User", role_name: 'Пользователь'},
   {role_type: "Admin", role_name: 'Администратор'},
 ];
 
+const UsersListActions = ({ basePath }) => (
+  <TopToolbar>
+    <CreateButton basePath={basePath} />
+  </TopToolbar>
+);
+
 const usersList = props => (
-  <List {...props}>
+  <List actions={<UsersListActions />} {...props}>
     <Datagrid>
       <TextField source='name' label="Имя" sortable={false}/>
       <TextField source='lastName' label="Фамилия" sortable={false}/>

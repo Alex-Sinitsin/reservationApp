@@ -23,10 +23,17 @@ class ItemController @Inject()(silhouette: Silhouette[JWTEnvironment],
    *
    * @return
    */
-  def listAll(): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
-    itemService.retrieveAll.flatMap { items =>
-      Future.successful(Ok(Json.toJson(items)).withHeaders("X-Total-Count" -> items.size.toString))
-    }
+  def listAll(id: Long): Action[AnyContent] = silhouette.SecuredAction.async {
+    implicit request: Request[AnyContent] =>
+      if (id == -1)
+        itemService.retrieveAll.flatMap { items =>
+          Future.successful(Ok(Json.toJson(items)).withHeaders("X-Total-Count" -> items.size.toString))
+        }
+      else
+        itemService.retrieveByID(id).flatMap {
+          case Some(item) => Future.successful(Ok(Json.toJson(item)))
+          case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Объект не найден!"))))
+        }
   }
 
   /**
@@ -43,11 +50,11 @@ class ItemController @Inject()(silhouette: Silhouette[JWTEnvironment],
       formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),
       data => {
         itemService.createOrUpdate(itemID, data, currentUser).flatMap {
-          case ItemCreated(_) => Future.successful(Created(Json.toJson(Json.obj("status" -> "success", "message" -> "Объект успешно добавлен!"))))
-          case ItemUpdated(_) => Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Объект успешно обновлен!"))))
+          case ItemCreated(item) => Future.successful(Created(Json.toJson(Json.obj("status" -> "success", "message" -> "Объект успешно добавлен!", "data" -> item))))
+          case ItemUpdated(item) => Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Объект успешно обновлен!", "data" -> item.copy(id = itemID)))))
           case ItemAlreadyExist => Future.successful(Conflict(Json.toJson(Json.obj("status" -> "error", "code" -> CONFLICT, "message" -> "Объект с таким именем уже существует!"))))
-          case OperationForbidden => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error",  "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
-          case _ => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error",  "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при сохранении объекта!"))))
+          case OperationForbidden => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error", "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
+          case _ => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при сохранении объекта!"))))
         }
       }
     )
@@ -65,9 +72,9 @@ class ItemController @Inject()(silhouette: Silhouette[JWTEnvironment],
 
     itemService.delete(itemID, currentUser).flatMap {
       case ItemDeleted => Future.successful(Ok(Json.toJson(Json.obj("status" -> "success", "message" -> "Объект успешно удален!"))))
-      case ItemNotFound => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error",  "code" -> NOT_FOUND, "message" -> "Объект не найден!"))))
-      case OperationForbidden => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error",  "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
-      case _ => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error",  "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при удалении объекта!"))))
+      case ItemNotFound => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Объект не найден!"))))
+      case OperationForbidden => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error", "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
+      case _ => Future.successful(BadRequest(Json.toJson(Json.obj("status" -> "error", "code" -> INTERNAL_SERVER_ERROR, "message" -> "Произошла ошибка при удалении объекта!"))))
     }
   }
 }
