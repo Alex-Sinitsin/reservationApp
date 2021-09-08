@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 
 import FullCalendar from "@fullcalendar/react";
 
@@ -15,14 +15,12 @@ import {Button, Modal, ModalBody, ModalFooter} from "react-bootstrap";
 import ModalHeader from "react-bootstrap/ModalHeader";
 
 
-
-export default function MyCalendar() {
+const MyCalendar = () => {
   const [eventList, setEventList] = useState([]);
   const [alarmTime2, setAlarm] = useState([]);
   const [seconds, setSeconds] = useState([]);
 
   const currentUser = AuthService.getCurrentUser();
-
 
   const [modal, setModal] = React.useState(false);
   const [event, setEvent] = React.useState({
@@ -30,99 +28,100 @@ export default function MyCalendar() {
     start: new Date()
   });
 
-  function toggle() {
-    setModal({ modal: !modal });
+  const handleEventClick = (eventInfo) => {
+    setModal(true);
+    setEvent(eventInfo.event);
   };
 
-  function handleEventClick({ event, el }) {
-    toggle();
-    setEvent({ event });
-  };
+  const handleModalClose = () => {
+    setModal(false);
+    setEvent(null);
+  }
 
+  const calendarRef = useRef(null);
+
+  async function getEventData() {
+    try {
+      const response = await EventService.getEvents();
+
+      const parsedList = response.data && response.data.map((event) => {
+        return {
+          id: event.id,
+          title: event.title,
+          start: event.startDateTime,
+          end: event.endDateTime,
+          members: event.members.users,
+          description: event.description,
+          color: (event.members.users.find(user => user.id === currentUser.userInfo.id)) ? 'red' : {} //Изменяет цвет, если в событии участвует user
+        }
+      })
+
+      setEventList(parsedList);
+    } catch (err) {
+      console.log(err, "API ERROR");
+    }
+  }
 
   // Получение данных о событиях
   useEffect(() => {
-    async function getEventData() {
-      try {
-        const response = await EventService.getEvents;
-
-        const parsedList = response.data && response.data.map((event) => {
-          return {
-            id: event.id,
-            title: event.title,
-            start: event.startDateTime,
-            end: event.endDateTime,
-            members: event.members.users,
-            description: event.description,
-            color: (event.members.users.find(user => user.id === currentUser.userInfo.id)) ? 'red' : {} //Изменяет цвет, если в событии участвует user
-          }
-        })
-
-        setEventList(parsedList);
-      } catch (err) {
-        console.log(err, "API ERROR");
-      }
-    }
-
     getEventData();
   }, [eventList]);
 
 
-
-
   return (
-      <div id="calendar" className="container" ref="calendar">
-    <FullCalendar
-      themeSystem="bootstrap"
-      firstDay={1}
-      businessHours={{
-        daysOfWeek: [1, 2, 3, 4, 5],
-      }}
-      navLinks={true}
-      nowIndicator={true}
-      height={750}
-      slotDuration={'00:30:00'}
-      defaultView="dayGridMonth"
-      headerToolbar={{
-        left: 'prev,today,next',
-        center: 'title',
-        right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
-      }}
-      buttonText={{
-        prev: '<<',
-        next: '>>',
-        listMonth: 'Расписание'
-      }}
-      dayMaxEvents={true}
-      footerToolbar={{
-        right: "deleteEvent"
-      }}
-      locales={ruLocale}
-      locale='ru'
-      customButtons={{
-        deleteEvent: {
-          text: 'Удалить',
-          click: function () {
-            let event = eventList.id;
-            alert("Вы действительно хотите удалить событие?");
-            event.remove();
-          }
-        },
-      }}
+    <div id="calendar" className="container" ref={calendarRef}>
+      <FullCalendar
+        themeSystem="bootstrap"
+        firstDay={1}
+        businessHours={{
+          daysOfWeek: [1, 2, 3, 4, 5],
+        }}
+        navLinks={true}
+        nowIndicator={true}
+        height={750}
+        slotDuration={'00:30:00'}
+        defaultView="dayGridMonth"
+        headerToolbar={{
+          left: 'prev,today,next',
+          center: 'title',
+          right: "dayGridMonth,timeGridWeek,timeGridDay,listMonth"
+        }}
+        buttonText={{
+          prev: '<<',
+          next: '>>',
+          listMonth: 'Расписание'
+        }}
+        dayMaxEvents={true}
+        footerToolbar={{
+          right: "deleteEvent"
+        }}
+        locales={ruLocale}
+        locale='ru'
+        customButtons={{
+          deleteEvent: {
+            text: 'Удалить',
+            click: function () {
+              let event = eventList.id;
+              alert("Вы действительно хотите удалить событие?");
+              event.remove();
+            }
+          },
+        }}
 
-      plugins={[dayGridPlugin, listPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin]}
-      events={eventList}
-      editable={false}
-      droppable={false}
-      eventResizableFromStart={true}
-      allDaySlot={false}
-      eventClick={handleEventClick}
-    />
+        plugins={[dayGridPlugin, listPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin]}
+        events={eventList}
+        // editable={false}
+        droppable={false}
+        eventResizableFromStart={true}
+        allDaySlot={false}
+        eventClick={handleEventClick}
+      />
+      {event && (
         <Modal
-            isOpen={modal}
-            toggle={toggle}
+          show={modal}
+          onHide={handleModalClose}
         >
-          <ModalHeader toggle={toggle}>
+          <ModalHeader>
             {event.title}
           </ModalHeader>
           <ModalBody>
@@ -132,11 +131,14 @@ export default function MyCalendar() {
           </ModalBody>
           <ModalFooter>
             <Button color="primary">Do Something</Button>{" "}
-            <Button color="secondary" onClick={toggle}>
+            <Button color="secondary" onClick={handleModalClose}>
               Cancel
             </Button>
           </ModalFooter>
         </Modal>
-      </div>
+      )};
+    </div>
   );
 }
+
+export default MyCalendar
