@@ -35,6 +35,16 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
   }
 
   /**
+   * Извлекает даные о событии
+   *
+   * @param eventID ID события
+   * @return
+   */
+  def getEventByID(eventID: Long): Future[Option[Event]] = {
+    eventDAO.getByID(eventID)
+  }
+
+  /**
    * Метод сохраняет новое событие
    *
    * @param eventData Данные с формы
