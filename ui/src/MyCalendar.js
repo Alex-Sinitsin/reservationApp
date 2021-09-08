@@ -11,21 +11,26 @@ import bootstrapPlugin from '@fullcalendar/bootstrap'
 import EventService from "./services/event.service";
 import AuthService from "./services/auth.service";
 import ChoiceForm from "./components/ChoiceForm";
-import {Button, Modal, ModalBody, ModalFooter} from "react-bootstrap";
+import {Modal, ModalBody, ModalFooter} from "react-bootstrap";
 import ModalHeader from "react-bootstrap/ModalHeader";
+import moment from "moment";
 
 
 const MyCalendar = () => {
   const [eventList, setEventList] = useState([]);
-  const [alarmTime2, setAlarm] = useState([]);
-  const [seconds, setSeconds] = useState([]);
 
   const currentUser = AuthService.getCurrentUser();
 
   const [modal, setModal] = React.useState(false);
   const [event, setEvent] = React.useState({
+    id: "",
     title: "",
-    start: new Date()
+    start: new Date(),
+    end: new Date(),
+    orgUserId: "",
+    members: "",
+    itemID: "",
+    description: "",
   });
 
   const handleEventClick = (eventInfo) => {
@@ -43,14 +48,15 @@ const MyCalendar = () => {
   async function getEventData() {
     try {
       const response = await EventService.getEvents();
-
       const parsedList = response.data && response.data.map((event) => {
         return {
           id: event.id,
           title: event.title,
           start: event.startDateTime,
           end: event.endDateTime,
+          orgUserID: event.orgUserId,
           members: event.members.users,
+          itemID: event.itemID,
           description: event.description,
           color: (event.members.users.find(user => user.id === currentUser.userInfo.id)) ? 'red' : {} //Изменяет цвет, если в событии участвует user
         }
@@ -122,18 +128,24 @@ const MyCalendar = () => {
           onHide={handleModalClose}
         >
           <ModalHeader>
-            {event.title}
+            <h4 className="col-12 modal-title text-center">{event.title}</h4>
+
           </ModalHeader>
           <ModalBody>
             <div>
-              <p>{event.start.toISOString()}</p>
+
+              <p><b>Что занимается:</b> {event.itemID}</p>
+              <p><b>Организатор:</b> {event.orgUserId}</p>
+              <p><b>Начало события:</b> {event.start.toISOString().replace('T', ' ').slice(0,-8)}</p>
+              <p><b>Конец события:</b> {event.end.toISOString().replace('T', ' ').slice(0,-8)}</p>
+              <p><b>Участники:</b> {event.members}</p>
+              <p><b>Описание:</b> {event.description}</p>
+
             </div>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary">Do Something</Button>{" "}
-            <Button color="secondary" onClick={handleModalClose}>
-              Cancel
-            </Button>
+            <button type="button" className="btn btn-danger" onClick={handleModalClose}>Удалить событие</button>
+            <button type="button" className="btn btn-primary" onClick={handleModalClose}>Закрыть</button>
           </ModalFooter>
         </Modal>
       )};
