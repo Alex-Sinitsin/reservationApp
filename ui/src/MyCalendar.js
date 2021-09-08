@@ -71,7 +71,7 @@ const MyCalendar = () => {
   // Получение данных о событиях
   useEffect(() => {
     getEventData();
-  }, [eventList]);
+  }, []);
 
 
   return (
