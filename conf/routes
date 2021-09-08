@@ -22,7 +22,7 @@ DELETE      /events/:eventId                  controllers.EventController.delete
 # Объекты
 GET        /items                             controllers.ItemController.listAll()
 GET        /items/:itemId                     controllers.ItemController.getByID(itemId: Long)
-POST       /items                             controllers.ItemController.saveItem(itemId: Long = -1)
+POST       /items                             controllers.ItemController.saveItem(itemId: Long)
 PUT        /items/:itemId                     controllers.ItemController.saveItem(itemId: Long)
 DELETE     /items/:itemId                     controllers.ItemController.deleteItem(itemId: Long)
 

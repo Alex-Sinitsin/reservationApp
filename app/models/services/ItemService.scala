@@ -47,7 +47,7 @@ class ItemService @Inject()(itemDAO: ItemDAO)(implicit ex: ExecutionContext) {
       itemDAO.getByID(itemID).flatMap {
         case Some(_) =>
           itemDAO.getByName(itemData.name).flatMap{
-            case Some(_) =>Future.successful(ItemAlreadyExist)
+            case Some(_) => Future.successful(ItemAlreadyExist)
             case None => itemDAO.update(itemID, itemData).map(ItemUpdated)
           }
         case None => itemDAO.add(itemData).map(ItemCreated)
