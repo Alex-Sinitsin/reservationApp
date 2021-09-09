@@ -157,17 +157,6 @@ const MyCalendar = () => {
         }}
         locales={ruLocale}
         locale='ru'
-        customButtons={{
-          deleteEvent: {
-            text: 'Удалить',
-            click: function () {
-              let event = eventList.id;
-              alert("Вы действительно хотите удалить событие?");
-              event.remove();
-            }
-          },
-        }}
-
         plugins={[dayGridPlugin, listPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin]}
         events={eventList}
         editable={false}
@@ -183,7 +172,6 @@ const MyCalendar = () => {
         >
           <ModalHeader>
             <h4 className="col-12 modal-title text-center">{eventStateData.title}</h4>
-
           </ModalHeader>
           <ModalBody>
             <div>
@@ -196,9 +184,7 @@ const MyCalendar = () => {
                 {eventStateData.members != [] ?
                   eventStateData.members.map(member => {
                       return (
-
                         <li key={member.id}>{member.name} {member.lastName}</li>
-
                       )
                     }
                   ) : null}
