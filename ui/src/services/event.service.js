@@ -37,7 +37,20 @@ const getEvents = () => {
 }
 
 
+const deleteEvent = (id) => {
+    return axios.delete(API_URL + "events/" + id,
+        {
+            headers: {
+                'Csrf-Token': Cookies.get('csrfCookie'),
+                'Content-Type': 'application/json',
+                'X-Auth-Token': authHeader(),
+            }
+        });
+}
+
+
 export default {
     add,
-    getEvents
+    getEvents,
+    deleteEvent,
 }
