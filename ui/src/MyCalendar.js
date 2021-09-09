@@ -53,10 +53,16 @@ const MyCalendar = () => {
   const currentUser = AuthService.getCurrentUser();
 
   const [modal, setModal] = React.useState(false);
+  const [deleteButton, setDeleteButton] = React.useState(false)
 
   const [eventStateData, setEventStateData] = React.useState(defaultEvent);
   const [orgUserInfo, setOrgUser] = React.useState(defaultOrgUser);
   const [itemInfo, setItemInfo] = React.useState(defaultItem);
+
+
+    const showDeleteButton = () => {
+      currentUser.userInfo.id === orgUserInfo.id ? setDeleteButton(true) : setDeleteButton(true);
+    }
 
   async function getOrgUserInfo(userID) {
     await UserService.getUserByID(userID).then(userData => setOrgUser(userData.data))
@@ -79,11 +85,13 @@ const MyCalendar = () => {
       itemID: eventInfo.event.extendedProps ? eventInfo.event.extendedProps.itemID : null,
       description: eventInfo.event.extendedProps ? eventInfo.event.extendedProps.description : null,
     });
+    showDeleteButton();
     setModal(true);
   };
 
   const handleModalClose = () => {
     setModal(false);
+    setDeleteButton(false);
     setEventStateData(defaultEvent);
     setOrgUser(defaultOrgUser);
   }
@@ -190,7 +198,7 @@ const MyCalendar = () => {
             </div>
           </ModalBody>
           <ModalFooter>
-            <button type="button" className="btn btn-danger" onClick={e => deleteEvent(e,eventStateData.id)}>Удалить событие</button>
+            {deleteButton && <button type="button" className="btn btn-danger" onClick={e => deleteEvent(e,eventStateData.id)}>Удалить событие</button>}
             <button type="button" className="btn btn-primary" onClick={handleModalClose}>Закрыть</button>
           </ModalFooter>
         </Modal>
