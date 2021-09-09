@@ -6,6 +6,7 @@ import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import timeGridPlugin from "@fullcalendar/timegrid";
 import interactionPlugin from '@fullcalendar/interaction';
+import bootstrapPlugin from '@fullcalendar/bootstrap';
 
 import "@fullcalendar/common/main.css";
 import "@fullcalendar/daygrid/main.css";
@@ -14,12 +15,13 @@ import "@fullcalendar/timegrid/main.css";
 import 'bootstrap/dist/css/bootstrap.css';
 import '@fortawesome/fontawesome-free/css/all.css';
 
-import bootstrapPlugin from '@fullcalendar/bootstrap';
 
 export default function MyCalendar() {
     const [eventsList, setEventsList] = useState([]);
     const [alarmTime2, setAlarm] = useState([]);
     const [seconds, setSeconds] = useState([]);
+    const [isOpen, setOpen] = React.useState(false);
+    const result = eventsList.map(event => <div>{event.title}</div>);
 
         var state = {
            currentTime: new Date().toLocaleTimeString('ru', { hour12: false }),
@@ -42,7 +44,9 @@ export default function MyCalendar() {
              }
 
   return (
+    <div>
       <FullCalendar
+        allDaySlot={false}
         firstDay={1}
         businessHours={{
           daysOfWeek: [ 1, 2, 3, 4, 5 ],
@@ -61,24 +65,27 @@ export default function MyCalendar() {
                 }}
                 headerToolbar={{
                   left: "prev today next",
-                  center: "title myDeleteEvent",
+                  center: "title",
                   right: "dayGridMonth,timeGridWeek,timeGridDay"
                 }}
-                footerToolbar={{
-                    left: "myCustomButton"
-                }}
-                customButtons={{
-                        myDeleteEvent: {
-                            text: 'Удалить',
-                               click: function() {
-                                 var event = eventsList.event;
-                                 alert("Are You Remove Event "+event);
-                                 event.remove();
-                                    }
-                                    },
+        footerToolbar={{
+                            left: "myCustomButton",
+                            right: "deleteEvents"
+                        }}
+                        customButtons={{
+                                deleteEvents: {
+                                          text: 'Очистить',
+                                          click: function () {
+                                            const question = window.prompt("Вы действительно хотите удалить все события? (да/нет)");
+                                            if (question == 'да') {
+                                                setEventsList([]);
+                                                }
+                                          }
+                                        },
                         myCustomButton: {
                             text: 'Создать',
                                     click: function() {
+
                                       var startDateStr = prompt('Введите время начала события (ГГГГ-ММ-ДД ЧЧ:ММ):');
                                       var startDate = new Date(startDateStr);
                                       var endDateStr = prompt('Введите время конца события (ГГГГ-ММ-ДД ЧЧ:ММ):');
@@ -97,9 +104,10 @@ export default function MyCalendar() {
                                           members: members,
                                           alarmTime1: startDate.toLocaleTimeString('ru', { hour12: false })
                                         };
-                                        alert('Хорошо! Вы создали новое событие.');
+
                                         setEventsList([...eventsList, addEvent]);
                                         setAlarm([...alarmTime2, addEvent.alarmTime1]);
+
                                       } else {
                                         alert('Invalid date.');
                                         }
@@ -116,7 +124,9 @@ export default function MyCalendar() {
         droppable={true}
         eventResizableFromStart={true}
         locale="ru"
+        eventClick={(event) => alert(eventsList.map(event => event.title ))}
 
       />
+      </div>
   );
 }
