@@ -2,4 +2,8 @@ header {
     margin-bottom: 10px;
 }
 
+.fc-timegrid-event, .fc-daygrid-event, .fc-list-event {
+    cursor: pointer;
+}
+
 
