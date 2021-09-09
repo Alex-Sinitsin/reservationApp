@@ -113,7 +113,7 @@ const MyCalendar = () => {
           members: event.members.users,
           itemID: event.itemId,
           description: event.description,
-          color: event.members.users.find(user => user.id === currentUser.userInfo.id) || event.orgUserId === currentUser.userInfo.id ? 'red' : {} //Изменяет цвет, если в событии участвует user
+          color: event.members.users.find(user => user.id === currentUser.userInfo.id) ? 'orange' : event.orgUserId === currentUser.userInfo.id ? 'red' : {} //Изменяет цвет, если в событии участвует user
         }
       })
 
