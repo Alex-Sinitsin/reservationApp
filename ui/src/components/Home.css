@@ -20,4 +20,10 @@ header {
     z-index: 15 !important;
 }
 
+.notificationMessage {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+}
+
 

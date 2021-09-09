@@ -8,6 +8,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
     min-height: 600px;
     height: 100vh;
+    position: relative;
 }
 
 code {

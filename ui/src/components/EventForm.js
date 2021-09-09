@@ -26,88 +26,66 @@ const required = value => {
 
 const AddEvent = (props) => {
 
+  const { successful, handleAddEvent } = props;
+
   const form = useRef();
   const checkBtn = useRef();
   const currentUser = AuthService.getCurrentUser();
 
-  const [title, setTitle] = useState("");
-  const [startDateTime, setStartDateTime] = useState("");
-  const [endDateTime, setEndDateTime] = useState("");
   const [orgUserID] = useState(currentUser.userInfo.id);
+  const [formData, setFormData] = React.useState({
+    title: "",
+    startDateTime: null,
+    endDateTime: null,
+    orgUserID: orgUserID,
+    members: [],
+    itemID: null,
+    description: ""
+  })
 
-  const [members, setMembers] = useState("");
   const [membersList, setMembersList] = useState("");
 
-  const [itemID, setItemID] = useState(null);
   const [itemList, setItemList] = useState([]);
-
-  const [description, setDescription] = useState("");
-
-  const [successful, setSuccessful] = useState(false);
-  const [message, setMessage] = useState("");
-
 
   const onChangeTitle = (e) => {
     const title = e.target.value;
-    setTitle(title);
+    let formDataCopy = {...formData}
+    formDataCopy.title = title;
+    setFormData(formDataCopy);
   };
 
   const onChangeStartDateTime = (e) => {
     const startDateTime = e.target.value;
-    setStartDateTime(startDateTime);
+    let formDataCopy = {...formData}
+    formDataCopy.startDateTime = startDateTime;
+    setFormData(formDataCopy);
   };
 
   const onChangeEndDateTime = (e) => {
     const endDateTime = e.target.value;
-    setEndDateTime(endDateTime);
+    let formDataCopy = {...formData}
+    formDataCopy.endDateTime = endDateTime;
+    setFormData(formDataCopy);
   };
 
   const onChangeDescription = (e) => {
     const description = e.target.value;
-    setDescription(description);
+    let formDataCopy = {...formData}
+    formDataCopy.description = description;
+    setFormData(formDataCopy);
   };
 
+  const handleChangeItem = (selectedItem) => {
+    let formDataCopy = {...formData}
+    formDataCopy.itemID = selectedItem;
+    setFormData(formDataCopy);
+  }
 
-  const handleAddEvent = (e) => {
-    e.preventDefault();
-
-    setMessage("");
-    setSuccessful(false);
-
-
-    form.current.validateAll();
-
-
-    if (checkBtn.current.context._errors.length === 0) {
-      EventService.add
-      (
-        title,
-        startDateTime.replace('T', ' '),
-        endDateTime.replace('T', ' '),
-        orgUserID,
-        members ? members.map(x => x.value) : "[]",
-        itemID.value,
-        description
-      )
-        .then(
-          (response) => {
-            setMessage(response.data.message);
-            setSuccessful(true);
-          },
-          (error) => {
-            const resMessage =
-              (error.response &&
-                error.response.data &&
-                error.response.data.message) ||
-              error.message ||
-              error.toString();
-
-            setMessage(resMessage);
-            setSuccessful(false);
-          }
-        );
-    }
-  };
+  const handleChangeMembers = (selectedMembers) => {
+    let formDataCopy = {...formData}
+    formDataCopy.members = selectedMembers;
+    setFormData(formDataCopy);
+  }
 
   // Получение данных об Items в Select
   async function getItemData() {
@@ -130,6 +108,18 @@ const AddEvent = (props) => {
   useEffect(() => {
     getItemData();
   }, []);
+
+  useEffect(() => {
+    setFormData({
+      title: "",
+      startDateTime: null,
+      endDateTime: null,
+      orgUserID: orgUserID,
+      members: [],
+      itemID: null,
+      description: ""
+    })
+  }, [successful]);
 
 
   // Получение данных о Users в Select
@@ -158,33 +148,16 @@ const AddEvent = (props) => {
   }, []);
 
 
-  function handleChangeItem(selectedItem) {
-    setItemID(selectedItem);
-  }
-
-  function handleChangeMembers(selectedMembers) {
-    setMembers(selectedMembers);
-  }
-
-
   return (
     <div className="card card-container">
-      <Form onSubmit={handleAddEvent} ref={form}>
+      <Form onSubmit={(e) => handleAddEvent(e, form, checkBtn, formData)} ref={form}>
         <div>
           <div className="title-form">Создание события</div>
-
-          {message && (
-            <div className="form-group">
-              <div className={successful ? "alert alert-success" : "alert alert-danger"} role="alert">
-                {message}
-              </div>
-            </div>
-          )}
 
           <div className="form-group">
             <label htmlFor="itemID">Помещение/Предмет: <span className="required-field">*</span></label>
             <Select
-              value={itemID}
+              value={formData.itemID}
               onChange={handleChangeItem}
               options={itemList}
               placeholder={null}
@@ -200,7 +173,7 @@ const AddEvent = (props) => {
               type="text"
               className="form-control"
               name="title"
-              value={title}
+              value={formData.title}
               onChange={onChangeTitle}
               validations={[required]}
             />
@@ -212,7 +185,7 @@ const AddEvent = (props) => {
               type="datetime-local"
               className="form-control"
               name="startDateTime"
-              value={startDateTime}
+              value={formData.startDateTime}
               onChange={onChangeStartDateTime}
               validations={[required]}
             />
@@ -224,7 +197,7 @@ const AddEvent = (props) => {
               type="datetime-local"
               className="form-control"
               name="endDateTime"
-              value={endDateTime}
+              value={formData.endDateTime}
               onChange={onChangeEndDateTime}
               validations={[required]}
             />
@@ -235,7 +208,7 @@ const AddEvent = (props) => {
             <Select
               isMulti
               name="members"
-              value={members}
+              value={formData.members}
               options={membersList}
               placeholder={null}
               onChange={handleChangeMembers}
@@ -251,7 +224,7 @@ const AddEvent = (props) => {
               type="description"
               className="form-control"
               name="description"
-              value={description}
+              value={formData.description}
               onChange={onChangeDescription}
             />
           </div>
