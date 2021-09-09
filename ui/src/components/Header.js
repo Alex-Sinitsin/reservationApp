@@ -25,7 +25,7 @@ const Header = () => {
 
 
   return (
-    <div>
+    <header>
       <nav className="navbar navbar-expand navbar-dark bg-primary">
         <div className="container-fluid">
           <div className="navbar-nav">
@@ -86,7 +86,7 @@ const Header = () => {
           )}
         </div>
       </nav>
-    </div>
+    </header>
   );
 };
 

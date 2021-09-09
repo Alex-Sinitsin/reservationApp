@@ -81,79 +81,79 @@ const AddEvent = (props) => {
     if (checkBtn.current.context._errors.length === 0) {
       EventService.add
       (
-          title,
-          startDateTime.replace('T', ' '),
-          endDateTime.replace('T', ' '),
-          orgUserID,
-          members ? members.map(x => x.value) : "[]",
-          itemID.value,
-          description
+        title,
+        startDateTime.replace('T', ' '),
+        endDateTime.replace('T', ' '),
+        orgUserID,
+        members ? members.map(x => x.value) : "[]",
+        itemID.value,
+        description
       )
         .then(
           (response) => {
             setMessage(response.data.message);
             setSuccessful(true);
           },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
+          (error) => {
+            const resMessage =
+              (error.response &&
+                error.response.data &&
+                error.response.data.message) ||
+              error.message ||
+              error.toString();
 
-          setMessage(resMessage);
-          setSuccessful(false);
-        }
-      );
+            setMessage(resMessage);
+            setSuccessful(false);
+          }
+        );
     }
   };
 
-// Получение данных об Items в Select
-  useEffect(() => {
-    async function getItemData() {
-      try {
-        const response = await ItemService.getItems();
-        const parsedList = response.data && response.data.map((item) => {
+  // Получение данных об Items в Select
+  async function getItemData() {
+    try {
+      const response = await ItemService.getItems();
+      const parsedList = response.data && response.data.map((item) => {
 
-          return {
-            value: item.id,
-            label: `${item.name}`
-          }
-        })
+        return {
+          value: item.id,
+          label: `${item.name}`
+        }
+      })
 
-        setItemList(parsedList);
-      } catch (err) {
-        console.log(err, "API ERROR");
-      }
+      setItemList(parsedList);
+    } catch (err) {
+      console.log(err, "API ERROR");
     }
+  }
 
+  useEffect(() => {
     getItemData();
   }, []);
 
 
-// Получение данных о Users в Select
-  useEffect(() => {
-    async function getMembersData() {
-      try {
-        const response = await UserService.getUsers()
+  // Получение данных о Users в Select
+  async function getMembersData() {
+    try {
+      const response = await UserService.getUsers()
 
-        let userList = response.data && response.data.filter(user => user.id !== currentUser.userInfo.id)
+      let userList = response.data && response.data.filter(user => user.id !== currentUser.userInfo.id)
 
-        const parsedList = userList && userList.map((user) => {
+      const parsedList = userList && userList.map((user) => {
 
-          return {
-            value: user.id,
-            label: `${user.name} ${user.lastName} - ${user.position}`
-          }
-        })
+        return {
+          value: user.id,
+          label: `${user.name} ${user.lastName} - ${user.position}`
+        }
+      })
 
-        setMembersList(parsedList);
-      } catch (err) {
-        console.log(err, "API ERROR");
-      }
+      setMembersList(parsedList);
+    } catch (err) {
+      console.log(err, "API ERROR");
     }
+  }
 
+  useEffect(() => {
     getMembersData();
   }, []);
 
@@ -258,7 +258,7 @@ const AddEvent = (props) => {
 
 
           <div className="form-group">
-              <button className="btn eventSubmitBtn btn-block btn-primary">Добавить событие</button>
+            <button className="btn eventSubmitBtn btn-block btn-primary">Добавить событие</button>
           </div>
         </div>
 

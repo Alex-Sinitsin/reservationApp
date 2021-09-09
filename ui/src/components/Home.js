@@ -1,7 +1,6 @@
-import React, {Component, useEffect} from 'react'
+import React, {useEffect} from 'react'
 import './Home.css'
 import Header from './Header'
-import 'moment/locale/ru'
 import MyCalendar from '../MyCalendar';
 import EventForm from "./EventForm";
 import ChoiceForm from "./ChoiceForm";
@@ -15,8 +14,7 @@ const Home = () => {
 
   return (
     <div>
-      <header><Header/></header>
-
+      <Header />
       <div className="container">
         <div className="row">
           <div className="col-md-3 eventForm"><EventForm/></div>
@@ -26,8 +24,6 @@ const Home = () => {
           </div>
         </div>
       </div>
-
-
     </div>
   )
 }
