@@ -152,9 +152,6 @@ const MyCalendar = () => {
           listMonth: 'Расписание'
         }}
         dayMaxEvents={true}
-        footerToolbar={{
-          right: "deleteEvent"
-        }}
         locales={ruLocale}
         locale='ru'
         plugins={[dayGridPlugin, listPlugin, timeGridPlugin, interactionPlugin, bootstrapPlugin]}
