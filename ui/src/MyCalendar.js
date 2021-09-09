@@ -13,6 +13,7 @@ import EventService from "./services/event.service";
 import UserService from "./services/user.service";
 import ItemService from "./services/item.service";
 import AuthService from "./services/auth.service";
+import ChoiceForm from "./components/ChoiceForm";
 
 import {Modal, ModalBody, ModalFooter} from "react-bootstrap";
 import ModalHeader from "react-bootstrap/ModalHeader";
@@ -111,6 +112,22 @@ const MyCalendar = () => {
   async function getEventData() {
     try {
       const response = await EventService.getEvents();
+
+      // response фильтруется
+      const filteredResponse = () => {
+        switch (ChoiceForm.chooseItems.whichItemID) {
+          case 'all':
+            return response.data && response.data
+          case 'mine':
+            return response.data && response.data.filter(event => event.orgUserId == currentUser.userInfo.id);
+          case 'member':
+            return response.data && response.data.filter(event => event.orgUserId == currentUser.userInfo.id || event.members.users.find(user => user.id === currentUser.userInfo.id));
+          case 'other':
+            return response.data && response.data.filter(event => event.orgUserId == currentUser.userInfo.id || event.members.users.find(user => user.id === currentUser.userInfo.id));
+        }
+      }
+
+      // ЗАМЕНИТЬ НА filteredResponse
       const parsedList = response.data && response.data.map((event) => {
         return {
           id: event.id,

@@ -9,6 +9,8 @@ const ChooseItems = (props) => {
   const [itemID, setItemID] = useState(null);
   const [itemList, setItemList] = useState([]);
 
+  const [whichItemID, setWhichItemID] = useState(null);
+
 // Получение данных об Items в Select
   useEffect(() => {
     async function getItemData() {
@@ -36,10 +38,16 @@ const ChooseItems = (props) => {
     setItemID(selectedItem);
   }
 
+  function handleChangeWhichItem(selectedItem) {
+    setWhichItemID(selectedItem);
+  }
 
-  const whichItems = [
-    {value: 'mine', label: 'Мои события'},
+
+  const whichItemsList = [
     {value: 'all', label: 'Все события'},
+    {value: 'mine', label: 'Мои события'},
+    {value: 'member', label: 'Участник события'},
+    {value: 'other', label: 'Чужие события'},
   ]
 
   return (
@@ -48,20 +56,23 @@ const ChooseItems = (props) => {
         <div className="col">
           <label htmlFor="itemID">Помещение/Предмет:</label>
           <Select
-            value={itemID}
-            onChange={handleChangeItem}
-            options={itemList}
-            placeholder={null}
-            components={{IndicatorSeparator: () => null}}
+              value={itemID}
+              onChange={handleChangeItem}
+              options={itemList}
+              placeholder={null}
+              components={{IndicatorSeparator: () => null}}
           />
         </div>
 
         <div className="col">
           <label htmlFor="itemID">Отображать:</label>
           <Select
-            options={whichItems}
-            placeholder={null}
-            components={{IndicatorSeparator: () => null}}
+              value={whichItemID}
+              onChange={handleChangeWhichItem}
+              options={whichItemsList}
+              defaultValue={whichItemsList[0]}
+              placeholder={null}
+              components={{IndicatorSeparator: () => null}}
           />
         </div>
       </div>
