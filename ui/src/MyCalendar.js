@@ -194,7 +194,7 @@ const MyCalendar = () => {
             <button type="button" className="btn btn-primary" onClick={handleModalClose}>Закрыть</button>
           </ModalFooter>
         </Modal>
-      )};
+      )}
     </div>
   );
 }
