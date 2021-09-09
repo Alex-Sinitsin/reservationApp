@@ -3,7 +3,7 @@ package models.services
 import forms.EventForm.EventData
 import models.{Event, User}
 import models.daos.{EventDAO, UserDAO}
-import play.api.libs.json.Json
+import play.api.libs.json.{Json, OFormat}
 
 import java.time.{Duration, LocalDateTime}
 import java.util.UUID
@@ -11,6 +11,9 @@ import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: ExecutionContext) {
+
+  case class EventWithOrgUserInfo(event: Event, orgUserInfo: User)
+  implicit val EventWithOrgUserInfoFormat: OFormat[EventWithOrgUserInfo] = Json.format[EventWithOrgUserInfo]
 
   /**
    * Извлекает список событий
