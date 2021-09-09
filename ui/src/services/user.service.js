@@ -9,9 +9,22 @@ const getUsers = () => {
     {
       headers: {
         "Csrf-Token": Cookies.get("csrfCookie"),
+        'Content-Type': 'application/json',
         'X-Auth-Token': authHeader(),
       },
     })
+}
+
+const getUserByID = (userID) => {
+  return axios.get(API_URL + 'users/' + userID,
+    {
+      headers: {
+        "Csrf-Token": Cookies.get("csrfCookie"),
+        'Content-Type': 'application/json',
+        'X-Auth-Token': authHeader(),
+      },
+    }
+  )
 }
 
 const changePassword = (currentPassword, newPassword, confirmPassword) => {
@@ -30,5 +43,5 @@ const changePassword = (currentPassword, newPassword, confirmPassword) => {
 }
 
 export default {
-  getUsers, changePassword
+  getUsers, getUserByID, changePassword
 }

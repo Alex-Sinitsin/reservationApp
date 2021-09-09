@@ -9,11 +9,23 @@ const getItems = () => {
         {
             headers: {
               "Csrf-Token": Cookies.get("csrfCookie"),
+              'Content-Type': 'application/json',
               'X-Auth-Token': authHeader(),
             }
         });
 }
 
+const getItemByID = (itemID) => {
+  return axios.get(API_URL + 'items/' + itemID,
+    {
+      headers: {
+        "Csrf-Token": Cookies.get("csrfCookie"),
+        'Content-Type': 'application/json',
+        'X-Auth-Token': authHeader(),
+      }
+    });
+}
+
 export default{
-    getItems,
+    getItems, getItemByID,
 }
