@@ -31,15 +31,29 @@ const MyCalendar = () => {
     description: "",
   });
 
+
   const handleEventClick = (eventInfo) => {
     setModal(true);
     setEvent(eventInfo.event);
   };
 
-  const handleModalClose = () => {
+  const handleModalClose= () => {
     setModal(false);
     setEvent(null);
   }
+
+
+  const deleteEvent = (e, id) => {
+    e.preventDefault();
+    try {
+      EventService.deleteEvent(id);
+      handleModalClose();
+    } catch (err) {
+      console.log(err, "Удаление не удалось");
+    }
+  };
+
+
 
   const calendarRef = useRef(null);
 
@@ -56,7 +70,7 @@ const MyCalendar = () => {
           members: event.members.users,
           itemID: event.itemID,
           description: event.description,
-          color: (event.members.users.find(user => user.id === currentUser.userInfo.id)) ? 'red' : {} //Изменяет цвет, если в событии участвует user
+          color: event.members.users.find(user => user.id === currentUser.userInfo.id) || event.orgUserId === currentUser.userInfo.id ? 'red' : {} //Изменяет цвет, если в событии участвует user
         }
       })
 
@@ -141,7 +155,7 @@ const MyCalendar = () => {
             </div>
           </ModalBody>
           <ModalFooter>
-            <button type="button" className="btn btn-danger" onClick={handleModalClose}>Удалить событие</button>
+            <button type="button" className="btn btn-danger" onClick={e => deleteEvent(e,event.id)}>Удалить событие</button>
             <button type="button" className="btn btn-primary" onClick={handleModalClose}>Закрыть</button>
           </ModalFooter>
         </Modal>
