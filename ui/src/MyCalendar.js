@@ -60,9 +60,9 @@ const MyCalendar = () => {
   const [itemInfo, setItemInfo] = React.useState(defaultItem);
 
 
-    const showDeleteButton = () => {
-      currentUser.userInfo.id === orgUserInfo.id ? setDeleteButton(true) : setDeleteButton(true);
-    }
+  const showDeleteButton = (orgUserId) => {
+    currentUser.userInfo.id === orgUserId || currentUser.userInfo.role === "Admin" ? setDeleteButton(true) : setDeleteButton(false);
+  }
 
   async function getOrgUserInfo(userID) {
     await UserService.getUserByID(userID).then(userData => setOrgUser(userData.data))
@@ -85,7 +85,7 @@ const MyCalendar = () => {
       itemID: eventInfo.event.extendedProps ? eventInfo.event.extendedProps.itemID : null,
       description: eventInfo.event.extendedProps ? eventInfo.event.extendedProps.description : null,
     });
-    showDeleteButton();
+    showDeleteButton(eventInfo.event.extendedProps && eventInfo.event.extendedProps.orgUserID);
     setModal(true);
   };
 
@@ -198,7 +198,9 @@ const MyCalendar = () => {
             </div>
           </ModalBody>
           <ModalFooter>
-            {deleteButton && <button type="button" className="btn btn-danger" onClick={e => deleteEvent(e,eventStateData.id)}>Удалить событие</button>}
+            {deleteButton &&
+            <button type="button" className="btn btn-danger" onClick={e => deleteEvent(e, eventStateData.id)}>Удалить
+              событие</button>}
             <button type="button" className="btn btn-primary" onClick={handleModalClose}>Закрыть</button>
           </ModalFooter>
         </Modal>
