@@ -88,6 +88,16 @@ const MyCalendar = () => {
     setOrgUser(defaultOrgUser);
   }
 
+  const deleteEvent = (e, id) => {
+    e.preventDefault();
+    try {
+      EventService.deleteEvent(id);
+      handleModalClose();
+    } catch (err) {
+      console.log(err, "Удаление не удалось");
+    }
+  };
+
   const calendarRef = useRef(null);
 
   async function getEventData() {
@@ -103,7 +113,7 @@ const MyCalendar = () => {
           members: event.members.users,
           itemID: event.itemId,
           description: event.description,
-          color: (event.members.users.find(user => user.id === currentUser.userInfo.id)) ? 'red' : {} //Изменяет цвет, если в событии участвует user
+          color: event.members.users.find(user => user.id === currentUser.userInfo.id) || event.orgUserId === currentUser.userInfo.id ? 'red' : {} //Изменяет цвет, если в событии участвует user
         }
       })
 
@@ -197,7 +207,7 @@ const MyCalendar = () => {
             </div>
           </ModalBody>
           <ModalFooter>
-            <button type="button" className="btn btn-danger" onClick={handleModalClose}>Удалить событие</button>
+            <button type="button" className="btn btn-danger" onClick={e => deleteEvent(e,eventStateData.id)}>Удалить событие</button>
             <button type="button" className="btn btn-primary" onClick={handleModalClose}>Закрыть</button>
           </ModalFooter>
         </Modal>
