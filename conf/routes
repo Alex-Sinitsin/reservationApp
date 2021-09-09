@@ -1,5 +1,5 @@
 # Маршруты
-GET         /                                 controllers.IndexController.index()
+GET         /                                 controllers.FrontendController.index()
 
 # Пользователи
 GET         /api/signOut                          controllers.SignInController.signOut()
