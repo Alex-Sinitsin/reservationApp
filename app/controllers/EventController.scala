@@ -46,17 +46,11 @@ class EventController @Inject()(silhouette: Silhouette[JWTEnvironment],
    * @param eventID ID события
    * @return
    */
-  def getEventByID(eventID: Long): Action[AnyContent] = silhouette.SecuredAction(hasSignUpMethod[JWTEnvironment#A](CredentialsProvider.ID)).async {
-    implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
-
-      request.identity.role match {
-        case Some("Admin") =>
-          eventService.getEventByID(eventID).flatMap {
-            case Some(event) => Future.successful(Ok(Json.toJson(event)))
-            case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Событие не найдено!"))))
-          }
-        case _ => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error", "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
-      }
+  def getEventByID(eventID: Long): Action[AnyContent] = silhouette.SecuredAction.async { implicit request: Request[AnyContent] =>
+    eventService.getEventByID(eventID).flatMap {
+      case Some(event) => Future.successful(Ok(Json.toJson(event)))
+      case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Событие не найдено!"))))
+    }
   }
 
   /**
