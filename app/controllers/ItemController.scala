@@ -37,16 +37,11 @@ class ItemController @Inject()(silhouette: Silhouette[JWTEnvironment],
    * @param itemID ID объекта
    * @return
    */
-  def getItemByID(itemID: Long): Action[AnyContent] = silhouette.SecuredAction(hasSignUpMethod[JWTEnvironment#A](CredentialsProvider.ID)).async {
-    implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
-
-      request.identity.role match {
-        case Some("Admin") =>
-          itemService.retrieveByID(itemID).flatMap {
-            case Some(item) => Future.successful(Ok(Json.toJson(item)))
-            case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Объект не найден!"))))
-          }
-        case _ => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error", "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
+  def getItemByID(itemID: Long): Action[AnyContent] = silhouette.SecuredAction.async {
+    implicit request: Request[AnyContent] =>
+      itemService.retrieveByID(itemID).flatMap {
+        case Some(item) => Future.successful(Ok(Json.toJson(item)))
+        case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Объект не найден!"))))
       }
   }
 

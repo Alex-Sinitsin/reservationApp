@@ -52,16 +52,11 @@ class UserController @Inject()(silhouette: Silhouette[JWTEnvironment],
    * @param userID ID пользователя
    * @return
    */
-  def getUserByID(userID: UUID): Action[AnyContent] = silhouette.SecuredAction(hasSignUpMethod[JWTEnvironment#A](CredentialsProvider.ID)).async {
-    implicit request: SecuredRequest[JWTEnvironment, AnyContent] =>
-
-      request.identity.role match {
-        case Some("Admin") =>
-          userService.retrieveByID(userID).flatMap {
-            case Some(user) => Future.successful(Ok(Json.toJson(user)))
-            case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Пользователь не найден!"))))
-          }
-        case _ => Future.successful(Forbidden(Json.toJson(Json.obj("status" -> "error", "code" -> FORBIDDEN, "message" -> "Недостаточно прав для выполнения операции!"))))
+  def getUserByID(userID: UUID): Action[AnyContent] = silhouette.SecuredAction.async {
+    implicit request: Request[AnyContent] =>
+      userService.retrieveByID(userID).flatMap {
+        case Some(user) => Future.successful(Ok(Json.toJson(user)))
+        case None => Future.successful(NotFound(Json.toJson(Json.obj("status" -> "error", "code" -> NOT_FOUND, "message" -> "Пользователь не найден!"))))
       }
   }
 
