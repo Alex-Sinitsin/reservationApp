@@ -26,7 +26,7 @@ const required = value => {
 
 const AddEvent = (props) => {
 
-  const { successful, handleAddEvent } = props;
+  const {successful, handleAddEvent} = props;
 
   const form = useRef();
   const checkBtn = useRef();
@@ -35,11 +35,11 @@ const AddEvent = (props) => {
   const [orgUserID] = useState(currentUser.userInfo.id);
   const [formData, setFormData] = React.useState({
     title: "",
-    startDateTime: null,
-    endDateTime: null,
+    startDateTime: "null",
+    endDateTime: "null",
     orgUserID: orgUserID,
-    members: [],
-    itemID: null,
+    members: "",
+    itemID: "",
     description: ""
   })
 
@@ -87,6 +87,25 @@ const AddEvent = (props) => {
     setFormData(formDataCopy);
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    form.current.validateAll();
+
+    if (checkBtn.current.context._errors.length === 0) {
+      handleAddEvent(formData)
+    }
+
+    setFormData({
+      title: "",
+      startDateTime: "null",
+      endDateTime: "null",
+      orgUserID: orgUserID,
+      members: "",
+      itemID: "",
+      description: ""
+    })
+  }
+
   // Получение данных об Items в Select
   async function getItemData() {
     try {
@@ -104,23 +123,6 @@ const AddEvent = (props) => {
       console.log(err, "API ERROR");
     }
   }
-
-  useEffect(() => {
-    getItemData();
-  }, []);
-
-  useEffect(() => {
-    setFormData({
-      title: "",
-      startDateTime: null,
-      endDateTime: null,
-      orgUserID: orgUserID,
-      members: [],
-      itemID: null,
-      description: ""
-    })
-  }, [successful]);
-
 
   // Получение данных о Users в Select
   async function getMembersData() {
@@ -144,13 +146,14 @@ const AddEvent = (props) => {
   }
 
   useEffect(() => {
+    getItemData();
     getMembersData();
-  }, []);
-
+    console.log(formData)
+  }, [formData]);
 
   return (
     <div className="card card-container">
-      <Form onSubmit={(e) => handleAddEvent(e, form, checkBtn, formData)} ref={form}>
+      <Form onSubmit={e => handleSubmit(e)} ref={form}>
         <div>
           <div className="title-form">Создание события</div>
 

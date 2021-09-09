@@ -56,46 +56,39 @@ const Home = () => {
     }
   }
 
-  const handleAddEvent = (e, formRef, checkBtnRef, formData) => {
-    e.preventDefault();
-
+  const handleAddEvent = (formData) => {
     setMessage("");
     setIsNotitcationVisible(false)
     setSuccessfulAddEvent(false);
 
-    formRef.current.validateAll();
+    EventService.add(
+      formData.title,
+      formData.startDateTime.replace('T', ' '),
+      formData.endDateTime.replace('T', ' '),
+      formData.orgUserID,
+      formData.members ? formData.members.map(x => x.value) : "[]",
+      formData.itemID.value,
+      formData.description
+    ).then(
+      (response) => {
+        setMessage(response.data.message);
+        setIsNotitcationVisible(true)
+        setSuccessfulAddEvent(true);
+        getEventData();
+      },
+      (error) => {
+        const resMessage =
+          (error.response &&
+            error.response.data &&
+            error.response.data.message) ||
+          error.message ||
+          error.toString();
 
-    if (checkBtnRef.current.context._errors.length === 0) {
-      EventService.add
-      (
-        formData.title,
-        formData.startDateTime.replace('T', ' '),
-        formData.endDateTime.replace('T', ' '),
-        formData.orgUserID,
-        formData.members ? formData.members.map(x => x.value) : "[]",
-        formData.itemID.value,
-        formData.description
-      ).then(
-        (response) => {
-          setMessage(response.data.message);
-          setIsNotitcationVisible(true)
-          setSuccessfulAddEvent(true);
-          getEventData();
-        },
-        (error) => {
-          const resMessage =
-            (error.response &&
-              error.response.data &&
-              error.response.data.message) ||
-            error.message ||
-            error.toString();
-
-          setMessage(resMessage);
-          setIsNotitcationVisible(true)
-          setSuccessfulAddEvent(false);
-        }
-      );
-    }
+        setMessage(resMessage);
+        setIsNotitcationVisible(true)
+        setSuccessfulAddEvent(false);
+      }
+    );
   };
 
   const handleDeleteEvent = (e, eventID) => {
@@ -186,13 +179,14 @@ const Home = () => {
         </div>
       </div>
       {message ? (
-          <Toast className="notificationMessage" onClose={() => setIsNotitcationVisible(false)} show={isNotitcationVisible} delay={3000} autohide>
-            <Toast.Header closeButton={false}>
-              <strong className="me-auto">Сообщение</strong>
-              <small className="text-muted">{moment().toNow(true)}</small>
-            </Toast.Header>
-            <Toast.Body>{message}</Toast.Body>
-          </Toast>
+        <Toast className="notificationMessage" onClose={() => setIsNotitcationVisible(false)}
+               show={isNotitcationVisible} delay={3000} autohide>
+          <Toast.Header closeButton={false}>
+            <strong className="me-auto">Сообщение</strong>
+            <small className="text-muted">{moment().toNow(true)}</small>
+          </Toast.Header>
+          <Toast.Body>{message}</Toast.Body>
+        </Toast>
       ) : null}
     </div>
   )

@@ -23,50 +23,20 @@ const MyCalendar = (props) => {
   const { events, editEventData, orgUserData, itemData, handleDeleteEvent, isDeleteButtonVisible, isModalVisible, handleModalClose, handleEventClick } = props
 
   const calendarRef = useRef(null);
+  const currentUser = AuthService.getCurrentUser();
 
-  async function getEventData() {
-    try {
-      const response = await EventService.getEvents();
-
-      // response фильтруется
-      const filteredResponse = () => {
-        switch (ChoiceForm.chooseItems.whichItemID) {
-          case 'all':
-            return response.data && response.data
-          case 'mine':
-            return response.data && response.data.filter(event => event.orgUserId == currentUser.userInfo.id);
-          case 'member':
-            return response.data && response.data.filter(event => event.orgUserId == currentUser.userInfo.id || event.members.users.find(user => user.id === currentUser.userInfo.id));
-          case 'other':
-            return response.data && response.data.filter(event => event.orgUserId == currentUser.userInfo.id || event.members.users.find(user => user.id === currentUser.userInfo.id));
-        }
-      }
-
-      // ЗАМЕНИТЬ НА filteredResponse
-      const parsedList = response.data && response.data.map((event) => {
-        return {
-          id: event.id,
-          title: event.title,
-          start: event.startDateTime,
-          end: event.endDateTime,
-          orgUserID: event.orgUserId,
-          members: event.members.users,
-          itemID: event.itemId,
-          description: event.description,
-          color: event.members.users.find(user => user.id === currentUser.userInfo.id) ? 'orange' : event.orgUserId === currentUser.userInfo.id ? 'red' : {} //Изменяет цвет, если в событии участвует user
-        }
-      })
-
-      setEventList(parsedList);
-    } catch (err) {
-      console.log(err, "API ERROR");
+  const filteredResponse = () => {
+    switch (ChoiceForm.chooseItems.whichItemID) {
+      case 'all':
+        return events && events
+      case 'mine':
+        return events && events.filter(event => event.orgUserId == currentUser.userInfo.id);
+      case 'member':
+        return events && events.filter(event => event.orgUserId == currentUser.userInfo.id || event.members.users.find(user => user.id === currentUser.userInfo.id));
+      case 'other':
+        return events && events.filter(event => event.orgUserId == currentUser.userInfo.id || event.members.users.find(user => user.id === currentUser.userInfo.id));
     }
   }
-
-  // Получение данных о событиях
-  useEffect(() => {
-    getEventData();
-  }, []);
 
   return (
     <div id="calendar" className="container" ref={calendarRef}>
