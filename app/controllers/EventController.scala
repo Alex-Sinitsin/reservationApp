@@ -63,7 +63,9 @@ class EventController @Inject()(silhouette: Silhouette[JWTEnvironment],
     EventForm.form.bindFromRequest().fold(
       formWithErrors => Future.successful(BadRequest(Json.toJson(formWithErrors.errors.toString))),
       data => {
-        val members: List[UUID] = data.members.get.map(UUID.fromString)
+        val members: List[UUID] =
+          if(data.members.isEmpty) data.members.get.map(UUID.fromString)
+          else data.members.getOrElse(List.empty.map(_ => UUID.fromString("")))
 
         eventService.saveEvent(data, members).flatMap {
           case EventCreated(_) => Future.successful(Created(Json.toJson(Json.obj("status" -> "success", "message" -> "Событие успешно добавлено!"))))
