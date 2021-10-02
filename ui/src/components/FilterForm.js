@@ -1,15 +1,23 @@
-import React, {useState, useRef, useEffect} from "react";
-import "./ChoiceForm.css";
+import React, {useState, useEffect} from "react";
+import "./FilterForm.css";
 import Select from 'react-select'
 import ItemService from "../services/item.service"
 
 
-const ChooseItems = (props) => {
+const FilterEvents = () => {
 
-  const [itemID, setItemID] = useState(null);
-  const [itemList, setItemList] = useState([]);
+  const initialItemList = [{value: 0, label: 'Все'}]
+  const [itemList, setItemList] = useState(initialItemList);
+  const [item, setItem] = useState();
 
-  const [whichItemID, setWhichItemID] = useState(null);
+  const whoseItemsList = [
+    {value: 'all', label: 'Все события'},
+    {value: 'mine', label: 'Созданные события'},
+    {value: 'member', label: 'Мои события'},
+    {value: 'other', label: 'Чужие события'},
+  ]
+  const [whoseItem, setWhoseItem] = useState();
+
 
 // Получение данных об Items в Select
   useEffect(() => {
@@ -24,7 +32,7 @@ const ChooseItems = (props) => {
           }
         })
 
-        setItemList(parsedList);
+        setItemList(list => [...list, ...parsedList]);
       } catch (err) {
         console.log(err, "API ERROR");
       }
@@ -35,20 +43,13 @@ const ChooseItems = (props) => {
 
 
   function handleChangeItem(selectedItem) {
-    setItemID(selectedItem);
+    setItem(selectedItem);
   }
 
-  function handleChangeWhichItem(selectedItem) {
-    setWhichItemID(selectedItem);
+  function handleChangeWhoseItem(selectedItem) {
+    setWhoseItem(selectedItem);
   }
 
-
-  const whichItemsList = [
-    {value: 'all', label: 'Все события'},
-    {value: 'mine', label: 'Мои события'},
-    {value: 'member', label: 'Участник события'},
-    {value: 'other', label: 'Чужие события'},
-  ]
 
   return (
     <div className='choiceForm px-4'>
@@ -56,23 +57,26 @@ const ChooseItems = (props) => {
         <div className="col">
           <label htmlFor="itemID">Помещение/Предмет:</label>
           <Select
-              value={itemID}
+              value={item}
+              defaultValue={initialItemList[0]}
               onChange={handleChangeItem}
               options={itemList}
               placeholder={null}
               components={{IndicatorSeparator: () => null}}
+              isSearchable={false}
           />
         </div>
 
         <div className="col">
           <label htmlFor="itemID">Отображать:</label>
           <Select
-              value={whichItemID}
-              onChange={handleChangeWhichItem}
-              options={whichItemsList}
-              defaultValue={whichItemsList[0]}
+              value={whoseItem}
+              defaultValue={whoseItemsList[0]}
+              onChange={handleChangeWhoseItem}
+              options={whoseItemsList}
               placeholder={null}
               components={{IndicatorSeparator: () => null}}
+              isSearchable={false}
           />
         </div>
       </div>
@@ -80,4 +84,4 @@ const ChooseItems = (props) => {
   );
 }
 
-export default ChooseItems;
+export default FilterEvents;
