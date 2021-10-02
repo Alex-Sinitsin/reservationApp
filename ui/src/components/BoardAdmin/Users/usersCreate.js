@@ -21,7 +21,7 @@ const validateConfirmPassword = (value, allValues) => {
 ;
 
 const UserCreate = props => (
-  <Create {...props} title="Добавление нового пользователя">
+  <Create {...props} title="Создание нового пользователя">
     <SimpleForm>
       <TextInput source='name' label="Имя" validate={validateName}/>
       <TextInput source='lastName' label="Фамилия" validate={validateLastName}/>
