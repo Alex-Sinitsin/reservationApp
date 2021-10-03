@@ -3,7 +3,6 @@ package models.daos
 import com.google.inject.Inject
 import models.Event
 import play.api.db.slick.DatabaseConfigProvider
-import play.api.libs.json.Json
 import slick.jdbc.PostgresProfile.api._
 
 import java.sql.Timestamp
@@ -57,10 +56,9 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
    * @param event Событие для добавления
    * @return
    */
-  def add(event: Event): Future[Event] = {
-    db.run(events +=
-        Event(event.id, event.title, event.startDateTime, event.endDateTime, event.orgUserId, event.members, event.itemId, event.description))
-      .map(_ => event)
+  def add(event: Event): Future[Long] = {
+    db.run((events returning events.map(_.id)) +=
+        Event(event.id, event.title, event.startDateTime, event.endDateTime, event.orgUserId, event.itemId, event.description))
   }
 
   /**
@@ -71,8 +69,8 @@ class EventDAO @Inject() (protected val dbConfigProvider: DatabaseConfigProvider
    */
   def update(event: Event): Future[Event] =
     db.run(events.filter(_.id === event.id)
-      .map(evt => (evt.title, evt.startDateTime, evt.endDateTime, evt.orgUserId, evt.members, evt.itemId, evt.description))
-      .update((event.title, event.startDateTime, event.endDateTime, event.orgUserId, Some(Json.toJson(event.members)), event.itemId, event.description)).map(_ => event))
+      .map(evt => (evt.title, evt.startDateTime, evt.endDateTime, evt.orgUserId, evt.itemId, evt.description))
+      .update((event.title, event.startDateTime, event.endDateTime, event.orgUserId, event.itemId, event.description)).map(_ => event))
 
   /**
    * Удаляет данные события

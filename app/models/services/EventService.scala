@@ -1,26 +1,49 @@
 package models.services
 
 import forms.EventForm.EventData
-import models.{Event, User}
-import models.daos.{EventDAO, UserDAO}
-import play.api.libs.json.{Json, OFormat}
+import models.daos.{EventDAO, EventMemberDAO, UserDAO}
+import models.{Event, EventMember, EventTemp, EventWithMembers, User}
 
 import java.time.{Duration, LocalDateTime}
 import java.util.UUID
 import javax.inject.Inject
+import scala.collection.mutable.ArrayBuffer
 import scala.concurrent.{ExecutionContext, Future}
 
-class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: ExecutionContext) {
+class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO, eventMemberDAO: EventMemberDAO)(implicit ex: ExecutionContext) {
 
-  case class EventWithOrgUserInfo(event: Event, orgUserInfo: User)
-  implicit val EventWithOrgUserInfoFormat: OFormat[EventWithOrgUserInfo] = Json.format[EventWithOrgUserInfo]
+  //TODO: Доделать обновление с удалением событий
+  //TODO: Сделать метод для получения участников конкретного события и добавить для этого URI
 
   /**
    * Извлекает список событий
    *
    * @return
    */
-  def retrieveAll: Future[Seq[Event]] = eventDAO.getAll
+  def retrieveAll: Future[(Array[(Long, Seq[Event])], ArrayBuffer[EventWithMembers])] = {
+    val membersWithInfo: ArrayBuffer[EventWithMembers] = ArrayBuffer.empty
+
+    val eventsWithMembersData = for {
+      events <- eventDAO.getAll
+      event_members <- eventMemberDAO.getAllMembers
+      memberIds = event_members.map(member => member.user_id)
+      memberInfo <- userDAO.findUsersByID(memberIds)
+    } yield EventTemp(events, memberInfo, event_members)
+
+    val allEvents = eventsWithMembersData.flatMap{data =>
+      val listOfEvents: Array[(Long, Seq[Event])] = data.event.groupBy(_.id).toArray
+      val listOfMembers: Array[(Long, Seq[EventMember])] = data.eventMembers.groupBy(_.event_id).toArray
+
+      listOfMembers.flatMap{dd =>
+        dd._2.flatMap { member =>
+          val users = data.users.filter(_.id == member.user_id)
+          membersWithInfo += (EventWithMembers(dd._1, users))
+        }
+      }.groupBy(_.event).toArray
+      Future.successful((listOfEvents, membersWithInfo))
+    }
+    allEvents
+  }
 
   /**
    * Функция обрабатывает дату и время окончания события
@@ -66,10 +89,9 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
         case Some(_) => Future.successful(EventAlreadyExists)
         case None =>
           for {
-            memberUsers <- userDAO.findUsersByID(members).map(data => data.toList)
-            createdEvent <-
-              eventDAO.add(Event(-1, eventData.title, eventData.startDateTime, newEndDateTime, UUID.fromString(eventData.orgUserID), Some(Json.obj("users" -> Json.toJson(memberUsers))), eventData.itemID, eventData.description))
-          } yield EventCreated(createdEvent)
+            createdEventID <- eventDAO.add(Event(-1, eventData.title, eventData.startDateTime, newEndDateTime, UUID.fromString(eventData.orgUserID), eventData.itemID, eventData.description))
+            _ <- eventMemberDAO.create(createdEventID, members)
+          } yield EventCreated(createdEventID)
       }
     }
   }
@@ -87,7 +109,7 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO)(implicit ex: 
     if (currentUser.id == UUID.fromString(eventData.orgUserID) || currentUser.role.contains("Admin"))
       for {
         memberUsers <- userDAO.findUsersByID(members).map(data => data.toList)
-        updatedEvent <- eventDAO.update(Event(eventID, eventData.title, eventData.startDateTime, newEndDateTime, UUID.fromString(eventData.orgUserID), Some(Json.obj("users" -> Json.toJson(memberUsers))), eventData.itemID, eventData.description))
+        updatedEvent <- eventDAO.update(Event(eventID, eventData.title, eventData.startDateTime, newEndDateTime, UUID.fromString(eventData.orgUserID), eventData.itemID, eventData.description))
       } yield EventUpdated(updatedEvent)
     else Future.successful(EventCreatedByAnotherUser("update"))
   }
@@ -158,7 +180,7 @@ case object EventAlreadyExists extends EventResult
 case object EventNotFound extends EventResult
 case object EventDeleted extends EventResult
 
-case class EventCreated(event: Event) extends EventResult
+case class EventCreated(eventId: Long) extends EventResult
 case class EventCreatedByAnotherUser(action: String) extends EventResult
 case class EventUpdated(event: Event) extends EventResult
 case class EventDeleteError(msg: String) extends EventResult
