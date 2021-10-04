@@ -20,29 +20,33 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO, eventMemberDA
    *
    * @return
    */
-  def retrieveAll: Future[(Array[(Long, Seq[Event])], ArrayBuffer[EventWithMembers])] = {
+  def retrieveAll: Future[ArrayBuffer[EventWithMembers]] = {
     val membersWithInfo: ArrayBuffer[EventWithMembers] = ArrayBuffer.empty
 
-    val eventsWithMembersData = for {
+    val dataSummary = for {
       events <- eventDAO.getAll
       event_members <- eventMemberDAO.getAllMembers
       memberIds = event_members.map(member => member.user_id)
       memberInfo <- userDAO.findUsersByID(memberIds)
     } yield EventTemp(events, memberInfo, event_members)
 
-    val allEvents = eventsWithMembersData.flatMap{data =>
-      val listOfEvents: Array[(Long, Seq[Event])] = data.event.groupBy(_.id).toArray
+    val d = dataSummary.flatMap { data =>
+      val listOfEvents: Array[(Long, Seq[Event])] = data.events.groupBy(_.id).toArray
       val listOfMembers: Array[(Long, Seq[EventMember])] = data.eventMembers.groupBy(_.event_id).toArray
 
-      listOfMembers.flatMap{dd =>
-        dd._2.flatMap { member =>
-          val users = data.users.filter(_.id == member.user_id)
-          membersWithInfo += (EventWithMembers(dd._1, users))
+      listOfMembers.map { evtMembers =>
+        listOfEvents.map { evts =>
+          evtMembers._2.map { member =>
+            val users = data.users.filter(_.id == member.user_id)
+            evts._2.filter(evt => evt.id == evtMembers._1).map { evt =>
+              membersWithInfo += EventWithMembers(evtMembers._1, Seq((evt, users)))
+            }
+          }
         }
-      }.groupBy(_.event).toArray
-      Future.successful((listOfEvents, membersWithInfo))
+      }
+      Future.successful(membersWithInfo)
     }
-    allEvents
+    d
   }
 
   /**
@@ -74,7 +78,7 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO, eventMemberDA
    * Метод сохраняет новое событие
    *
    * @param eventData Данные с формы
-   * @param members Данные из формы (ID пользователей-участников события)
+   * @param members   Данные из формы (ID пользователей-участников события)
    * @return Добавленное событие
    */
   def saveEvent(eventData: EventData, members: List[UUID]): Future[EventResult] = {
@@ -99,9 +103,9 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO, eventMemberDA
   /**
    * Фрагмент кода для обновления события
    *
-   * @param eventID ID события
-   * @param eventData Данные о событии
-   * @param members ID пользователей
+   * @param eventID        ID события
+   * @param eventData      Данные о событии
+   * @param members        ID пользователей
    * @param newEndDateTime Обработанные дата и время окончания события
    * @return Результат выполнения операции и событие, которое было обновлено
    */
@@ -117,9 +121,9 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO, eventMemberDA
   /**
    * Обрабатывает обновления данных события
    *
-   * @param eventID ID события
-   * @param eventData Данные о событии
-   * @param members ID пользователей-участников
+   * @param eventID     ID события
+   * @param eventData   Данные о событии
+   * @param members     ID пользователей-участников
    * @param currentUser Объект данных авторизованного пользователей
    * @return Результат выполнения операции и событие, которое было обновлено
    */
@@ -151,11 +155,11 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO, eventMemberDA
   /**
    * Обрабатывает удаление данных события
    *
-   * @param eventID ID события, которое необходимо удалить
+   * @param eventID     ID события, которое необходимо удалить
    * @param currentUser Объект данных авторизованного пользователя
    * @return Результат выполнения операции
    */
-  def deleteEvent(eventID: Long, currentUser: User) : Future[EventResult] = {
+  def deleteEvent(eventID: Long, currentUser: User): Future[EventResult] = {
     eventDAO.getByID(eventID).flatMap {
       case Some(eventData) =>
         if (currentUser.id == eventData.orgUserId || currentUser.role.contains("Admin"))
@@ -175,12 +179,19 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO, eventMemberDA
 sealed trait EventResult
 
 case object InvalidEndDate extends EventResult
+
 case object DateTimeEqualException extends EventResult
+
 case object EventAlreadyExists extends EventResult
+
 case object EventNotFound extends EventResult
+
 case object EventDeleted extends EventResult
 
 case class EventCreated(eventId: Long) extends EventResult
+
 case class EventCreatedByAnotherUser(action: String) extends EventResult
+
 case class EventUpdated(event: Event) extends EventResult
+
 case class EventDeleteError(msg: String) extends EventResult
