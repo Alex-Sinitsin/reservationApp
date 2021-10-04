@@ -21,7 +21,7 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO, eventMemberDA
    * @return
    */
   def retrieveAll: Future[ArrayBuffer[EventWithMembers]] = {
-    val membersWithInfo: ArrayBuffer[EventWithMembers] = ArrayBuffer.empty
+    val eventsList: ArrayBuffer[EventWithMembers] = ArrayBuffer.empty
 
     val dataSummary = for {
       events <- eventDAO.getAll
@@ -30,7 +30,7 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO, eventMemberDA
       memberInfo <- userDAO.findUsersByID(memberIds)
     } yield EventTemp(events, memberInfo, event_members)
 
-    val d = dataSummary.flatMap { data =>
+    val allEvents = dataSummary.flatMap { data =>
       val listOfEvents: Array[(Long, Seq[Event])] = data.events.groupBy(_.id).toArray
       val listOfMembers: Array[(Long, Seq[EventMember])] = data.eventMembers.groupBy(_.event_id).toArray
 
@@ -39,14 +39,14 @@ class EventService @Inject()(userDAO: UserDAO, eventDAO: EventDAO, eventMemberDA
           evtMembers._2.map { member =>
             val users = data.users.filter(_.id == member.user_id)
             evts._2.filter(evt => evt.id == evtMembers._1).map { evt =>
-              membersWithInfo += EventWithMembers(evtMembers._1, Seq((evt, users)))
+              eventsList += EventWithMembers(evtMembers._1, Seq((evt, users)))
             }
           }
         }
       }
-      Future.successful(membersWithInfo)
+      Future.successful(eventsList)
     }
-    d
+    allEvents
   }
 
   /**
