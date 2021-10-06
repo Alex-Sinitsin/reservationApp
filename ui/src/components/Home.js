@@ -4,7 +4,7 @@ import './Home.css'
 import Header from './Header'
 import MyCalendar from '../MyCalendar';
 import EventForm from "./EventForm";
-import ChoiceForm from "./ChoiceForm";
+import FilterForm from "./FilterForm";
 
 import EventService from "../services/event.service";
 import UserService from "../services/user.service";
@@ -32,10 +32,25 @@ const Home = () => {
 
   const currentUser = AuthService.getCurrentUser();
 
+  // Данные для фильтров
+  const initialItemList = [{value: 0, label: 'Все'}]
+  const [itemList, setItemList] = useState(initialItemList);
+  const [item, setItem] = useState(itemList[0]);
+  const whoseEventList = [
+    {value: 0, label: 'Все события'},
+    {value: 1, label: 'Мои события'},
+    {value: 2, label: 'Созданные события'},
+    {value: 3, label: 'Чужие события'}]
+  const [whoseEvent, setWhoseEvent] = useState(whoseEventList[0]);
+
+
   async function getEventData() {
+
     try {
       const response = await EventService.getEvents();
-      const parsedList = response.data && response.data.map((event) => {
+      const filteredResponseByBelonging = response.data && filterByBelonging(response.data, whoseEvent);
+      const filteredResponseByItem = filteredResponseByBelonging && filterByItem(filteredResponseByBelonging, item);
+      const parsedList = filteredResponseByItem && filteredResponseByItem.map((event) => {
         return {
           id: event.id,
           title: event.title,
@@ -154,6 +169,28 @@ const Home = () => {
   }, []);
 
 
+  // Фильтрация по объекту
+  const filterByItem = (response, chosenItemID) => {
+    switch (chosenItemID.value) {
+      case 0: return response;
+      default: return response.filter(event => event.itemId === chosenItemID.value);
+    }
+  }
+
+// Фильтрация по принадлежности
+  const filterByBelonging = (response, chosenWhoseEvent) => {
+    const currentUser = AuthService.getCurrentUser();
+    switch (chosenWhoseEvent.value) {
+      case 0: return response;
+      case 1: return response.filter(event => event.orgUserId === currentUser.userInfo.id || event.members.users.find(user => user.id === currentUser.userInfo.id));
+      case 2: return response.filter(event => event.orgUserId === currentUser.userInfo.id);
+      case 3: return response.filter(event => event.orgUserId !== currentUser.userInfo.id && (event.members.users.find(user => user.id === currentUser.userInfo.id) === undefined));
+      default: return response;
+    }
+  }
+
+
+
   return (
     <div>
       <Header/>
@@ -163,7 +200,7 @@ const Home = () => {
             <EventForm successful={successfulAddEvent} handleAddEvent={handleAddEvent}/>
           </div>
           <div className="calendar col-md-9 mb-5">
-            <ChoiceForm/>
+            <FilterForm initialItemList={initialItemList} item={item} setItem={setItem} itemList={itemList} setItemList={setItemList} whoseEvent={whoseEvent} setWhoseEvent={setWhoseEvent} whoseEventList={whoseEventList} getEventData={getEventData}/>
             <MyCalendar
               events={eventList}
               handleEventClick={handleEventClick}

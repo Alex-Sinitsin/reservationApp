@@ -148,7 +148,6 @@ const AddEvent = (props) => {
   useEffect(() => {
     getItemData();
     getMembersData();
-    console.log(formData)
   }, [formData]);
 
   return (

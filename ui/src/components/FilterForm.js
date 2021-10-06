@@ -1,23 +1,12 @@
-import React, {useState, useEffect} from "react";
+import React, {useEffect} from "react";
 import "./FilterForm.css";
 import Select from 'react-select'
 import ItemService from "../services/item.service"
 
 
-const FilterEvents = () => {
+const FilterForm = (props) => {
 
-  const initialItemList = [{value: 0, label: 'Все'}]
-  const [itemList, setItemList] = useState(initialItemList);
-  const [item, setItem] = useState();
-
-  const whoseItemsList = [
-    {value: 'all', label: 'Все события'},
-    {value: 'mine', label: 'Созданные события'},
-    {value: 'member', label: 'Мои события'},
-    {value: 'other', label: 'Чужие события'},
-  ]
-  const [whoseItem, setWhoseItem] = useState();
-
+  const {initialItemList, item, setItem, itemList, setItemList, whoseEvent ,whoseEventList, setWhoseEvent, getEventData} = props;
 
 // Получение данных об Items в Select
   useEffect(() => {
@@ -42,13 +31,17 @@ const FilterEvents = () => {
   }, []);
 
 
+  useEffect(() => getEventData(), [whoseEvent]);
+  useEffect(() => getEventData(), [item]);
+
   function handleChangeItem(selectedItem) {
     setItem(selectedItem);
   }
 
-  function handleChangeWhoseItem(selectedItem) {
-    setWhoseItem(selectedItem);
+  function handleChangeWhoseEvent(selectedEvent) {
+    setWhoseEvent(selectedEvent);
   }
+
 
 
   return (
@@ -70,10 +63,10 @@ const FilterEvents = () => {
         <div className="col">
           <label htmlFor="itemID">Отображать:</label>
           <Select
-              value={whoseItem}
-              defaultValue={whoseItemsList[0]}
-              onChange={handleChangeWhoseItem}
-              options={whoseItemsList}
+              value={whoseEvent}
+              defaultValue={whoseEventList[0]}
+              onChange={handleChangeWhoseEvent}
+              options={whoseEventList}
               placeholder={null}
               components={{IndicatorSeparator: () => null}}
               isSearchable={false}
@@ -84,4 +77,5 @@ const FilterEvents = () => {
   );
 }
 
-export default FilterEvents;
+export default FilterForm;
+
