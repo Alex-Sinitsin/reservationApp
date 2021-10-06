@@ -6,7 +6,7 @@ import ItemService from "../services/item.service"
 
 const FilterForm = (props) => {
 
-  const {initialItemList, item, setItem, itemList, setItemList, whoseEvent ,whoseEventList, setWhoseEvent, getEventData} = props;
+  const {initialItemList, item, setItem, itemList, setItemList, whoseEvent ,whoseEventList, setWhoseEvent, handleFilter} = props;
 
 // Получение данных об Items в Select
   useEffect(() => {
@@ -31,8 +31,10 @@ const FilterForm = (props) => {
   }, []);
 
 
-  useEffect(() => getEventData(), [whoseEvent]);
-  useEffect(() => getEventData(), [item]);
+  // Обновление календаря при изменении Select
+  useEffect(() => handleFilter(), [item]);
+  useEffect(() => handleFilter(), [whoseEvent]);
+
 
   function handleChangeItem(selectedItem) {
     setItem(selectedItem);
@@ -41,8 +43,6 @@ const FilterForm = (props) => {
   function handleChangeWhoseEvent(selectedEvent) {
     setWhoseEvent(selectedEvent);
   }
-
-
 
   return (
     <div className='choiceForm px-4'>

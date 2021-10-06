@@ -18,9 +18,10 @@ import 'moment/locale/ru';
 const Home = () => {
 
   const [eventList, setEventList] = useState([]);
+  const [filteredEventList, setFilteredEventList] = useState([]);
 
   const [isModalVisible, setIsModalVisible] = React.useState(false);
-  const [isNotitcationVisible, setIsNotitcationVisible] = React.useState(false);
+  const [isNotificationVisible, setIsNotificationVisible] = React.useState(false);
   const [isDeleteButtonVisible, setIsDeleteButtonVisible] = React.useState(false)
 
   const [editEventData, setEditEventData] = React.useState(defaultEvent);
@@ -38,19 +39,17 @@ const Home = () => {
   const [item, setItem] = useState(itemList[0]);
   const whoseEventList = [
     {value: 0, label: 'Все события'},
-    {value: 1, label: 'Мои события'},
-    {value: 2, label: 'Созданные события'},
+    {value: 1, label: 'События с моим участием'},
+    {value: 2, label: 'Созданные мной события'},
     {value: 3, label: 'Чужие события'}]
   const [whoseEvent, setWhoseEvent] = useState(whoseEventList[0]);
 
-
+  // Функция запроса к API для получения событий
   async function getEventData() {
 
     try {
       const response = await EventService.getEvents();
-      const filteredResponseByBelonging = response.data && filterByBelonging(response.data, whoseEvent);
-      const filteredResponseByItem = filteredResponseByBelonging && filterByItem(filteredResponseByBelonging, item);
-      const parsedList = filteredResponseByItem && filteredResponseByItem.map((event) => {
+      const parsedList = response && response.data.map((event) => {
         return {
           id: event.id,
           title: event.title,
@@ -65,15 +64,16 @@ const Home = () => {
       })
 
       setEventList(parsedList);
+      setFilteredEventList(filterByBelonging(filterByItem(parsedList, item), whoseEvent))
     } catch (err) {
       setMessage("Произошла ошибка при получении данных с сервера!");
-      setIsNotitcationVisible(true)
+      setIsNotificationVisible(true)
     }
   }
 
   const handleAddEvent = (formData) => {
     setMessage("");
-    setIsNotitcationVisible(false)
+    setIsNotificationVisible(false)
     setSuccessfulAddEvent(false);
 
     EventService.add(
@@ -87,7 +87,7 @@ const Home = () => {
     ).then(
       (response) => {
         setMessage(response.data.message);
-        setIsNotitcationVisible(true)
+        setIsNotificationVisible(true)
         setSuccessfulAddEvent(true);
         getEventData();
       },
@@ -100,7 +100,7 @@ const Home = () => {
           error.toString();
 
         setMessage(resMessage);
-        setIsNotitcationVisible(true)
+        setIsNotificationVisible(true)
         setSuccessfulAddEvent(false);
       }
     );
@@ -112,7 +112,7 @@ const Home = () => {
       EventService.deleteEvent(eventID).then(
         (response) => {
           setMessage(response.data.message);
-          setIsNotitcationVisible(true)
+          setIsNotificationVisible(true)
           setIsModalVisible(false);
           setEditEventData(defaultEvent)
           setOrgUserData(defaultOrgUser)
@@ -123,7 +123,7 @@ const Home = () => {
 
     } catch (err) {
       setMessage("Удаление события не удалось!");
-      setIsNotitcationVisible(true)
+      setIsNotificationVisible(true)
     }
   };
 
@@ -169,26 +169,30 @@ const Home = () => {
   }, []);
 
 
-  // Фильтрация по объекту
-  const filterByItem = (response, chosenItemID) => {
+
+  // Фильтрация по объекту для данных календаря
+  const filterByItem = (events, chosenItemID) => {
     switch (chosenItemID.value) {
-      case 0: return response;
-      default: return response.filter(event => event.itemId === chosenItemID.value);
+      case 0: return events; // Все события
+      default: return events.filter(event => event.itemID === chosenItemID.value);
     }
   }
 
-// Фильтрация по принадлежности
-  const filterByBelonging = (response, chosenWhoseEvent) => {
+  // Фильтрация по принадлежности для данных календаря
+  const filterByBelonging = (events, whoseEvent) => {
     const currentUser = AuthService.getCurrentUser();
-    switch (chosenWhoseEvent.value) {
-      case 0: return response;
-      case 1: return response.filter(event => event.orgUserId === currentUser.userInfo.id || event.members.users.find(user => user.id === currentUser.userInfo.id));
-      case 2: return response.filter(event => event.orgUserId === currentUser.userInfo.id);
-      case 3: return response.filter(event => event.orgUserId !== currentUser.userInfo.id && (event.members.users.find(user => user.id === currentUser.userInfo.id) === undefined));
-      default: return response;
+    switch (whoseEvent.value) {
+      case 1:  return events.filter(event => event.orgUserID === currentUser.userInfo.id || event.members.find(user => user.id === currentUser.userInfo.id)); // События с участием пользователя
+      case 2:  return events.filter(event => event.orgUserID === currentUser.userInfo.id); // Созданные пользователем события
+      case 3:  return events.filter(event => event.orgUserID !== currentUser.userInfo.id && (event.members.find(user => user.id === currentUser.userInfo.id) === undefined)); // Чужие события
+      default: return events; // Все события
     }
   }
 
+  // Производит фильтрацию
+  const handleFilter = () => {
+    setFilteredEventList(filterByBelonging(filterByItem(eventList, item), whoseEvent))
+  }
 
 
   return (
@@ -200,24 +204,34 @@ const Home = () => {
             <EventForm successful={successfulAddEvent} handleAddEvent={handleAddEvent}/>
           </div>
           <div className="calendar col-md-9 mb-5">
-            <FilterForm initialItemList={initialItemList} item={item} setItem={setItem} itemList={itemList} setItemList={setItemList} whoseEvent={whoseEvent} setWhoseEvent={setWhoseEvent} whoseEventList={whoseEventList} getEventData={getEventData}/>
+            <FilterForm
+                initialItemList={initialItemList}
+                item={item} setItem={setItem}
+                itemList={itemList}
+                setItemList={setItemList}
+                whoseEvent={whoseEvent}
+                setWhoseEvent={setWhoseEvent}
+                whoseEventList={whoseEventList}
+                handleFilter={handleFilter}/>
+
+
             <MyCalendar
-              events={eventList}
-              handleEventClick={handleEventClick}
-              handleDeleteEvent={handleDeleteEvent}
-              handleModalClose={handleModalClose}
-              editEventData={editEventData}
-              orgUserData={orgUserData}
-              itemData={itemData}
-              isModalVisible={isModalVisible}
-              isDeleteButtonVisible={isDeleteButtonVisible}
+                events={filteredEventList}
+                handleEventClick={handleEventClick}
+                handleDeleteEvent={handleDeleteEvent}
+                handleModalClose={handleModalClose}
+                editEventData={editEventData}
+                orgUserData={orgUserData}
+                itemData={itemData}
+                isModalVisible={isModalVisible}
+                isDeleteButtonVisible={isDeleteButtonVisible}
             />
           </div>
         </div>
       </div>
       {message ? (
-        <Toast className="notificationMessage" onClose={() => setIsNotitcationVisible(false)}
-               show={isNotitcationVisible} delay={3000} autohide>
+        <Toast className="notificationMessage" onClose={() => setIsNotificationVisible(false)}
+               show={isNotificationVisible} delay={5000} autohide>
           <Toast.Header closeButton={false}>
             <strong className="me-auto">Сообщение</strong>
             <small className="text-muted">{moment().toNow(true)}</small>
